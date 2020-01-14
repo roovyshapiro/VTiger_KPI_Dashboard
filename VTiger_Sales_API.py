@@ -58,7 +58,6 @@ class Vtiger_api:
 
         return first_name, last_name, email, utc_offset
 
-
     def get_users(self):    
         '''
         Accepts User List and returns a dictionary of the username, first, last and id
@@ -101,21 +100,11 @@ class Vtiger_api:
         return group_dict
 
 
-    def case_count(self, group_id, case_type = 'all', date = ''):
+    def get_module_count(self, module, user_id, date = ''):
         '''
-        Returns an int equal to the number of cases requested by the specific URL.
-        This count is used by self.get_all_open_cases() to retrieve the total number of cases,
-        the number of cases opened this month and the number of cases closed this month.
+        Returns an int equal to the number of items in a module requested by the specific URL.
         '''
-        if case_type == 'all':
-            case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE group_id = {group_id} AND casestatus != 'closed' AND casestatus != 'resolved';")
-        elif case_type == 'month_closed':
-            case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE group_id = {group_id} AND casestatus = 'closed' AND sla_actual_closureon >= '{date}' limit 0, 100;")
-        elif case_type == 'month_resolved':
-            case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE group_id = {group_id} AND casestatus = 'resolved' AND sla_actual_closureon >= '{date}' limit 0, 100;")
-        elif case_type == 'month_open':
-            case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE group_id = {group_id} AND  createdtime >= '{date}' limit 0, 100;")
-
+        case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE user = {user_id};")
         num_cases = case_amount['result'][0]['count']
         return num_cases
 
@@ -221,13 +210,17 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        groupdict = vtigerapi.get_groups()
-        data = vtigerapi.get_all_data()
-        data = json.dumps(data,  indent=4, sort_keys=True)
-        with open('all_data.json', 'w') as f:
-            f.write(data)
-
-        data = vtigerapi.get_module_data("PhoneCalls")
-        data = json.dumps(data,  indent=4, sort_keys=True)
-        with open('module_data.json', 'w') as f:
-            f.write(data)     
+        
+        #groupdict = vtigerapi.get_groups()
+        #data = vtigerapi.get_all_data()
+        #data = json.dumps(data,  indent=4, sort_keys=True)
+        #with open('all_data.json', 'w') as f:
+        #    f.write(data)
+        #
+        #data = vtigerapi.get_module_data("PhoneCalls")
+        #data = json.dumps(data,  indent=4, sort_keys=True)
+        #with open('module_data.json', 'w') as f:
+        #    f.write(data)
+        users = vtigerapi.get_users()
+        data = vtigerapi.get_module_count('PhoneCalls','19x55')
+        print(data)
