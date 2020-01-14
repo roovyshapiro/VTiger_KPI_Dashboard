@@ -9,6 +9,8 @@ class Vtiger_api:
 
         self.first_name, self.last_name, self.primary_email, self.utc_offset = self.get_user_personal_info()
 
+        self.today, self.beginning_of_week, self.beginning_of_month = self.day_week_month_times()
+
     def api_call(self, url):
         '''
         Accepts a URL and returns the text
@@ -104,9 +106,9 @@ class Vtiger_api:
         '''
         Returns an int equal to the number of items in a module requested by the specific URL.
         '''
-        case_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE user = {user_id};")
-        num_cases = case_amount['result'][0]['count']
-        return num_cases
+        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE user = {user_id} and starttime >= '2020-01-10';")
+        num_items = module_amount['result'][0]['count']
+        return num_items
 
     def get_all_open_cases(self, group_id, case_type = 'all'):
         '''
@@ -167,43 +169,49 @@ class Vtiger_api:
             self.month_open_case_list = full_case_list
         return full_case_list
 
-    def beginning_of_week(self):
+
+
+    def day_week_month_times(self):
         '''
-        For whichever day of the week it is, this past Monday at 12:00am is returned.
-        Today = datetime.datetime(2019, 9, 5, 15, 31, 13, 134153)
-        Returns: 2019-09-02 00:00:00
+        Times are set in UTC, but VTiger is configured to display data in the user's
+        configured time zone. As an example:
+        A case might return a created time of '2019-12-02 01:00:44 UTC', 
+        but the created time displayed in VTiger is 12-01-2019 08:00 PM EST.
+        This case should not be part of the week's data since it appears to be from the previous week
+        according to the user. Therefore, we add the offset to the time.
+        If the user has an offset of -5 (EST), then the first of the week would now be 2019-12-02 05:00:00
+
+        The same is true for the month.
+        A case might return a created time of '2019-12-01 01:00:44 UTC', 
+        but the created time displayed in VTiger is 11-30-2019 08:00 PM EST.
+        This case should not be part of the month's data since it appears to be from the previous month
+        according to the user. 
+
+        Assuming that datetime.datetime.now() == 2020-01-14 13:18:04.921655
+
+        >>>self.today
+        2020-01-14 05:00:00
+
+        >>>self.beginning_of_week
+        2020-01-13 05:00:00
+
+        >>>self.beginning_of_month
+        2020-01-01 05:00:00
         '''
         today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         #0 = monday, 5 = Saturday, 6 = Sunday 
         day = today.weekday()
+
+        today_time = today - datetime.timedelta(hours = self.utc_offset)
+
         first_of_week = today + datetime.timedelta(days = -day)
-
-        #Case created time is displayed in UTC, but VTiger is configured to display data in the user's
-        #configured time zone. As an example:
-        #A case might return a created time of '2019-12-02 01:00:44 UTC', 
-        #but the created time displayed in VTiger is 12-01-2019 08:00 PM EST.
-        #This case should not be part of the week's data since it appears to be from the previous week
-        #according to the user. Therefore, we add the offset to the time.
-        #If the user has an offset of -5 (EST), then the first of the week would now be 2019-12-02 05:00:00
         first_of_week = first_of_week - datetime.timedelta(hours = self.utc_offset)
-        return first_of_week
 
-    def beginning_of_month(self):
-        '''
-        For whichever day of the month it is, the first day of the month is returned.
-        Today = 2019-11-25 17:50:53.445677
-        Returns: 2019-11-01 00:00:00
-        '''
         first_of_month = datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        #Case created time is displayed in UTC, but VTiger is configured to display data in the user's
-        #configured time zone. As an example:
-        #A case might return a created time of '2019-12-01 01:00:44 UTC', 
-        #but the created time displayed in VTiger is 11-30-2019 08:00 PM EST.
-        #This case should not be part of the month's data since it appears to be from the previous month
-        #according to the user. Therefore, we add the offset to the time.
-        #If the user has an offset of -5 (EST), then the first of the month would now be 2019-12-01 05:00:00
         first_of_month = first_of_month - datetime.timedelta(hours = self.utc_offset)
-        return first_of_month
+
+        return today_time, first_of_week, first_of_month
+
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
@@ -221,6 +229,12 @@ if __name__ == '__main__':
         #data = json.dumps(data,  indent=4, sort_keys=True)
         #with open('module_data.json', 'w') as f:
         #    f.write(data)
-        users = vtigerapi.get_users()
-        data = vtigerapi.get_module_count('PhoneCalls','19x55')
-        print(data)
+        #users = vtigerapi.get_users()
+        #data = vtigerapi.get_module_count('PhoneCalls','19x55')
+        #print(data)
+        #vtigerapi.test_query()
+        #print(vtigerapi.beginning_of_month())
+        #print(vtigerapi.beginning_of_week())
+        print(vtigerapi.today)
+        print(vtigerapi.beginning_of_week)
+        print(vtigerapi.beginning_of_month)
