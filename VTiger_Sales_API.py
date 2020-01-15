@@ -66,7 +66,7 @@ class Vtiger_api:
         '''
         group_dict = self.get_groups()
         user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users WHERE user_primary_group = '{group_dict['Sales']}';")
-        
+
         num_of_users = len(user_list['result'])
         username_list = []
         for user in range(num_of_users):
@@ -115,11 +115,22 @@ class Vtiger_api:
     def get_opportunity_count(self, user_id, date):
         '''
         Returns an int equal to the number of items in the Opportunities module requested by the specific URL.
+        Additionally returns a dictionary with the amount of each sales stages.
         '''
         module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{self.beginning_of_month}';")
         num_items = module_amount['result'][0]['count']
-        return num_items
 
+
+        opportunities = self.api_call(f"{self.host}/query?query=SELECT * FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{self.beginning_of_month}';")
+        sales_stage_dict = {}
+        for item in opportunities['result']:
+            stage = item['sales_stage']
+            if stage not in sales_stage_dict:
+                sales_stage_dict[stage] = 1
+            else:
+                sales_stage_dict[stage] += 1
+
+        return num_items, sales_stage_dict
 
     def month_phone_call_stats(self):
         '''
@@ -130,7 +141,13 @@ class Vtiger_api:
         for key in user_dict:
             print(f"{user_dict[key][0]} {user_dict[key][1]}:")
             print("\tPhone Calls:", vtigerapi.get_phone_call_count(key, vtigerapi.beginning_of_month))
-            print("\tOpportunities:", vtigerapi.get_opportunity_count(key, vtigerapi.beginning_of_month))
+            num_items, sales_stage_dict = vtigerapi.get_opportunity_count(key, vtigerapi.beginning_of_month)
+            print("\tOpportunity Stage Changed:", num_items)
+            #Convert dictionary into a list of tuples ordered by values from highest to lowest
+            #Example output: [(8, 'Quote Sent'), (2, 'Closed Lost'), (1, 'Closed Won')]
+            data = sorted( ((v,k) for k,v in sales_stage_dict.items()), reverse=True) 
+            for item in data:
+                print(f"\t\t{item[1]}: {item[0]}")
 
     def get_all_open_cases(self, group_id, case_type = 'all'):
         '''
