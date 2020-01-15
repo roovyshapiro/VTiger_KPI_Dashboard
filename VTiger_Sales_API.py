@@ -117,11 +117,11 @@ class Vtiger_api:
         Returns an int equal to the number of items in the Opportunities module requested by the specific URL.
         Additionally returns a dictionary with the amount of each sales stages.
         '''
-        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{self.beginning_of_month}';")
+        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{date}';")
         num_items = module_amount['result'][0]['count']
 
 
-        opportunities = self.api_call(f"{self.host}/query?query=SELECT * FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{self.beginning_of_month}';")
+        opportunities = self.api_call(f"{self.host}/query?query=SELECT * FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{date}';")
         sales_stage_dict = {}
         for item in opportunities['result']:
             stage = item['sales_stage']
@@ -132,16 +132,25 @@ class Vtiger_api:
 
         return num_items, sales_stage_dict
 
-    def month_phone_call_stats(self):
+    def month_phone_call_stats(self, date):
         '''
         Prints out the monthly phone calls for each user who has "Sales" as their primary group.
         '''
-        user_dict = vtigerapi.get_users()
+        if date.strip().lower() == 'day':
+            date = self.today
+        elif date.strip().lower() == 'week':
+            date = self.beginning_of_week
+        elif date.strip().lower() == 'month':
+            date = self.beginning_of_month
+        else:
+            print("Not a valid timeframe! 'day', 'week' or 'month' only!") 
+
+        user_dict = self.get_users()
         print("This Month's Phone Calls and Opportunities:")
         for key in user_dict:
             print(f"{user_dict[key][0]} {user_dict[key][1]}:")
-            print("\tPhone Calls:", vtigerapi.get_phone_call_count(key, vtigerapi.beginning_of_month))
-            num_items, sales_stage_dict = vtigerapi.get_opportunity_count(key, vtigerapi.beginning_of_month)
+            print("\tPhone Calls:", self.get_phone_call_count(key, date))
+            num_items, sales_stage_dict = self.get_opportunity_count(key, date)
             print("\tOpportunity Stage Changed:", num_items)
             #Convert dictionary into a list of tuples ordered by values from highest to lowest
             #Example output: [(8, 'Quote Sent'), (2, 'Closed Lost'), (1, 'Closed Won')]
@@ -197,20 +206,8 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        
-        #groupdict = vtigerapi.get_groups()
         #data = vtigerapi.get_all_data()
-        #data = json.dumps(data,  indent=4, sort_keys=True)
-        #with open('all_data.json', 'w') as f:
-        #    f.write(data)
-        #data = vtigerapi.get_module_data("Potentials")
-
-        #users = vtigerapi.get_users()
-        #data = vtigerapi.get_module_count('PhoneCalls','19x55')
-        #print(data)
-        #print(vtigerapi.get_module_count("PhoneCalls", "19x55", vtigerapi.beginning_of_month))
-        vtigerapi.month_phone_call_stats()
-        #user_dict, full_user_list = vtigerapi.get_users()
         #data = json.dumps(data,  indent=4, sort_keys=True)
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
+        vtigerapi.month_phone_call_stats('month')
