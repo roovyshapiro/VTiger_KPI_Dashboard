@@ -103,23 +103,34 @@ class Vtiger_api:
         return group_dict
 
 
-    def get_module_count(self, module, user_id, date):
+    def get_phone_call_count(self, user_id, date):
         '''
-        Returns an int equal to the number of items in a module requested by the specific URL.
+        Returns an int equal to the number of items in the Phone Calls module requested by the specific URL.
         '''
-        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE user = {user_id} and starttime >= '{date}';")
+        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM PhoneCalls WHERE user = {user_id} and starttime >= '{date}';")
         num_items = module_amount['result'][0]['count']
         return num_items
+
+
+    def get_opportunity_count(self, user_id, date):
+        '''
+        Returns an int equal to the number of items in the Opportunities module requested by the specific URL.
+        '''
+        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{self.beginning_of_month}';")
+        num_items = module_amount['result'][0]['count']
+        return num_items
+
 
     def month_phone_call_stats(self):
         '''
         Prints out the monthly phone calls for each user who has "Sales" as their primary group.
         '''
         user_dict = vtigerapi.get_users()
-        print("This Month's Phone Calls:")
+        print("This Month's Phone Calls and Opportunities:")
         for key in user_dict:
-            print(f"{user_dict[key][0]} {user_dict[key][1]}: ", vtigerapi.get_module_count("PhoneCalls", key, vtigerapi.beginning_of_month))
-
+            print(f"{user_dict[key][0]} {user_dict[key][1]}:")
+            print("\tPhone Calls:", vtigerapi.get_phone_call_count(key, vtigerapi.beginning_of_month))
+            print("\tOpportunities:", vtigerapi.get_opportunity_count(key, vtigerapi.beginning_of_month))
 
     def get_all_open_cases(self, group_id, case_type = 'all'):
         '''
@@ -235,13 +246,14 @@ if __name__ == '__main__':
         #data = json.dumps(data,  indent=4, sort_keys=True)
         #with open('all_data.json', 'w') as f:
         #    f.write(data)
-        #data = vtigerapi.get_module_data("PhoneCalls")
-        #data = json.dumps(data,  indent=4, sort_keys=True)
-        #with open('module_data.json', 'w') as f:
-        #    f.write(data)
+        #data = vtigerapi.get_module_data("Potentials")
+
         #users = vtigerapi.get_users()
         #data = vtigerapi.get_module_count('PhoneCalls','19x55')
         #print(data)
         #print(vtigerapi.get_module_count("PhoneCalls", "19x55", vtigerapi.beginning_of_month))
         vtigerapi.month_phone_call_stats()
-    
+        #user_dict, full_user_list = vtigerapi.get_users()
+        #data = json.dumps(data,  indent=4, sort_keys=True)
+        #with open('potentials.json', 'w') as f:
+        #    f.write(data)
