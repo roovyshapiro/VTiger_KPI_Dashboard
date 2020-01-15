@@ -149,66 +149,6 @@ class Vtiger_api:
             for item in data:
                 print(f"\t\t{item[1]}: {item[0]}")
 
-    def get_all_open_cases(self, group_id, case_type = 'all'):
-        '''
-        A module can only return a maximum of 100 results. To circumvent that, an offset can be supplied which starts returning data from after the offset.
-        The amount must be looped through in order to retrieve all the results.
-        For instance if there are 250 cases, first 100 is retrieved, then another 100, and then 50.
-        A list is returned of each dictionary that was retrieved this way.
-        This same method is used to return data for cases asked for in a specific time frame.
-        '''
-        if case_type =='all':
-            num_cases = int(self.case_count(group_id))
-        elif case_type == 'month_closed' or case_type == 'month_resolved' or case_type == 'month_open':
-            first_of_month = self.beginning_of_month()
-            num_cases = int(self.case_count(group_id, case_type, first_of_month))
-
-        case_list = []
-        offset = 0
-        if num_cases > 100:
-            while num_cases > 100:
-                if case_type == 'all':
-                    cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus != 'resolved' AND casestatus != 'closed' limit {offset}, 100;")
-                elif case_type == 'month_closed':
-                    cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus = 'closed' AND sla_actual_closureon >= '{first_of_month}' limit {offset}, 100;")
-                elif case_type == 'month_resolved':
-                    cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus = 'resolved' AND sla_actual_closureon >= '{first_of_month}' limit {offset}, 100;")
-                elif case_type == 'month_open': 
-                    cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND createdtime >= '{first_of_month}' limit {offset}, 100;")
-
-                case_list.append(cases['result'])
-                offset += 100
-                num_cases = num_cases - offset
-                if num_cases <= 100:
-                    break
-        if num_cases <= 100:
-            if case_type == 'all':
-                cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus != 'resolved' AND casestatus != 'closed' limit {offset}, 100;")
-            elif case_type == 'month_closed':
-                cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus = 'closed' AND sla_actual_closureon >= '{first_of_month}' limit {offset}, 100;")
-            elif case_type == 'month_resolved':
-                cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND casestatus = 'resolved' AND sla_actual_closureon >= '{first_of_month}' limit {offset}, 100;")
-            elif case_type == 'month_open':
-                cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE group_id = {group_id} AND createdtime >= '{first_of_month}' limit {offset}, 100;")
-
-            case_list.append(cases['result'])
-        
-        #Combine the multiple lists of dictionaries into one list
-        #Before: [[{case1}, {case2}], [{case 101}, {case 102}]]
-        #After: [{case1}, {case2}, {case 101}, {case 102}]
-        full_case_list = []
-        for caselist in case_list:
-            full_case_list += caselist
-
-        if case_type == 'month_closed':
-            self.month_closed_case_list = full_case_list
-        elif case_type == 'month_resolved':
-            self.month_resolved_case_list = full_case_list
-        elif case_type == 'month_open':
-            self.month_open_case_list = full_case_list
-        return full_case_list
-
-
 
     def day_week_month_times(self):
         '''
