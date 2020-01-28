@@ -224,17 +224,20 @@ class Vtiger_api:
 
     def db_initialize(self):
         '''
-        Initializes Database with sales stage, phone calls and date fields.
+        Initializes Database with one table per sales person
+        Columns exist for each sales stage, phone calls and date.
         '''
+        user_dict = self.get_users()
         #Get sales stages, remove whitespace
         #demo_scheduled TEXT,demo_given TEXT,quote_sent TEXT,pilot TEXT,needs_analysis TEXT,closed_won TEXT,closed_lost TEXT,phone_calls TEXT,date TEXT
         stages = self.get_sales_stages()
         stages_string = ' TEXT,'.join(stages) + ' TEXT' + ',phone_calls TEXT,date TEXT'
-        #Connect to database, if it doesn't exist it will be created
+
         conn = sqlite3.connect(self.dbfilepath)
         c = conn.cursor()
-        #If the database has no table, this will create it (This should only really execute once)
-        c.execute(f"CREATE TABLE IF NOT EXISTS sales_table({stages_string})")
+        #Creates a table for each sales person if that sales person's table doesn't exist.
+        for key in user_dict:
+            c.execute(f"CREATE TABLE IF NOT EXISTS {user_dict[key][0].lower()}_{user_dict[key][1].lower()}({stages_string})")
         conn.close()
 
 
