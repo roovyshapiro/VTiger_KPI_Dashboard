@@ -1,4 +1,4 @@
-import requests, json, datetime, collections, time, pytz
+import requests, json, datetime, collections, time, pytz, os, sqlite3
 
 class Vtiger_api:
     def __init__(self, username, access_key, host):
@@ -10,6 +10,9 @@ class Vtiger_api:
         self.first_name, self.last_name, self.primary_email, self.utc_offset = self.get_user_personal_info()
 
         self.today, self.beginning_of_week, self.beginning_of_month = self.day_week_month_times()
+
+        self.dbfilename = 'db.sqlite3'
+        self.dbfilepath = os.path.join(os.path.abspath('.'), self.dbfilename)
 
     def api_call(self, url):
         '''
