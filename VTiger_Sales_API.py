@@ -166,15 +166,15 @@ class Vtiger_api:
         module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{date}';")
         num_items = module_amount['result'][0]['count']
 
-
         opportunities = self.api_call(f"{self.host}/query?query=SELECT * FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{date}';")
-        sales_stage_dict = {}
+        
+        #All sales stages are added to this dict with '0' as the default value.
+        #Here's what this ends up looking like as an example:
+        #{'Demo Scheduled': 2, 'Demo Given': 0, 'Quote Sent': 3, 'Pilot': 0, 'Needs Analysis': 0, 'Closed Won': 3, 'Closed Lost': 3}
+        sales_stage_dict = {i:0 for i in self.sales_stages}
         for item in opportunities['result']:
             stage = item['sales_stage']
-            if stage not in sales_stage_dict:
-                sales_stage_dict[stage] = 1
-            else:
-                sales_stage_dict[stage] += 1
+            sales_stage_dict[stage] += 1
 
         return num_items, sales_stage_dict
 
@@ -201,7 +201,7 @@ class Vtiger_api:
 
     def sales_stats(self, timeframe):
         '''
-        Prints out the monthly phone calls for each user who has "Sales" as their primary group.
+        Prints out the stats for each user who has "Sales" as their primary group.
         '''
         if timeframe.strip().lower() == 'day':
             date = self.today
@@ -244,7 +244,42 @@ class Vtiger_api:
             c.execute(f"CREATE TABLE IF NOT EXISTS {user_dict[key][0].lower()}_{user_dict[key][1].lower()}({stages_string})")
         conn.close()
 
+    def db_update(self):
+        '''
+        For each user who has "Sales" as their primary group,
+        Add stats from the last ten minutes into their respective Database.
+        '''
+        #Create tables for each sales person if they don't already exist.
+        self.db_initialize()
 
+        now = datetime.datetime.now().replace(second=0, microsecond=0)
+        #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
+        now = now - datetime.timedelta(hours = self.utc_offset)
+        ten_min_ago = now - datetime.timedelta(minutes=10)
+
+        user_dict = self.get_users()
+
+        for key in user_dict:
+            full_stat_list = []
+            num_phone_calls = self.get_phone_call_count(key, ten_min_ago)
+
+            num_items, sales_stage_dict = self.get_opportunity_count(key, ten_min_ago)
+            for v in sales_stage_dict.values():
+                full_stat_list.append(v)
+
+            full_stat_list.append(num_phone_calls)
+            full_stat_list.append(ten_min_ago.strftime('%Y-%m-%d %H:%M:%S'))
+
+            #full_stat_list
+            #[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00']]
+
+            conn = sqlite3.connect(self.dbfilepath)
+            c = conn.cursor()
+            c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date) VALUES (?,?,?,?,?,?,?,?,?)",
+                      (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8]))
+            conn.commit()
+            c.close()
+            conn.close()
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
@@ -255,5 +290,5 @@ if __name__ == '__main__':
         #data = json.dumps(response,  indent=4, sort_keys=True)
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
-        vtigerapi.sales_stats('week')
-        #vtigerapi.db_initialize()
+        #vtigerapi.sales_stats('week')
+        vtigerapi.db_update()
