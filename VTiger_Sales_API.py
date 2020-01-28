@@ -212,7 +212,30 @@ class Vtiger_api:
         potentials = self.get_module_data('Potentials')
         for item in potentials['result']['fields'][5]['type']['picklistValues']:
             self.sales_stages.append(item['value'])
-        return self.sales_stages
+
+        #Remove white space from stages
+        #['Demo_Scheduled', 'Demo_Given', 'Quote_Sent', 'Pilot', 'Needs_Analysis', 'Closed_Won', 'Closed_Lost'] 
+        stages_nospace = []
+        for stage in self.sales_stages:
+            stage_nospace = stage.replace(' ', '_').lower()
+            stages_nospace.append(stage_nospace)
+
+        return stages_nospace
+
+    def db_initialize(self):
+        '''
+        Initializes Database with sales stage, phone calls and date fields.
+        '''
+        #Get sales stages, remove whitespace
+        #demo_scheduled TEXT,demo_given TEXT,quote_sent TEXT,pilot TEXT,needs_analysis TEXT,closed_won TEXT,closed_lost TEXT,phone_calls TEXT,date TEXT
+        stages = self.get_sales_stages()
+        stages_string = ' TEXT,'.join(stages) + ' TEXT' + ',phone_calls TEXT,date TEXT'
+        #Connect to database, if it doesn't exist it will be created
+        conn = sqlite3.connect(self.dbfilepath)
+        c = conn.cursor()
+        #If the database has no table, this will create it (This should only really execute once)
+        c.execute(f"CREATE TABLE IF NOT EXISTS sales_table({stages_string})")
+        conn.close()
 
 
 if __name__ == '__main__':
@@ -224,4 +247,5 @@ if __name__ == '__main__':
         #data = json.dumps(response,  indent=4, sort_keys=True)
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
-        vtigerapi.month_phone_call_stats('month')
+        #vtigerapi.month_phone_call_stats('month')
+        vtigerapi.db_initialize()
