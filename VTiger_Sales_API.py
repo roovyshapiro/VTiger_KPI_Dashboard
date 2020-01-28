@@ -200,14 +200,25 @@ class Vtiger_api:
 
         return today_time, first_of_week, first_of_month
 
+    def get_sales_stages(self):
+        '''
+        Returns a list of all the sales stages in Opportunities:
+        ['Demo Scheduled', 'Demo Given', 'Quote Sent', 'Pilot', 'Needs Analysis', 'Closed Won', 'Closed Lost']
+        '''
+        self.sales_stages = []
+        potentials = self.get_module_data('Potentials')
+        for item in potentials['result']['fields'][5]['type']['picklistValues']:
+            self.sales_stages.append(item['value'])
+        return self.sales_stages
+
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        #data = vtigerapi.get_all_data()
-        #data = json.dumps(data,  indent=4, sort_keys=True)
+        #response = vtigerapi.get_module_data('Potentials')
+        #data = json.dumps(response,  indent=4, sort_keys=True)
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
         vtigerapi.month_phone_call_stats('month')
