@@ -14,6 +14,49 @@ class Vtiger_api:
         self.dbfilename = 'db.sqlite3'
         self.dbfilepath = os.path.join(os.path.abspath('.'), self.dbfilename)
 
+
+    def day_week_month_times(self):
+        '''
+        Times are set in UTC, but VTiger is configured to display data in the user's
+        configured time zone. As an example:
+        A case might return a created time of '2019-12-02 01:00:44 UTC', 
+        but the created time displayed in VTiger is 12-01-2019 08:00 PM EST.
+        This case should not be part of the week's data since it appears to be from the previous week
+        according to the user. Therefore, we add the offset to the time.
+        If the user has an offset of -5 (EST), then the first of the week would now be 2019-12-02 05:00:00
+
+        The same is true for the month.
+        A case might return a created time of '2019-12-01 01:00:44 UTC', 
+        but the created time displayed in VTiger is 11-30-2019 08:00 PM EST.
+        This case should not be part of the month's data since it appears to be from the previous month
+        according to the user. 
+
+        Assuming that datetime.datetime.now() == 2020-01-14 13:18:04.921655
+
+        >>>self.today
+        2020-01-14 05:00:00
+
+        >>>self.beginning_of_week
+        2020-01-13 05:00:00
+
+        >>>self.beginning_of_month
+        2020-01-01 05:00:00
+        '''
+        today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        #0 = monday, 5 = Saturday, 6 = Sunday 
+        day = today.weekday()
+
+        today_time = today - datetime.timedelta(hours = self.utc_offset)
+
+        first_of_week = today + datetime.timedelta(days = -day)
+        first_of_week = first_of_week - datetime.timedelta(hours = self.utc_offset)
+
+        first_of_month = datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        first_of_month = first_of_month - datetime.timedelta(hours = self.utc_offset)
+
+        return today_time, first_of_week, first_of_month
+
+
     def api_call(self, url):
         '''
         Accepts a URL and returns the text
@@ -135,73 +178,6 @@ class Vtiger_api:
 
         return num_items, sales_stage_dict
 
-    def month_phone_call_stats(self, date):
-        '''
-        Prints out the monthly phone calls for each user who has "Sales" as their primary group.
-        '''
-        if date.strip().lower() == 'day':
-            date = self.today
-        elif date.strip().lower() == 'week':
-            date = self.beginning_of_week
-        elif date.strip().lower() == 'month':
-            date = self.beginning_of_month
-        else:
-            print("Not a valid timeframe! 'day', 'week' or 'month' only!") 
-
-        user_dict = self.get_users()
-        print("This Month's Phone Calls and Opportunities:")
-        for key in user_dict:
-            print(f"{user_dict[key][0]} {user_dict[key][1]}:")
-            print("\tPhone Calls:", self.get_phone_call_count(key, date))
-            num_items, sales_stage_dict = self.get_opportunity_count(key, date)
-            print("\tOpportunity Stage Changed:", num_items)
-            #Convert dictionary into a list of tuples ordered by values from highest to lowest
-            #Example output: [(8, 'Quote Sent'), (2, 'Closed Lost'), (1, 'Closed Won')]
-            data = sorted( ((v,k) for k,v in sales_stage_dict.items()), reverse=True) 
-            for item in data:
-                print(f"\t\t{item[1]}: {item[0]}")
-
-
-    def day_week_month_times(self):
-        '''
-        Times are set in UTC, but VTiger is configured to display data in the user's
-        configured time zone. As an example:
-        A case might return a created time of '2019-12-02 01:00:44 UTC', 
-        but the created time displayed in VTiger is 12-01-2019 08:00 PM EST.
-        This case should not be part of the week's data since it appears to be from the previous week
-        according to the user. Therefore, we add the offset to the time.
-        If the user has an offset of -5 (EST), then the first of the week would now be 2019-12-02 05:00:00
-
-        The same is true for the month.
-        A case might return a created time of '2019-12-01 01:00:44 UTC', 
-        but the created time displayed in VTiger is 11-30-2019 08:00 PM EST.
-        This case should not be part of the month's data since it appears to be from the previous month
-        according to the user. 
-
-        Assuming that datetime.datetime.now() == 2020-01-14 13:18:04.921655
-
-        >>>self.today
-        2020-01-14 05:00:00
-
-        >>>self.beginning_of_week
-        2020-01-13 05:00:00
-
-        >>>self.beginning_of_month
-        2020-01-01 05:00:00
-        '''
-        today = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        #0 = monday, 5 = Saturday, 6 = Sunday 
-        day = today.weekday()
-
-        today_time = today - datetime.timedelta(hours = self.utc_offset)
-
-        first_of_week = today + datetime.timedelta(days = -day)
-        first_of_week = first_of_week - datetime.timedelta(hours = self.utc_offset)
-
-        first_of_month = datetime.datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        first_of_month = first_of_month - datetime.timedelta(hours = self.utc_offset)
-
-        return today_time, first_of_week, first_of_month
 
     def get_sales_stages(self):
         '''
@@ -222,6 +198,34 @@ class Vtiger_api:
 
         return stages_nospace
 
+
+    def sales_stats(self, timeframe):
+        '''
+        Prints out the monthly phone calls for each user who has "Sales" as their primary group.
+        '''
+        if timeframe.strip().lower() == 'day':
+            date = self.today
+        elif timeframe.strip().lower() == 'week':
+            date = self.beginning_of_week
+        elif timeframe.strip().lower() == 'month':
+            date = self.beginning_of_month
+        else:
+            print("Not a valid timeframe! 'day', 'week' or 'month' only!") 
+
+        user_dict = self.get_users()
+        print(f"This {timeframe.title()}'s Phone Calls and Opportunities:")
+        for key in user_dict:
+            print(f"{user_dict[key][0]} {user_dict[key][1]}:")
+            print("\tPhone Calls:", self.get_phone_call_count(key, date))
+            num_items, sales_stage_dict = self.get_opportunity_count(key, date)
+            print("\tOpportunity Stage Changed:", num_items)
+            #Convert dictionary into a list of tuples ordered by values from highest to lowest
+            #Example output: [(8, 'Quote Sent'), (2, 'Closed Lost'), (1, 'Closed Won')]
+            data = sorted( ((v,k) for k,v in sales_stage_dict.items()), reverse=True) 
+            for item in data:
+                print(f"\t\t{item[1]}: {item[0]}")
+
+
     def db_initialize(self):
         '''
         Initializes Database with one table per sales person
@@ -235,10 +239,11 @@ class Vtiger_api:
 
         conn = sqlite3.connect(self.dbfilepath)
         c = conn.cursor()
-        #Creates a table for each sales person if that sales person's table doesn't exist.
+        #Creates a table for each sales person if that sales person's table doesn't exist
         for key in user_dict:
             c.execute(f"CREATE TABLE IF NOT EXISTS {user_dict[key][0].lower()}_{user_dict[key][1].lower()}({stages_string})")
         conn.close()
+
 
 
 if __name__ == '__main__':
@@ -250,5 +255,5 @@ if __name__ == '__main__':
         #data = json.dumps(response,  indent=4, sort_keys=True)
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
-        #vtigerapi.month_phone_call_stats('month')
-        vtigerapi.db_initialize()
+        vtigerapi.sales_stats('week')
+        #vtigerapi.db_initialize()
