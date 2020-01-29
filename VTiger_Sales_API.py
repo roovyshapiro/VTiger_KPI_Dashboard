@@ -250,7 +250,7 @@ class Vtiger_api:
         Add stats from the last ten minutes into their respective Database.
         '''
         #Create tables for each sales person if they don't already exist.
-        self.db_initialize()
+        #self.db_initialize()
 
         now = datetime.datetime.now().replace(second=0, microsecond=0)
         #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
@@ -259,8 +259,10 @@ class Vtiger_api:
         ten_min_ago = self.beginning_of_month
 
         user_dict = self.get_users()
+        full_user_dict = {}
 
         for key in user_dict:
+            
             full_stat_list = []
             num_phone_calls = self.get_phone_call_count(key, ten_min_ago)
 
@@ -272,16 +274,21 @@ class Vtiger_api:
             full_stat_list.append(ten_min_ago.strftime('%Y-%m-%d %H:%M:%S'))
             full_stat_list.append(f"{user_dict[key][0].lower()}_{user_dict[key][1].lower()}")
 
-            #full_stat_list
-            #[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']]
+            full_user_dict[f"{user_dict[key][0].lower()}_{user_dict[key][1].lower()}"] = full_stat_list
 
-            conn = sqlite3.connect(self.dbfilepath)
-            c = conn.cursor()
-            c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date,user) VALUES (?,?,?,?,?,?,?,?,?,?)",
-                      (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8], full_stat_list[9]))
-            conn.commit()
-            c.close()
-            conn.close()
+            #full_user_dict
+            #{james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
+
+            #FILL OUT LOCAL SQLITE DATABASE
+            #conn = sqlite3.connect(self.dbfilepath)
+            #c = conn.cursor()
+            #c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date,user) VALUES (?,?,?,?,?,?,?,?,?,?)",
+            #          (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8], full_stat_list[9]))
+            #conn.commit()
+            #c.close()
+            #conn.close()
+
+        return full_user_dict
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
