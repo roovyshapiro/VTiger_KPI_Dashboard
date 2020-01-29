@@ -6,11 +6,11 @@ import json, os
 
 # Create your views here.
 def home_view(request):
-    stats = Sales_stats.objects.all()
-    my_sum = stats.filter(user='daphnie_low').aggregate(Sum('phone_calls'))
-    stat_dict = {'daphnie_low': my_sum['phone_calls__sum']}
+    sales_stats = Sales_stats
+    stats = sales_stats.objects.all()
+    user_stat_dict = sales_stats.user_totals()
 
-    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':stat_dict})
+    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict})
 
 def populate_db(request):
     '''

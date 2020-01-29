@@ -6,11 +6,15 @@
     <form action = "populate/" method="post">{% csrf_token %}
         <input type="submit" value="Populate"/>
     </form>
-
-    {% for key, value in stat_total.items %}
-            <h3>{{key}} {{value}}</h3>
+    <h2>Phone Calls</h2>
+    {% for item in stat_total %}
+        {% for key, value in item.items %}
+                <h3>{{ key }} : {{ value }}</h3>
+        {% endfor %}    
     {% endfor %}
+    <!--
 
+    -->
     {% for stat_item in stats %}
         <p>{{ stat_item.user }} - {{ stat_item.date }}</p>
     {% endfor %}
