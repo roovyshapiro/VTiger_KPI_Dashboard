@@ -1,12 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.http import HttpResponse
 from .models import Sales_stats
 import VTiger_Sales_API
 import json, os
 
 # Create your views here.
 def home_view(request):
-    return HttpResponse('<h1>Dashboard Home</h1>')
+    stats = Sales_stats.objects.all()
+    return render(request, 'dashboard/dashboard.html', {'stats':stats})
 
 def populate_db(request):
     '''

@@ -1,0 +1,10 @@
+<HTML>
+<head>
+</head>
+<body>
+    <h1>Dashboard Template</h1>
+    {% for stat_item in stats %}
+        <p>{{ stat_item.user }} - {{ stat_item.date }}</p>
+    {% endfor %}
+</body>
+</HTML>
