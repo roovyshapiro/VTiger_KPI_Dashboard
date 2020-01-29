@@ -235,7 +235,7 @@ class Vtiger_api:
         #Get sales stages, remove whitespace
         #demo_scheduled TEXT,demo_given TEXT,quote_sent TEXT,pilot TEXT,needs_analysis TEXT,closed_won TEXT,closed_lost TEXT,phone_calls TEXT,date TEXT
         stages = self.get_sales_stages()
-        stages_string = ' TEXT,'.join(stages) + ' TEXT' + ',phone_calls TEXT,date TEXT'
+        stages_string = ' TEXT,'.join(stages) + ' TEXT' + ',phone_calls TEXT,date TEXT,user TEXT'
 
         conn = sqlite3.connect(self.dbfilepath)
         c = conn.cursor()
@@ -256,6 +256,7 @@ class Vtiger_api:
         #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
         now = now - datetime.timedelta(hours = self.utc_offset)
         ten_min_ago = now - datetime.timedelta(minutes=10)
+        ten_min_ago = self.beginning_of_month
 
         user_dict = self.get_users()
 
@@ -269,14 +270,15 @@ class Vtiger_api:
 
             full_stat_list.append(num_phone_calls)
             full_stat_list.append(ten_min_ago.strftime('%Y-%m-%d %H:%M:%S'))
+            full_stat_list.append(f"{user_dict[key][0].lower()}_{user_dict[key][1].lower()}")
 
             #full_stat_list
-            #[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00']]
+            #[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']]
 
             conn = sqlite3.connect(self.dbfilepath)
             c = conn.cursor()
-            c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date) VALUES (?,?,?,?,?,?,?,?,?)",
-                      (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8]))
+            c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date,user) VALUES (?,?,?,?,?,?,?,?,?,?)",
+                      (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8], full_stat_list[9]))
             conn.commit()
             c.close()
             conn.close()
