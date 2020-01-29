@@ -1,4 +1,5 @@
 from django.shortcuts import render, HttpResponseRedirect
+from django.db.models import Sum
 from .models import Sales_stats
 import VTiger_Sales_API
 import json, os
@@ -6,7 +7,10 @@ import json, os
 # Create your views here.
 def home_view(request):
     stats = Sales_stats.objects.all()
-    return render(request, 'dashboard/dashboard.html', {'stats':stats})
+    my_sum = stats.filter(user='daphnie_low').aggregate(Sum('phone_calls'))
+    stat_dict = {'daphnie_low': my_sum['phone_calls__sum']}
+
+    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':stat_dict})
 
 def populate_db(request):
     '''
@@ -44,4 +48,5 @@ def retrieve_stats():
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     user_stat_dict = vtigerapi.retrieve_data()
+
     return user_stat_dict
