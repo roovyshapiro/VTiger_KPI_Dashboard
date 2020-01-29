@@ -13,6 +13,7 @@ class Vtiger_api:
 
         self.dbfilename = 'db.sqlite3'
         self.dbfilepath = os.path.join(os.path.abspath('.'), self.dbfilename)
+        self.sales_stages = []
 
 
     def day_week_month_times(self):
@@ -171,6 +172,9 @@ class Vtiger_api:
         #All sales stages are added to this dict with '0' as the default value.
         #Here's what this ends up looking like as an example:
         #{'Demo Scheduled': 2, 'Demo Given': 0, 'Quote Sent': 3, 'Pilot': 0, 'Needs Analysis': 0, 'Closed Won': 3, 'Closed Lost': 3}
+        if self.sales_stages == []:
+            self.get_sales_stages()
+
         sales_stage_dict = {i:0 for i in self.sales_stages}
         for item in opportunities['result']:
             stage = item['sales_stage']
@@ -181,7 +185,7 @@ class Vtiger_api:
 
     def get_sales_stages(self):
         '''
-        Returns a list of all the sales stages in Opportunities:
+        Populates self.sales_stages with all the sales stages in Opportunities:
         ['Demo Scheduled', 'Demo Given', 'Quote Sent', 'Pilot', 'Needs Analysis', 'Closed Won', 'Closed Lost']
         '''
         self.sales_stages = []
@@ -190,7 +194,7 @@ class Vtiger_api:
             self.sales_stages.append(item['value'])
 
         #Remove white space from stages
-        #['Demo_Scheduled', 'Demo_Given', 'Quote_Sent', 'Pilot', 'Needs_Analysis', 'Closed_Won', 'Closed_Lost'] 
+        #['demo_scheduled', 'demo_given', 'quote_sent', 'pilot', 'needs_analysis', 'closed_won', 'closed_lost'] 
         stages_nospace = []
         for stage in self.sales_stages:
             stage_nospace = stage.replace(' ', '_').lower()
@@ -226,36 +230,16 @@ class Vtiger_api:
                 print(f"\t\t{item[1]}: {item[0]}")
 
 
-    def db_initialize(self):
-        '''
-        Initializes Database with one table per sales person
-        Columns exist for each sales stage, phone calls and date.
-        '''
-        user_dict = self.get_users()
-        #Get sales stages, remove whitespace
-        #demo_scheduled TEXT,demo_given TEXT,quote_sent TEXT,pilot TEXT,needs_analysis TEXT,closed_won TEXT,closed_lost TEXT,phone_calls TEXT,date TEXT
-        stages = self.get_sales_stages()
-        stages_string = ' TEXT,'.join(stages) + ' TEXT' + ',phone_calls TEXT,date TEXT,user TEXT'
-
-        conn = sqlite3.connect(self.dbfilepath)
-        c = conn.cursor()
-        #Creates a table for each sales person if that sales person's table doesn't exist
-        for key in user_dict:
-            c.execute(f"CREATE TABLE IF NOT EXISTS {user_dict[key][0].lower()}_{user_dict[key][1].lower()}({stages_string})")
-        conn.close()
-
     def db_update(self):
         '''
         For each user who has "Sales" as their primary group,
         Add stats from the last ten minutes into their respective Database.
         '''
-        #Create tables for each sales person if they don't already exist.
-        self.db_initialize()
-
         now = datetime.datetime.now().replace(second=0, microsecond=0)
         #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
         now = now - datetime.timedelta(hours = self.utc_offset)
         ten_min_ago = now - datetime.timedelta(minutes=10)
+        #Useful for testing so there's more data to work with
         ten_min_ago = self.beginning_of_month
 
         user_dict = self.get_users()
@@ -279,15 +263,6 @@ class Vtiger_api:
             #full_user_dict
             #{james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
 
-            #FILL OUT LOCAL SQLITE DATABASE
-            #conn = sqlite3.connect(self.dbfilepath)
-            #c = conn.cursor()
-            #c.execute(f"INSERT INTO {user_dict[key][0].lower()}_{user_dict[key][1].lower()}(demo_scheduled,demo_given,quote_sent,pilot,needs_analysis,closed_won,closed_lost,phone_calls,date,user) VALUES (?,?,?,?,?,?,?,?,?,?)",
-            #          (full_stat_list[0], full_stat_list[1], full_stat_list[2], full_stat_list[3], full_stat_list[4], full_stat_list[5], full_stat_list[6], full_stat_list[7], full_stat_list[8], full_stat_list[9]))
-            #conn.commit()
-            #c.close()
-            #conn.close()
-
         return full_user_dict
 
 if __name__ == '__main__':
@@ -300,4 +275,3 @@ if __name__ == '__main__':
         #with open('potentials.json', 'w') as f:
         #    f.write(data)
         #vtigerapi.sales_stats('week')
-        vtigerapi.db_update()
