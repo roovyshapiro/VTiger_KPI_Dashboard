@@ -230,10 +230,11 @@ class Vtiger_api:
                 print(f"\t\t{item[1]}: {item[0]}")
 
 
-    def db_update(self):
+    def retrieve_data(self):
         '''
-        For each user who has "Sales" as their primary group,
-        Add stats from the last ten minutes into their respective Database.
+        Retrieves data from VTiger for each sales person and then
+        returns it as a dictionary of lists.
+        This is then passed to dashboard/views.py to populate the Django database.
         '''
         now = datetime.datetime.now().replace(second=0, microsecond=0)
         #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case

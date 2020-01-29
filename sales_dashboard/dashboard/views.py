@@ -43,5 +43,5 @@ def retrieve_stats():
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    user_stat_dict = vtigerapi.db_update()
+    user_stat_dict = vtigerapi.retrieve_data()
     return user_stat_dict
