@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import HttpResponse
+from .models import Sales_stats
 import VTiger_Sales_API
 import json, os
 
@@ -8,8 +9,25 @@ def home_view(request):
     return HttpResponse('<h1>Dashboard Home</h1>')
 
 def populate_db(request):
+    '''
+    Populates the database with stats from vtigerapi.db_update()
+    demo_scheduled, demo_given, quote_sent, pilot, needs_analysis, closed_won, closed_lost, phone_calls, date, user
+    {james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
+    '''
     user_stat_dict = retrieve_stats()
-    print(user_stat_dict)
+    for value in user_stat_dict.values():
+        stat = Sales_stats()
+        stat.demo_scheduled = value[0]
+        stat.demo_given = value[1]
+        stat.quote_sent = value[2]
+        stat.pilot = value[3]
+        stat.needs_analysis = value[4]
+        stat.closed_won = value[5]
+        stat.closed_lost = value[6]
+        stat.phone_calls = value[7]
+        stat.date = value[8]
+        stat.user = value[9]
+        stat.save()
     return HttpResponseRedirect('/')
 
 def retrieve_stats():
