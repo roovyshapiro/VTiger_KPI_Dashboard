@@ -26,6 +26,12 @@ class Sales_stats(models.Model):
 
     @classmethod
     def user_totals(self):
+        '''
+        Retrieves usernames from VTiger and returns a list of dictionaries
+        with the username and total phone numbers. 
+        No time frame is specified.
+        [{'james_franklin': 18}, {'bob_bluenicorn': 756}, {'sawyer_skipbob': 1935}, {'shmeltzy_dunk': 0}]
+        '''
         credentials_file = 'credentials.json'
         credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
         with open(credentials_path) as f:
@@ -41,7 +47,6 @@ class Sales_stats(models.Model):
             my_sum = stats.filter(user=f'{username}').aggregate(Sum('phone_calls'))
             stat_dict = {username: my_sum['phone_calls__sum']}
             user_stat_dict.append(stat_dict)
-        
         return user_stat_dict
 
 
