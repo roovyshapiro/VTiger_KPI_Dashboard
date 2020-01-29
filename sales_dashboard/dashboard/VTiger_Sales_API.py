@@ -250,7 +250,7 @@ class Vtiger_api:
         Add stats from the last ten minutes into their respective Database.
         '''
         #Create tables for each sales person if they don't already exist.
-        #self.db_initialize()
+        self.db_initialize()
 
         now = datetime.datetime.now().replace(second=0, microsecond=0)
         #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
