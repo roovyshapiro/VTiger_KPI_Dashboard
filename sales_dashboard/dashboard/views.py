@@ -7,6 +7,11 @@ def home_view(request):
     return HttpResponse('<h1>Dashboard Home</h1>')
 
 def populate_db(request):
+    '''
+    Create a file named 'credentials.json' with VTiger credentials
+    in the following format:
+    {"username": "(user)", "access_key": "(access_key)", "host": "(host)"}
+    '''
     with open('credentials.json') as f:
         data = f.read()
     credential_dict = json.loads(data)
