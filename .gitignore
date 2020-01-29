@@ -1,4 +1,5 @@
 # All JSON Files
+credentials.json
 *.json
 
 # Byte-compiled / optimized / DLL files
