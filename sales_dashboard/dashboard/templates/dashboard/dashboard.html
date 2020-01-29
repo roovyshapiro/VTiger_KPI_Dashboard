@@ -1,22 +1,45 @@
 <HTML>
-<head>
-</head>
-<body>
-    <h1>Dashboard Template</h1>
-    <form action = "populate/" method="post">{% csrf_token %}
-        <input type="submit" value="Populate"/>
-    </form>
-    <h2>Phone Calls</h2>
-    {% for item in stat_total %}
-        {% for key, value in item.items %}
-                <h3>{{ key }} : {{ value }}</h3>
-        {% endfor %}    
-    {% endfor %}
-    <!--
+    <head>
+        <style>
+            table {
+            border-collapse: collapse;
+            }
+            td, th {
+            border: 1px solid orange;
+            padding:10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Dashboard Template</h1>
+        <form action = "populate/" method="post">{% csrf_token %}
+            <input type="submit" value="Populate"/>
+        </form>
+        <h2>User Stats</h2>
+        {% for item in stat_total %}
+            {% for key, value in item.items %}
+                <h3>{{ key }}</h3>
+                <table>
+                    <th>Demo Scheduled</th>
+                    <th>Demo Given</th>
+                    <th>Quote Sent</th>
+                    <th>Pilot</th>
+                    <th>Needs Analysis</th>
+                    <th>Closed Won</th>
+                    <th>Closed Lost</th>
+                    <th>Phone Calls</th>
+                    <tr>
+                        {% for thing in value %}
+                            <td>{{ thing }}</td>
+                        {% endfor %}
+                    </tr>
+                <table>
+            {% endfor %}    
+        {% endfor %}
 
-    -->
-    {% for stat_item in stats %}
-        <p>{{ stat_item.user }} - {{ stat_item.date }}</p>
-    {% endfor %}
-</body>
+<!--        {% for stat_item in stats %}
+            <p>{{ stat_item.user }} - {{ stat_item.date }}</p>
+        {% endfor %}
+-->
+    </body>
 </HTML>

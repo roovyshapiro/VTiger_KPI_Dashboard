@@ -27,10 +27,9 @@ class Sales_stats(models.Model):
     @classmethod
     def user_totals(self):
         '''
-        Retrieves usernames from VTiger and returns a list of dictionaries
-        with the username and total phone numbers. 
-        No time frame is specified.
-        [{'james_franklin': 18}, {'bob_bluenicorn': 756}, {'sawyer_skipbob': 1935}, {'shmeltzy_dunk': 0}]
+        Retrieves usernames from VTiger and returns a dictionary of lists
+        with SUMs of all the total items in the column.
+        No time frame is specified yet.
         '''
         credentials_file = 'credentials.json'
         credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
@@ -41,12 +40,31 @@ class Sales_stats(models.Model):
         users = vtigerapi.get_users()
         
         stats = Sales_stats.objects.all()
+
         user_stat_dict = []
         for value in users.values():
             username = f"{value[0]}_{value[1]}".lower()
-            my_sum = stats.filter(user=f'{username}').aggregate(Sum('phone_calls'))
-            stat_dict = {username: my_sum['phone_calls__sum']}
+            demo_scheduled_sum = stats.filter(user=f'{username}').aggregate(Sum('demo_scheduled'))
+            demo_given_sum = stats.filter(user=f'{username}').aggregate(Sum('demo_given'))
+            quote_sent_sum = stats.filter(user=f'{username}').aggregate(Sum('quote_sent'))
+            pilot_sum = stats.filter(user=f'{username}').aggregate(Sum('pilot'))
+            needs_analysis_sum = stats.filter(user=f'{username}').aggregate(Sum('needs_analysis'))
+            closed_won_sum = stats.filter(user=f'{username}').aggregate(Sum('closed_won'))
+            closed_lost_sum = stats.filter(user=f'{username}').aggregate(Sum('closed_lost'))
+            phone_calls_sum = stats.filter(user=f'{username}').aggregate(Sum('phone_calls'))
+           
+            stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],
+                                    demo_given_sum['demo_given__sum'],
+                                    quote_sent_sum['quote_sent__sum'],
+                                    pilot_sum['pilot__sum'],
+                                    needs_analysis_sum['needs_analysis__sum'],
+                                    closed_won_sum['closed_won__sum'],
+                                    closed_lost_sum['closed_lost__sum'],
+                                    phone_calls_sum['phone_calls__sum'],
+                                    ]
+                        }
             user_stat_dict.append(stat_dict)
+
         return user_stat_dict
 
 
