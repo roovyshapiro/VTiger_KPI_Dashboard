@@ -8,9 +8,9 @@ import json, os
 def home_view(request):
     sales_stats = Sales_stats
     stats = sales_stats.objects.all()
-    user_stat_dict = sales_stats.user_totals()
+    user_stat_dict, user_score_dict = sales_stats.user_totals()
 
-    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict})
+    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict, 'score_total':user_score_dict,})
 
 def populate_db(request):
     '''
