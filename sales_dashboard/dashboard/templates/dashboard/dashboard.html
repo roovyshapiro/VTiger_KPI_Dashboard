@@ -1,14 +1,37 @@
 <HTML>
     <head>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
         <style>
+            body{
+                font-family: 'Montserrat';
+            }
             table {
-            border-collapse: collapse;
+                border-collapse: collapse;
             }
             td, th {
-            border: 1px solid orange;
-            padding:10px;
+                border: 1px solid orange;
+                padding:10px;
+            }
+            .score_box{
+                border: 1px solid blue;
+                padding: 10px;
+                width: 150px;
+                height: 150px;
+                float:left;
+                margin-right: 5px;
+                text-align:center;
+            }
+            .score_name{
+                padding-bottom:5px;
+            }
+            .score{
+                font-size:40px;
+            }
+            .clr{
+                clear:both;
             }
         </style>
+        
     </head>
     <body>
         <h1>Dashboard Template</h1>
@@ -16,9 +39,15 @@
             <input type="submit" value="Populate"/>
         </form>
         <h2>User Stats</h2>
-        {% for item in stat_total %}
-            {% for key, value in item.items %}
-                <h3>{{ key }}</h3>
+        {% for user_score in score_total %}
+            {% for key, value in user_score.items %}
+                <div class = "score_box"><span class ="score_name">{{ key }}</span> </br> <span class="score">{{ value }}</span></div>
+            {% endfor %}
+        {% endfor %}
+         <div class='clr'></div>
+        {% for stat in stat_total %}
+            {% for key, value in stat.items %}
+                <h3>{{ key }} </h3>
                 <table>
                     <th>Demo Scheduled</th>
                     <th>Demo Given</th>
@@ -29,17 +58,13 @@
                     <th>Closed Lost</th>
                     <th>Phone Calls</th>
                     <tr>
-                        {% for thing in value %}
-                            <td>{{ thing }}</td>
+                        {% for num in value %}
+                            <td>{{ num }}</td>
                         {% endfor %}
                     </tr>
                 <table>
-            {% endfor %}    
+            {% endfor %}
         {% endfor %}
 
-<!--        {% for stat_item in stats %}
-            <p>{{ stat_item.user }} - {{ stat_item.date }}</p>
-        {% endfor %}
--->
     </body>
 </HTML>
