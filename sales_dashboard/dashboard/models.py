@@ -30,6 +30,9 @@ class Sales_stats(models.Model):
         Retrieves usernames from VTiger and returns a dictionary of lists
         with SUMs of all the total items in the column.
         No time frame is specified yet.
+        Returns user_stat_dict:
+        [{'Jiminy Krispers': [0, 12, 84, 12, 12, 108, 108, 24]}, {'Gargayle Hoffer': [29, 0, 37, 0, 0, 36, 36, 
+        1008]}, {'Shinckley Putnick': [23, 12, 194, 0, 0, 37, 72, 2580]}, ]
         '''
         credentials_file = 'credentials.json'
         credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
@@ -53,6 +56,7 @@ class Sales_stats(models.Model):
             closed_lost_sum = stats.filter(user=f'{username}').aggregate(Sum('closed_lost'))
             phone_calls_sum = stats.filter(user=f'{username}').aggregate(Sum('phone_calls'))
            
+            username = f"{value[0]} {value[1]}".title()
             stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],
                                     demo_given_sum['demo_given__sum'],
                                     quote_sent_sum['quote_sent__sum'],
@@ -66,6 +70,7 @@ class Sales_stats(models.Model):
             user_stat_dict.append(stat_dict)
 
         return user_stat_dict
+
 
 
 
