@@ -12,23 +12,24 @@
                 border: 1px solid orange;
                 padding:10px;
             }
+            .points{
+                display:flex;
+            }
             .score_box{
+                flex:1;
                 border: 1px solid blue;
                 padding: 10px;
-                width: 150px;
+                margin-right: 40px;
+                margin-left: 40px;
                 height: 150px;
-                float:left;
-                margin-right: 5px;
                 text-align:center;
             }
             .score_name{
                 padding-bottom:5px;
+                font-weight:bold;
             }
-            .score{
-                font-size:40px;
-            }
-            .clr{
-                clear:both;
+            .score_num{
+                font-size:75px;
             }
         </style>
         
@@ -39,12 +40,13 @@
             <input type="submit" value="Populate"/>
         </form>
         <h2>User Stats</h2>
+        <div class="points">
         {% for user_score in score_total %}
             {% for key, value in user_score.items %}
-                <div class = "score_box"><span class ="score_name">{{ key }}</span> </br> <span class="score">{{ value }}</span></div>
+                <div class = "score_box"><span class ="score_name">{{ key }}</span> </br> <span class="score_num">{{ value }}</span></div>
             {% endfor %}
         {% endfor %}
-         <div class='clr'></div>
+        </div>
         {% for stat in stat_total %}
             {% for key, value in stat.items %}
                 <h3>{{ key }} </h3>
