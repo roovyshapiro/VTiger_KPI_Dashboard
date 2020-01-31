@@ -2,26 +2,59 @@
     <head>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
         <style>
+        	*{
+                margin: 0;
+                padding: 0;
+                box-sizing:border-box;
+            }
             body{
                 font-family: 'Montserrat';
             }
-            table {
-                border-collapse: collapse;
+
+            /* Header */
+            .header{
+                display:flex;
+                margin-bottom:15px;
+                align-items:center;
+                justify-content:center;
+                background-color:#222B37;
+                color: #FFF;
+                width:100%;
+                height:75px;
+			}
+			.header p{
+                font-weight:bold;
+                font-size:20px;
+                margin-left:20px;
+			}
+			.header div:last-child{
+                margin-left:auto;
+                margin-right:20px
+			}
+            input[type=submit]{
+                background-color: orange;
+                border: none;
+                color: white;
+                padding: 10px;
+                border-radius:5px;
+                cursor: pointer;
             }
-            td, th {
-                border: 1px solid orange;
-                padding:10px;
-            }
+
+            /* Point Boxes */
             .points{
                 display:flex;
+                flex-direction:row;
+                padding-top:10px;
+                padding-bottom:30px;
             }
             .score_box{
                 flex:1;
-                border: 1px solid blue;
+                border: 3px solid blue;
+                border-radius:10px;
                 padding: 10px;
-                margin-right: 40px;
-                margin-left: 40px;
-                height: 150px;
+                margin-right: 30px;
+                margin-left: 30px;
+                justify-content:center;
                 text-align:center;
             }
             .score_name{
@@ -31,42 +64,73 @@
             .score_num{
                 font-size:75px;
             }
+
+            /* Point Tables */
+            .score_table_title{
+	            text-align:center;
+                padding-top:25px;
+                padding-bottom:10px;
+                font-size:1.2em;
+                font-weight:bold;
+            }
+            table{
+                border-collapse: collapse;
+                margin-right:auto;
+                margin-left:auto;
+            }
+            td, th{
+                border: 1px solid orange;
+                padding:10px;
+            }
         </style>
-        
     </head>
     <body>
-        <h1>Dashboard Template</h1>
-        <form action = "populate/" method="post">{% csrf_token %}
-            <input type="submit" value="Populate"/>
-        </form>
-        <h2>User Stats</h2>
-        <div class="points">
-        {% for user_score in score_total %}
-            {% for key, value in user_score.items %}
-                <div class = "score_box"><span class ="score_name">{{ key }}</span> </br> <span class="score_num">{{ value }}</span></div>
+
+		<section class ="header">
+            <div>
+                <p>VTiger Sales Dashboard</p>
+            </div>
+            <div>
+                <form action = "populate/" method="post"><input type="hidden" name="csrfmiddlewaretoken" value="oqpa9nS2iUmOjPWDKA0qqZETw4vyJ09qPUHlGdBWPqagEIKdJOAB8NgYHHfnUwkC">
+                    <input type="submit" value="Populate"/>
+                </form>
+            </div>
+        </section>
+
+        <section class="points">
+            {% for user_score in score_total %}
+                {% for key, value in user_score.items %}
+                    <div class = "score_box">
+                        <span class ="score_name">{{ key }}</span> </br> <span class="score_num">{{ value }}</span>
+                    </div>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-        </div>
-        {% for stat in stat_total %}
-            {% for key, value in stat.items %}
-                <h3>{{ key }} </h3>
-                <table>
-                    <th>Demo Scheduled</th>
-                    <th>Demo Given</th>
-                    <th>Quote Sent</th>
-                    <th>Pilot</th>
-                    <th>Needs Analysis</th>
-                    <th>Closed Won</th>
-                    <th>Closed Lost</th>
-                    <th>Phone Calls</th>
-                    <tr>
-                        {% for num in value %}
-                            <td>{{ num }}</td>
-                        {% endfor %}
-                    </tr>
-                <table>
+        </section>
+
+        <section class="score_tables">
+            {% for stat in stat_total %}
+                {% for key, value in stat.items %}
+                    <p class="score_table_title">{{ key }}</p>
+                    <table>
+                        <th>Demo Scheduled</th>
+                        <th>Demo Given</th>
+                        <th>Quote Sent</th>
+                        <th>Pilot</th>
+                        <th>Needs Analysis</th>
+                        <th>Closed Won</th>
+                        <th>Closed Lost</th>
+                        <th>Phone Calls</th>
+                        <tr>
+                            {% for num in value %}
+                                <td>
+                                    {{ num }}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    <table>
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
+        </section>
 
     </body>
 </HTML>
