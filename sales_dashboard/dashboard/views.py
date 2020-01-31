@@ -6,11 +6,19 @@ import json, os
 
 # Create your views here.
 def home_view(request):
-    sales_stats = Sales_stats
-    stats = sales_stats.objects.all()
-    user_stat_dict, user_score_dict = sales_stats.user_totals()
+    '''
+    Loads the main page. 
+    If there is no data in the database, then the populate url is called
+    Which automatically pulls data from the database.
+    '''
+    try:
+        sales_stats = Sales_stats
+        stats = sales_stats.objects.all()
+        user_stat_dict, user_score_dict = sales_stats.user_totals()
 
-    return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict, 'score_total':user_score_dict,})
+        return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict, 'score_total':user_score_dict,})
+    except TypeError:
+        return HttpResponseRedirect('/populate/')
 
 def populate_db(request):
     '''
