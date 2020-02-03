@@ -58,3 +58,12 @@ def retrieve_stats():
     user_stat_dict = vtigerapi.retrieve_data()
 
     return user_stat_dict
+
+
+def delete_all_items(request):
+    '''
+    Delete all the items in the database.
+    This is useful for testing but will probably not make it to the final version.
+    '''
+    Sales_stats.objects.all().delete()
+    return HttpResponseRedirect('/')

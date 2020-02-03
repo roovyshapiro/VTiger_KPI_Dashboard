@@ -8,14 +8,20 @@
     <body>
 
 		<section class ="header">
-            <div>
+            <div class ="header-title">
                 <p>VTiger Sales Dashboard</p>
             </div>
             <div>
-                <form action = "populate/" method="post"><input type="hidden" name="csrfmiddlewaretoken" value="oqpa9nS2iUmOjPWDKA0qqZETw4vyJ09qPUHlGdBWPqagEIKdJOAB8NgYHHfnUwkC">
+                <form action = "populate/" method="post">{% csrf_token %}<input type="hidden" name="populate">
                     <input type="submit" value="Populate"/>
                 </form>
             </div>
+            <div>
+                <form action = "deleteall/" method="post">{% csrf_token %}<input type="hidden" name="deleteall">
+                    <input type="submit" value="DeleteAll"/>
+                </form>
+            </div>
+
         </section>
 
         <section class="points">
