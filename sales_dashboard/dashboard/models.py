@@ -20,6 +20,7 @@ class Sales_stats(models.Model):
     phone_calls = models.CharField(max_length=50)
     date = models.CharField(max_length=50)
     user = models.CharField(max_length=75)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.user} - {self.date}'
