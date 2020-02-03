@@ -23,7 +23,7 @@ class Sales_stats(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user} - {self.date}'
+        return f'{self.user} - {self.date_created}'
 
     @classmethod
     def user_totals(self):

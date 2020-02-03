@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.db.models import Sum
 from .models import Sales_stats
 import VTiger_Sales_API
-import json, os
+import json, os, datetime
 
 # Create your views here.
 def home_view(request):
@@ -66,4 +66,17 @@ def delete_all_items(request):
     This is useful for testing but will probably not make it to the final version.
     '''
     Sales_stats.objects.all().delete()
+    return HttpResponseRedirect('/')
+
+def test_method(request):
+    '''
+    Useful for testing functionality
+    '''
+    item = Sales_stats.objects.latest('date_created')
+    print(type(item.date_created))
+    import datetime
+    time = item.date_created - datetime.timedelta(hours= 5)
+    print('mytimezone', time)
+    print(time.strftime('%Y-%m-%d %H:%M:%S'))
+
     return HttpResponseRedirect('/')
