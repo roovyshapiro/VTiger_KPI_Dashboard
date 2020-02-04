@@ -54,7 +54,9 @@ def retrieve_stats():
     #Get the most recently added item to the database
     try:
         latest_item = Sales_stats.objects.latest('date_created')
+        #Current time in UTC
         now = timezone.now()
+        #"date_created" audo_now_add is in UTC
         time_diff = now - latest_item.date_created
         time_diff_seconds = time_diff.total_seconds()
         catch_up_time = now - datetime.timedelta(seconds = time_diff_seconds)

@@ -238,12 +238,11 @@ class Vtiger_api:
         '''
         if timeframe == 'ten_min_ago':
             now = datetime.datetime.now().replace(second=0, microsecond=0)
-            #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
-            now = now - datetime.timedelta(hours = self.utc_offset)
+            #Values from VTiger are in UTC. The following makes it to EST.
+            #now = now - datetime.timedelta(hours = self.utc_offset)
             timespan = now - datetime.timedelta(minutes=10)
             #Useful for testing so there's more data to work with
-            #TODO: Delete this when ready to go live
-            timespan = self.beginning_of_month
+            #timespan = self.beginning_of_month
         elif timeframe == 'today':
             timespan = self.today
         else:
