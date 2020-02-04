@@ -46,17 +46,23 @@ class Sales_stats(models.Model):
         
         stats = Sales_stats.objects.all()
 
+        #Determine the beginning and end of the day.
+        today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0)
+
         user_stat_dict = []
         for value in users.values():
             username = f"{value[0]}_{value[1]}".lower()
-            demo_scheduled_sum = stats.filter(user=f'{username}').aggregate(Sum('demo_scheduled'))
-            demo_given_sum = stats.filter(user=f'{username}').aggregate(Sum('demo_given'))
-            quote_sent_sum = stats.filter(user=f'{username}').aggregate(Sum('quote_sent'))
-            pilot_sum = stats.filter(user=f'{username}').aggregate(Sum('pilot'))
-            needs_analysis_sum = stats.filter(user=f'{username}').aggregate(Sum('needs_analysis'))
-            closed_won_sum = stats.filter(user=f'{username}').aggregate(Sum('closed_won'))
-            closed_lost_sum = stats.filter(user=f'{username}').aggregate(Sum('closed_lost'))
-            phone_calls_sum = stats.filter(user=f'{username}').aggregate(Sum('phone_calls'))
+            #Displays the SUM of all items in the database per username
+            #Only displays data for today.
+            demo_scheduled_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('demo_scheduled'))
+            demo_given_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('demo_given'))
+            quote_sent_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('quote_sent'))
+            pilot_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('pilot'))
+            needs_analysis_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('needs_analysis'))
+            closed_won_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_won'))
+            closed_lost_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_lost'))
+            phone_calls_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('phone_calls'))
            
             username = f"{value[0]} {value[1]}".title()
             stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],

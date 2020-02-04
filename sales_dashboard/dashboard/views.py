@@ -102,14 +102,12 @@ def test_method(request):
 
     from django.utils import timezone
     now = timezone.now()
+    today =now.replace(hour=0, minute=0, second=0, microsecond=0)
+    print(today)
+    end_of_day =now.replace(hour=23, minute=59, second=59, microsecond=0)
+    print(end_of_day)
     delta= now - item.date_created
     tdseconds = delta.total_seconds()
-    print('item.date_created', item.date_created)
-    print('now',now)
-    print('seconds delta',tdseconds)
-    mytime = now - datetime.timedelta(seconds = tdseconds)
-    print('now - delta',mytime)
-
-    
+    mytime = now - datetime.timedelta(seconds = tdseconds)    
 
     return HttpResponseRedirect('/')
