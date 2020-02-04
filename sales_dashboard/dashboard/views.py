@@ -67,7 +67,7 @@ def retrieve_stats():
             update_timespan = 'ten_min_ago'
     except:
         #If the database is empty, then the most recent item can't be checked
-        update_timespan = 'ten_min_ago'
+        update_timespan = 'today'
     
 
     credentials_file = 'credentials.json'
