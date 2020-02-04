@@ -230,18 +230,23 @@ class Vtiger_api:
                 print(f"\t\t{item[1]}: {item[0]}")
 
 
-    def retrieve_data(self):
+    def retrieve_data(self, timeframe):
         '''
         Retrieves data from VTiger for each sales person and then
         returns it as a dictionary of lists.
         This is then passed to dashboard/views.py to populate the Django database.
         '''
-        now = datetime.datetime.now().replace(second=0, microsecond=0)
-        #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
-        now = now - datetime.timedelta(hours = self.utc_offset)
-        ten_min_ago = now - datetime.timedelta(minutes=10)
-        #Useful for testing so there's more data to work with
-        ten_min_ago = self.beginning_of_month
+        if timeframe == 'ten_min_ago':
+            now = datetime.datetime.now().replace(second=0, microsecond=0)
+            #Values from VTiger are in UTC so we'll need to add 5 hours to match the EST timezone in this case
+            now = now - datetime.timedelta(hours = self.utc_offset)
+            timespan = now - datetime.timedelta(minutes=10)
+            #Useful for testing so there's more data to work with
+            timespan = self.beginning_of_month
+        elif timeframe == 'today':
+            timespan = self.today
+        else:
+            timespan = timeframe
 
         user_dict = self.get_users()
         full_user_dict = {}
@@ -249,14 +254,14 @@ class Vtiger_api:
         for key in user_dict:
             
             full_stat_list = []
-            num_phone_calls = self.get_phone_call_count(key, ten_min_ago)
+            num_phone_calls = self.get_phone_call_count(key, timespan)
 
-            num_items, sales_stage_dict = self.get_opportunity_count(key, ten_min_ago)
+            num_items, sales_stage_dict = self.get_opportunity_count(key, timespan)
             for v in sales_stage_dict.values():
                 full_stat_list.append(v)
 
             full_stat_list.append(num_phone_calls)
-            full_stat_list.append(ten_min_ago.strftime('%Y-%m-%d %H:%M:%S'))
+            full_stat_list.append(timespan.strftime('%Y-%m-%d %H:%M:%S'))
             full_stat_list.append(f"{user_dict[key][0].lower()}_{user_dict[key][1].lower()}")
 
             full_user_dict[f"{user_dict[key][0].lower()}_{user_dict[key][1].lower()}"] = full_stat_list

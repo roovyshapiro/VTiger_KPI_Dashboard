@@ -1,5 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.db.models import Sum
+from django.utils import timezone
+
 from .models import Sales_stats
 import VTiger_Sales_API
 import json, os, datetime
@@ -49,13 +51,32 @@ def retrieve_stats():
     It should have the following format:
     {"username": "(user)", "access_key": "(access_key)", "host": "(host)"}
     '''
+    #Get the most recently added item to the database
+    try:
+        latest_item = Sales_stats.objects.latest('date_created')
+        now = timezone.now()
+        time_diff = now - latest_item.date_created
+        time_diff_seconds = time_diff.total_seconds()
+        catch_up_time = now - datetime.timedelta(seconds = time_diff_seconds)
+        #If the most recent item in the DB was added more than 15 min ago
+        if time_diff_seconds >= 900:
+            #populate the database with the time frame from the last entry until now
+            update_timespan = catch_up_time
+        else:
+            #populate the database with data from the last ten minutes.
+            update_timespan = 'ten_min_ago'
+    except:
+        #If the database is empty, then the most recent item can't be checked
+        update_timespan = 'ten_min_ago'
+    
+
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
     with open(credentials_path) as f:
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    user_stat_dict = vtigerapi.retrieve_data()
+    user_stat_dict = vtigerapi.retrieve_data(update_timespan)
 
     return user_stat_dict
 
@@ -73,10 +94,22 @@ def test_method(request):
     Useful for testing functionality
     '''
     item = Sales_stats.objects.latest('date_created')
-    print(type(item.date_created))
+    #print(type(item.date_created))
     import datetime
-    time = item.date_created - datetime.timedelta(hours= 5)
-    print('mytimezone', time)
-    print(time.strftime('%Y-%m-%d %H:%M:%S'))
+    #time = item.date_created - datetime.timedelta(hours= 5)
+    #print('mytimezone', time)
+    #print(time.strftime('%Y-%m-%d %H:%M:%S'))
+
+    from django.utils import timezone
+    now = timezone.now()
+    delta= now - item.date_created
+    tdseconds = delta.total_seconds()
+    print('item.date_created', item.date_created)
+    print('now',now)
+    print('seconds delta',tdseconds)
+    mytime = now - datetime.timedelta(seconds = tdseconds)
+    print('now - delta',mytime)
+
+    
 
     return HttpResponseRedirect('/')
