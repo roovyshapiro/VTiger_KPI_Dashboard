@@ -4,6 +4,7 @@
     <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
         <link rel="stylesheet" type="text/css" href="{% static 'dashboard/style.css' %}">
+        <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}">></script>
     </head>
     <body>
 
@@ -33,6 +34,9 @@
                 {% endfor %}
             {% endfor %}
         </section>
+
+        <input type="checkbox" onclick="autorefresh()" id="checkbox_autoupdate" unchecked/>
+        <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
 
         <section class="score_tables">
             {% for stat in stat_total %}
