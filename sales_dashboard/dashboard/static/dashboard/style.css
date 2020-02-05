@@ -42,6 +42,11 @@ input[type=submit]{
     cursor: pointer;
 }
 
+/* Auto Refresh */
+.auto_refresh_box{
+    margin-left: 10px;
+}
+
 /* Point Boxes */
 .points{
     display:flex;

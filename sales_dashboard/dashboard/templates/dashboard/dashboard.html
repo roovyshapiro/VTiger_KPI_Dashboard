@@ -34,9 +34,11 @@
                 {% endfor %}
             {% endfor %}
         </section>
-
-        <input type="checkbox" onclick="autorefresh()" id="checkbox_autoupdate" unchecked/>
-        <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
+        
+        <div class = "auto_refresh_box">
+            <input type="checkbox" onclick="autorefresh()" id="checkbox_autoupdate" unchecked/>
+            <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
+        </div>
 
         <section class="score_tables">
             {% for stat in stat_total %}
