@@ -95,8 +95,8 @@ def test_method(request):
     '''
     Useful for testing functionality
     '''
-    from dashboard.tasks import delete_database
+    from dashboard.tasks import database_retrieve
 
-    delete_database.delay()
+    database_retrieve.delay()
     
     return HttpResponseRedirect('/')
