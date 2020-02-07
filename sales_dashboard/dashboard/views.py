@@ -95,21 +95,8 @@ def test_method(request):
     '''
     Useful for testing functionality
     '''
-    item = Sales_stats.objects.latest('date_created')
-    #print(type(item.date_created))
-    import datetime
-    #time = item.date_created - datetime.timedelta(hours= 5)
-    #print('mytimezone', time)
-    #print(time.strftime('%Y-%m-%d %H:%M:%S'))
+    from dashboard.tasks import delete_database
 
-    from django.utils import timezone
-    now = timezone.now()
-    today =now.replace(hour=0, minute=0, second=0, microsecond=0)
-    print(today)
-    end_of_day =now.replace(hour=23, minute=59, second=59, microsecond=0)
-    print(end_of_day)
-    delta= now - item.date_created
-    tdseconds = delta.total_seconds()
-    mytime = now - datetime.timedelta(seconds = tdseconds)    
-
+    delete_database.delay()
+    
     return HttpResponseRedirect('/')
