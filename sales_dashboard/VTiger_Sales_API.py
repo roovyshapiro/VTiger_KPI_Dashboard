@@ -242,7 +242,7 @@ class Vtiger_api:
             #now = now - datetime.timedelta(hours = self.utc_offset)
             timespan = now - datetime.timedelta(minutes=10)
             #Useful for testing so there's more data to work with
-            timespan = self.beginning_of_month
+            #timespan = self.beginning_of_month
         elif timeframe == 'today':
             timespan = self.today
         else:

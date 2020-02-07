@@ -1,7 +1,8 @@
 /* -----  AUTO-UPDATE CHECKBOX  -----*/
 
 //The amount of time in seconds until the page reloads
-var update_time = 20;
+var update_time = 600;
+localStorage.setItem("refresh_count", update_time);
 //After a page reload, set the checkbox status to what's saved in localStorage
 window.onload = function set_check_box() {
     var checked_status = JSON.parse(localStorage.getItem("checkbox_autoupdate"));
