@@ -1,4 +1,9 @@
-/* -----  AUTO-UPDATE CHECKBOX  -----*/
+/* 
+-----  AUTO-UPDATE CHECKBOX  -----
+If the checkbox is checked, the page will be refreshed after ten minutes.
+The database population is performed asynchronously via celery so we'll
+need to refresh the page to see these new changes.
+*/
 
 //The amount of time in seconds until the page reloads
 var update_time = 600;
@@ -15,14 +20,16 @@ function save() {
 	var checkbox = document.getElementById("checkbox_autoupdate");
     localStorage.setItem("checkbox_autoupdate", checkbox.checked);	
 }
-//If the checkbox is checked, '/populate' will be called after ten minutes.
+//If the checkbox is checked, the page will be refreshed after ten minutes.
+//The database population is performed asynchronously via celery so we'll
+//need to refresh the page to see these new changes.
 function autorefresh() {
     save();
     var isChecked = document.getElementById("checkbox_autoupdate").checked;
     if (isChecked == true) {
         refresh_counter();
         time = setInterval(function () {
-            window.location.assign("http://127.0.0.1:8000/populate");
+            window.location.assign("http://127.0.0.1:8000/");
         }, (update_time * 1000));
     } else if (isChecked == false) {
         clearInterval(time);
