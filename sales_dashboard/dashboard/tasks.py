@@ -7,6 +7,10 @@ from .models import Sales_stats
 import VTiger_Sales_API
 import json, os, datetime
 
+@shared_task
+def test_celery_beat():
+    print('is this working?')
+
 
 @shared_task
 def populate_db_celery():
