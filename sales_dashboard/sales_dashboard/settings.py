@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'dashboard',
     'celery',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -132,3 +133,20 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 #CELERY_IMPORTS = ['comm.tasks']
+from celery.schedules import crontab   
+CELERY_BROKER_URL = 'redis://localhost:6379' 
+CELERY_TIMEZONE = 'America/New_York'   
+CELERY_BEAT_SCHEDULE = {
+ 'send-summary-every-hour': {
+       'task': 'dashboard.tasks.test_celery',
+        # There are 4 ways we can handle time, read further 
+       'schedule': 20.0,
+        # If you're using any arguments
+        # 'args': ("We don’t need any",),
+    },
+    # Executes every Friday at 4pm
+    #'send-notification-on-friday-afternoon': { 
+    #     'task': 'my_app.tasks.send_notification', 
+    #     'schedule': crontab(hour=16, day_of_week=5),
+    #    },          
+}
