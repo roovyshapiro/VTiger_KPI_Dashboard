@@ -4,7 +4,6 @@
     <head>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
         <link rel="stylesheet" type="text/css" href="{% static 'dashboard/style.css' %}">
-        <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}">></script>
     </head>
     <body>
 
@@ -36,7 +35,10 @@
         </section>
         
         <div class = "auto_refresh_box">
-            <input type="checkbox" onclick="autorefresh()" id="checkbox_autoupdate" unchecked/>
+            <label id="number_input" for="minutes">Minutes:</label>
+            <input type="number" id="minutes_input" name="minutes" min="1" max="20" value="5" onchange="update_refresh_time()">
+            </br>            
+            <input type="checkbox" id="checkbox_autoupdate" onclick="checkbox_click()" unchecked/>
             <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
         </div>
 
@@ -65,5 +67,6 @@
             {% endfor %}
         </section>
 
+    <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}"></script>     
     </body>
 </HTML>

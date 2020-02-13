@@ -1,56 +1,72 @@
-/* 
------  AUTO-UPDATE CHECKBOX  -----
-If the checkbox is checked, the page will be refreshed after ten minutes.
-The database population is performed asynchronously via celery so we'll
-need to refresh the page to see these new changes.
-*/
+var countdown_timer;
+var countdown_update_label_timer;
+var refresh_minutes;
+var refresh_seconds;
+var checkbox_status;
 
-//The amount of time in seconds until the page reloads
-var update_time = 600;
-localStorage.setItem("refresh_count", update_time);
-//After a page reload, set the checkbox status to what's saved in localStorage
-window.onload = function set_check_box() {
-    var checked_status = JSON.parse(localStorage.getItem("checkbox_autoupdate"));
-    document.getElementById("checkbox_autoupdate").checked = checked_status;
-    localStorage.setItem("refresh_count", (this.update_time));
-    autorefresh();
-}
-//Saves the current checkbox state to localStorage
-function save() {	
-	var checkbox = document.getElementById("checkbox_autoupdate");
-    localStorage.setItem("checkbox_autoupdate", checkbox.checked);	
-}
-//If the checkbox is checked, the page will be refreshed after ten minutes.
-//The database population is performed asynchronously via celery so we'll
-//need to refresh the page to see these new changes.
-function autorefresh() {
-    save();
-    var isChecked = document.getElementById("checkbox_autoupdate").checked;
-    if (isChecked == true) {
-        refresh_counter();
-        time = setInterval(function () {
-            window.location.assign("http://127.0.0.1:8000/");
-        }, (update_time * 1000));
-    } else if (isChecked == false) {
-        clearInterval(time);
-        clearTimeout(timeoutVar);
+
+//WHEN the page reloads reload the values from local storage
+//retrieve_saved_data will also continue the countdown timer
+//if the checkbox was enabled before the page was reloaded
+window.onload = retrieve_saved_data;
+
+//WHEN the auto refresh check box is clicked
+function checkbox_click() {
+    checkbox_status = document.getElementById("checkbox_autoupdate").checked;
+    localStorage.setItem("checkbox_status", checkbox_status);
+    if (checkbox_status == true){
+        countdown_timer = setTimeout(function() {
+            location.reload();
+        }, refresh_seconds * 1000);
+        countdown_update();
+    } else {
+        clearTimeout(countdown_timer);
+        clearInterval(countdown_update_label_timer);
+        refresh_minutes = document.getElementById("minutes_input").value;
+        refresh_seconds = refresh_minutes * 60; 
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh';
-        localStorage.setItem("refresh_count", (this.update_time));
+
     }
 }
-autorefresh();
-document.getElementById('checkbox_autoupdate').addEventListener('click', autorefresh);
 
-//This function displays how many seconds remain until the page is auto-refreshed
-function refresh_counter() {
-        var refresh_count_int = JSON.parse(localStorage.getItem("refresh_count"));
-        refresh_count_int = refresh_count_int - 1;
-        document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_count_int;
-        localStorage.setItem("refresh_count", refresh_count_int);
-        if (refresh_count_int > 0){
-            console.log(refresh_count_int)
-            timeoutVar = setTimeout(refresh_counter, 1000);
-        }
+//WHEN the number input field is changed
+function update_refresh_time() {
+    refresh_minutes = document.getElementById("minutes_input").value;
+    refresh_seconds = refresh_minutes * 60; 
+    localStorage.setItem("refresh_seconds", refresh_seconds);
+    localStorage.setItem("refresh_minutes", refresh_minutes);
+    clearTimeout(countdown_timer);
+    clearInterval(countdown_update_label_timer);
+    checkbox_click();
 }
 
+//Called when the page is reloaded
+function retrieve_saved_data() {
+    checkbox_status = localStorage.getItem("checkbox_status");
+    checkbox_status_bool = (checkbox_status == 'true');
+    refresh_minutes = localStorage.getItem("refresh_minutes");
+    refresh_seconds = refresh_minutes * 60;
+    localStorage.setItem("refresh_seconds", refresh_seconds);
+    document.getElementById("minutes_input").value = refresh_minutes;
+    document.getElementById("checkbox_autoupdate").checked = checkbox_status_bool;
+    //If the checkbox is already clicked when the page reloads
+    if (checkbox_status_bool){
+        document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
+        checkbox_click();
+    }
+}
 
+//While countdown_timer starts a one time countdown to refresh the page,
+//countdown_update_label_timer starts an interval timer that shows
+//how much time is remaining before the page refreshes 
+function countdown_update(){
+    refresh_seconds = parseInt(localStorage.getItem("refresh_seconds"));
+    countdown_update_label_timer = setInterval(function(){
+        refresh_seconds -= 1;
+        if (refresh_seconds < 1){
+            clearInterval(countdown_update_label_timer);
+        }
+        localStorage.setItem('refresh_seconds', refresh_seconds);
+        document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
+    }, 1000);
+}
