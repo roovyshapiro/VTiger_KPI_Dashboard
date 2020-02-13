@@ -44,7 +44,46 @@ input[type=submit]{
 
 /* Auto Refresh */
 .auto_refresh_box{
-    margin-left: 10px;
+    margin-left: 30px;
+}
+
+
+/* Score Key and Tables*/
+
+.score_key_and_tables{
+    margin-top:10px;
+    display:flex;
+}
+/* Score Key */
+.score_key{
+    margin-left: 30px;
+    border-radius:5px;
+    overflow:auto;
+    border: 1px solid blue;
+    margin-top:33px;
+    height:250px;
+}
+
+.score_key p{
+    font-size:1.2em;
+    font-weight:bold;
+    text-align:left;
+    margin-left:10px;
+}
+
+.score_key_table {
+    margin:10px;
+    border-collapse: collapse;
+
+}
+.score_key_table th{
+    text-align:left;
+    padding:3px;
+    font-size:.8em;
+}
+.score_key_table td{
+    padding:3px;
+    font-size:.8em;
 }
 
 /* Point Boxes */
@@ -56,7 +95,7 @@ input[type=submit]{
 }
 .score_box{
     flex:1;
-    border: 3px solid blue;
+    border: 5px solid blue;
     border-radius:10px;
     padding: 10px;
     margin-right: 30px;
@@ -73,6 +112,9 @@ input[type=submit]{
 }
 
 /* Point Tables */
+.score_tables{
+    flex:2;
+}
 .score_table_title{
     text-align:center;
     padding-top:25px;

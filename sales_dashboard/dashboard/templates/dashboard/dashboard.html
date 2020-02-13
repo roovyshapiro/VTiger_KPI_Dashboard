@@ -42,31 +42,71 @@
             <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
         </div>
 
-        <section class="score_tables">
-            {% for stat in stat_total %}
-                {% for key, value in stat.items %}
-                    <p class="score_table_title">{{ key }}</p>
-                    <table>
-                        <th>Demo Scheduled</th>
-                        <th>Demo Given</th>
-                        <th>Quote Sent</th>
-                        <th>Pilot</th>
-                        <th>Needs Analysis</th>
-                        <th>Closed Won</th>
-                        <th>Closed Lost</th>
-                        <th>Phone Calls</th>
-                        <tr>
-                            {% for num in value %}
-                                <td>
-                                    {{ num }}
-                                </td>
-                            {% endfor %}
-                        </tr>
-                    <table>
-                {% endfor %}
-            {% endfor %}
-        </section>
+        <div class="score_key_and_tables">
+            <section class="score_key">
+                <p>Score Key</p>
+                <table class="score_key_table">
+                    <tr>
+                        <th>Demo Scheduled:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Demo Given:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Quote Sent:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Pilot:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Needs Analysis:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Closed Won:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Closed Lost:</th>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th>Phone Calls:</th>
+                        <td>1</td>
+                    </tr>
+                </table>
+            </section>
 
-    <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}"></script>     
+            <section class="score_tables">
+                {% for stat in stat_total %}
+                    {% for key, value in stat.items %}
+                        <p class="score_table_title">{{ key }}</p>
+                        <table>
+                            <th>Demo Scheduled</th>
+                            <th>Demo Given</th>
+                            <th>Quote Sent</th>
+                            <th>Pilot</th>
+                            <th>Needs Analysis</th>
+                            <th>Closed Won</th>
+                            <th>Closed Lost</th>
+                            <th>Phone Calls</th>
+                            <tr>
+                                {% for num in value %}
+                                    <td>
+                                        {{ num }}
+                                    </td>
+                                {% endfor %}
+                            </tr>
+                        <table>
+                    {% endfor %}
+                {% endfor %}
+            </section>
+        </div>
+
+        <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}"></script>
     </body>
 </HTML>
