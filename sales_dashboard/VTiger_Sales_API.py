@@ -154,7 +154,7 @@ class Vtiger_api:
         '''
         Returns an int equal to the number of items in the Phone Calls module requested by the specific URL.
         '''
-        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM PhoneCalls WHERE user = {user_id} and starttime >= '{date}';")
+        module_amount = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM PhoneCalls WHERE user = {user_id} and CreatedTime >= '{date}';")
         num_items = module_amount['result'][0]['count']
         return num_items
 
