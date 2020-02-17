@@ -30,8 +30,7 @@ class Sales_stats(models.Model):
     def user_totals(self):
         '''
         Retrieves usernames from VTiger and returns a dictionary of lists
-        with SUMs of all the total items in the column.
-        No time frame is specified yet.
+        with SUMs of all the total items in the column for today.
         Returns user_stat_dict:
         [{'Jiminy Krispers': [0, 12, 84, 12, 12, 108, 108, 24]}, {'Gargayle Hoffer': [29, 0, 37, 0, 0, 36, 36, 
         1008]}, {'Shinckley Putnick': [23, 12, 194, 0, 0, 37, 72, 2580]}, ]

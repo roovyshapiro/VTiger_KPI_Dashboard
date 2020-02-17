@@ -15,7 +15,7 @@ def test_celery_beat():
 @shared_task
 def populate_db_celery():
     '''
-    Populates the database with stats from vtigerapi.db_update()
+    Populates the database with stats from vtigerapi.retrieve_data()
     demo_scheduled, demo_given, quote_sent, pilot, needs_analysis, closed_won, closed_lost, phone_calls, date, user
     {james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
     '''
@@ -45,25 +45,18 @@ def retrieve_stats():
     {"username": "(user)", "access_key": "(access_key)", "host": "(host)"}
     '''
     #Get the most recently added item to the database
+    #and retrieve data from that point. The time frame for when
+    #to retrieve new data is decided by the celery beat period task.
+    #Wether its every 1, 5 or 10 minutes, this function will return
+    #all the data point since the last entry in the database.
     try:
         latest_item = Sales_stats.objects.latest('date_created')
-        #Current time in UTC
-        now = timezone.now()
-        #"date_created" audo_now_add is in UTC
-        time_diff = now - latest_item.date_created
-        time_diff_seconds = time_diff.total_seconds()
-        catch_up_time = now - datetime.timedelta(seconds = time_diff_seconds)
-        #If the most recent item in the DB was added more than 15 min ago
-        if time_diff_seconds >= 900:
-            #populate the database with the time frame from the last entry until now
-            update_timespan = catch_up_time
-        else:
-            #populate the database with data from the last ten minutes.
-            update_timespan = 'ten_min_ago'
+        update_timespan = latest_item.date_created
     except:
         #If the database is empty, then the most recent item can't be checked
-        update_timespan = 'today'
-    
+        #We pass 'today' which vtigerapi.retrieve_data will use to gather
+        #all data since the beginning of the day.
+        update_timespan = 'today'    
 
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)

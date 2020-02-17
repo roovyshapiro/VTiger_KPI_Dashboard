@@ -230,23 +230,17 @@ class Vtiger_api:
                 print(f"\t\t{item[1]}: {item[0]}")
 
 
-    def retrieve_data(self, timeframe):
+    def retrieve_data(self, timespan):
         '''
         Retrieves data from VTiger for each sales person and then
         returns it as a dictionary of lists.
         This is then passed to dashboard/views.py to populate the Django database.
         '''
-        if timeframe == 'ten_min_ago':
-            now = datetime.datetime.now().replace(second=0, microsecond=0)
-            #Values from VTiger are in UTC. The following makes it to EST.
-            #now = now - datetime.timedelta(hours = self.utc_offset)
-            timespan = now - datetime.timedelta(minutes=10)
-            #Useful for testing so there's more data to work with
-            #timespan = self.beginning_of_month
-        elif timeframe == 'today':
+        #The date passed here is from the most recent item in the database.
+        #If there are no items in the database, 'today' is passed here and
+        #We collect all data from the beginning of the day.
+        if timespan == 'today':
             timespan = self.today
-        else:
-            timespan = timeframe
 
         user_dict = self.get_users()
         full_user_dict = {}
