@@ -23,7 +23,7 @@ class Sales_stats(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user} - {self.date_created}'
+        return f'{self.user}: {self.date_created.strftime("%Y-%m-%d %H:%M:%S")}'
 
     @classmethod
     def user_totals(self):
@@ -129,4 +129,4 @@ class Phone_calls(models.Model):
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.user} - {self.date_created}'
+        return f'{self.user}: {self.phone_calls} - {self.date_created.strftime("%Y-%m-%d")}'
