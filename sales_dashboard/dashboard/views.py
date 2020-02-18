@@ -1,10 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
-from django.db.models import Sum
-from django.utils import timezone
 
 from .models import Sales_stats, Phone_calls
 import VTiger_Sales_API
-import json, os, datetime
 
 # Create your views here.
 def home_view(request):
