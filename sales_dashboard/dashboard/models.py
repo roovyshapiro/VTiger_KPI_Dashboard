@@ -61,7 +61,7 @@ class Sales_stats(models.Model):
             needs_analysis_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('needs_analysis'))
             closed_won_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_won'))
             closed_lost_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_lost'))
-            phone_calls_sum = phone_calls.filter(user=f'{username}', date_created__gte=today_start, date_created__lte=today_end)
+            phone_calls_sum = phone_calls.filter(user=f'{username}', date_created__gte=today_start, date_created__lte=today_end).aggregate(Sum('phone_calls'))
            
             username = f"{value[0]} {value[1]}".title()
             stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],
@@ -71,7 +71,7 @@ class Sales_stats(models.Model):
                                     needs_analysis_sum['needs_analysis__sum'],
                                     closed_won_sum['closed_won__sum'],
                                     closed_lost_sum['closed_lost__sum'],
-                                    phone_calls_sum[0].phone_calls,
+                                    phone_calls_sum['phone_calls__sum'],
                                     ]
                         }
             user_stat_dict.append(stat_dict)
