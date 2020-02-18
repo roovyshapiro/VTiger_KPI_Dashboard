@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.db.models import Sum
 from django.utils import timezone
 
-from .models import Sales_stats
+from .models import Sales_stats, Phone_calls
 import VTiger_Sales_API
 import json, os, datetime
 
@@ -40,6 +40,7 @@ def delete_all_items(request):
     This is useful for testing but will probably not make it to the final version.
     '''
     Sales_stats.objects.all().delete()
+    Phone_calls.objects.all().delete()
     return HttpResponseRedirect('/')
 
 def test_method(request):
