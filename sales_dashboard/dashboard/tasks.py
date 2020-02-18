@@ -3,7 +3,7 @@ from celery import Celery
 from celery import shared_task
 from django.utils import timezone
 
-from .models import Sales_stats
+from .models import Sales_stats, Phone_calls
 import VTiger_Sales_API
 import json, os, datetime
 
@@ -29,10 +29,24 @@ def populate_db_celery():
         stat.needs_analysis = value[4]
         stat.closed_won = value[5]
         stat.closed_lost = value[6]
-        stat.phone_calls = value[7]
         stat.date = value[8]
         stat.user = value[9]
         stat.save()
+
+        #Phone calls can be retrieved as a total number for the day, as the number doesn't change.
+        #This is different than the opportunity sales stages as one opportunity can have multiple
+        #sales stages changed in a day. Therefore, we attempt to retrieve the day's phone call entry
+        #per user and update it. If we can't find any, then we create new ones.
+        phone_query = Phone_calls.objects.filter(date_created__gte=datetime.date.today(), user = value[9])
+        if len(phone_query) == 0:
+            result = Phone_calls()
+        else:
+            result = phone_query[0]
+        result.phone_calls = value[7]
+        result.user = value[9]
+        result.save()
+
+    
     print('celery completed')
 
 

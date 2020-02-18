@@ -18,7 +18,6 @@ class Sales_stats(models.Model):
     needs_analysis = models.CharField(max_length=50)
     closed_won = models.CharField(max_length=50)
     closed_lost = models.CharField(max_length=50)
-    phone_calls = models.CharField(max_length=50)
     date = models.CharField(max_length=50)
     user = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)
@@ -44,6 +43,7 @@ class Sales_stats(models.Model):
         users = vtigerapi.get_users()
         
         stats = Sales_stats.objects.all()
+        phone_calls = Phone_calls.objects.all()
 
         #Determine the beginning and end of the day.
         today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -61,7 +61,7 @@ class Sales_stats(models.Model):
             needs_analysis_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('needs_analysis'))
             closed_won_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_won'))
             closed_lost_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_lost'))
-            phone_calls_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('phone_calls'))
+            phone_calls_sum = phone_calls.filter(user=f'{username}', date_created__gte=today_start, date_created__lte=today_end)
            
             username = f"{value[0]} {value[1]}".title()
             stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],
@@ -71,7 +71,7 @@ class Sales_stats(models.Model):
                                     needs_analysis_sum['needs_analysis__sum'],
                                     closed_won_sum['closed_won__sum'],
                                     closed_lost_sum['closed_lost__sum'],
-                                    phone_calls_sum['phone_calls__sum'],
+                                    phone_calls_sum[0].phone_calls,
                                     ]
                         }
             user_stat_dict.append(stat_dict)
@@ -116,3 +116,17 @@ class Sales_stats(models.Model):
             user_score.append(score_dict)
 
         return user_score
+
+# Create your models here.
+class Phone_calls(models.Model):
+    '''
+    Phone calls can be retrieved as a total number for the day, as the number doesn't change.
+    This is different than the opportunity sales stages as one opportunity can have multiple
+    sales stages changed in a day. 
+    '''
+    phone_calls = models.CharField(max_length=50)
+    user = models.CharField(max_length=75)
+    date_created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.user} - {self.date_created}'

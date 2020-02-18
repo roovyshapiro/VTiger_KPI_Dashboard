@@ -248,7 +248,7 @@ class Vtiger_api:
         for key in user_dict:
             
             full_stat_list = []
-            num_phone_calls = self.get_phone_call_count(key, timespan)
+            num_phone_calls = self.get_phone_call_count(key, self.today)
 
             num_items, sales_stage_dict = self.get_opportunity_count(key, timespan)
             for v in sales_stage_dict.values():
