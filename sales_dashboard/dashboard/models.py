@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Sum
 from django.utils import timezone
 import VTiger_Sales_API
-import json, os, datetime
+import json, os
 
 
 # Create your models here.

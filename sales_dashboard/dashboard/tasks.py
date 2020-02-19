@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from .models import Sales_stats, Phone_calls
 import VTiger_Sales_API
-import json, os, datetime
+import json, os
 
 @shared_task
 def test_celery_beat():
@@ -20,24 +20,44 @@ def populate_db_celery():
     {james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
     '''
     user_stat_dict = retrieve_stats()
+    stats = Sales_stats.objects.all()
+
+    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0) 
+
     for value in user_stat_dict.values():
-        stat = Sales_stats()
-        stat.demo_scheduled = value[0]
-        stat.demo_given = value[1]
-        stat.quote_sent = value[2]
-        stat.pilot = value[3]
-        stat.needs_analysis = value[4]
-        stat.closed_won = value[5]
-        stat.closed_lost = value[6]
+        sales_stat_query = stats.filter(user = value[9], date_created__gte=today_start, date_created__lte=today_end)
+        #If there are no objects in the database, create new ones.
+        if len(sales_stat_query) == 0:
+            stat = Sales_stats()
+            stat.demo_scheduled = value[0]
+            stat.demo_given = value[1]
+            stat.quote_sent = value[2]
+            stat.pilot = value[3]
+            stat.needs_analysis = value[4]
+            stat.closed_won = value[5]
+            stat.closed_lost = value[6]
+        #If objects exists for today, update the existing ones instead of creating new ones.
+        else:
+            stat = sales_stat_query[0]
+            stat.demo_scheduled = str(int(stat.demo_scheduled) + value[0])
+            stat.demo_given = str(int(stat.demo_given) + value[1])
+            stat.quote_sent = str(int(stat.quote_sent) + value[2])
+            stat.pilot = str(int(stat.pilot) + value[3])
+            stat.needs_analysis = str(int(stat.needs_analysis) + value[4])
+            stat.closed_won = str(int(stat.closed_won) + value[5])
+            stat.closed_lost = str(int(stat.closed_lost) + value[6])
+
         stat.date = value[8]
         stat.user = value[9]
         stat.save()
+
 
         #Phone calls can be retrieved as a total number for the day, as the number doesn't change.
         #This is different than the opportunity sales stages as one opportunity can have multiple
         #sales stages changed in a day. Therefore, we attempt to retrieve the day's phone call entry
         #per user and update it. If we can't find any, then we create new ones.
-        phone_query = Phone_calls.objects.filter(date_created__gte=datetime.date.today(), user = value[9])
+        phone_query = Phone_calls.objects.filter(user = value[9], date_created__gte=today_start, date_created__lte=today_end)
         if len(phone_query) == 0:
             result = Phone_calls()
         else:
@@ -45,10 +65,6 @@ def populate_db_celery():
         result.phone_calls = value[7]
         result.user = value[9]
         result.save()
-
-    
-    print('celery completed')
-
 
 def retrieve_stats():
     '''
