@@ -96,19 +96,19 @@ class Sales_stats(models.Model):
             total_score = 0
             for k, v in stat_dict.items():
                 #Points for Demo Scheduled
-                total_score += (1 * v[0])
+                total_score += (5 * v[0])
                 #Points for Demo Given
-                total_score += (1 * v[1])
+                total_score += (10 * v[1])
                 #Points for Quote Sent
-                total_score += (1 * v[2])
+                total_score += (0 * v[2])
                 #Points for Pilot
-                total_score += (1 * v[3])
+                total_score += (0 * v[3])
                 #Points for Needs Analysis
-                total_score += (1 * v[4])
+                total_score += (0 * v[4])
                 #Points for Closed Won
-                total_score += (1 * v[5])
+                total_score += (0 * v[5])
                 #Points for Closed Lost
-                total_score += (1 * v[6])
+                total_score += (0 * v[6])
                 #Points for Phone Calls
                 total_score += (1 * v[7])
 
