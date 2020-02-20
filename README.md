@@ -6,10 +6,15 @@
 VTiger Sales Dashboard is a Django application which shows live data from your VTiger sales team. We gather phone calls and the opportunity stages which have been changed in a given day and assign a point value to each. The goal is for the salesperson to reach 100 points in a day by whatever means necessary. They can reach their goal by making 100 phone calls, or by making 50 phone calls and conducting 5 demos, etc. The various sales stages will change depending on the way you've configured your Opportunities, stages and sales pipelines within VTiger.
 
 ### Connecting to VTiger
+sales_dashboard/VTiger_Sales_API.py uses VTiger's API to gather the data we need and pass it into the Django database.
+
+See here for VTiger's API documentation: https://www.vtiger.com/docs/rest-api-for-vtiger
+
 Make sure to have a file named 'credentials.json' within the main 'sales_dashboard' directory. It should be structured like this:
 ```python
 {"username": "<vtiger_username>", "access_key": "<access_key>", "host": "https://< custom_hostname>vtiger.com/restapi/v1/vtiger/default"}
 ```
+
 
 ### Celery Beat / Gathering VTiger Data on a Schedule
 Celery Beat is used to gather the data from VTiger every ten minutes and save it to the database. It also runs this in the background so it doesn't freeze the webpage and affect the user's experience. 
