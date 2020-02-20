@@ -14,6 +14,10 @@ window.onload = retrieve_saved_data;
 function checkbox_click() {
     checkbox_status = document.getElementById("checkbox_autoupdate").checked;
     localStorage.setItem("checkbox_status", checkbox_status);
+    if (refresh_minutes == '' || refresh_minutes == null){
+        document.getElementById("minutes_input").value = 10;
+        update_refresh_time();
+    }
     if (checkbox_status == true){
         countdown_timer = setTimeout(function() {
             location.reload();
