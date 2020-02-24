@@ -21,9 +21,10 @@ class Sales_stats(models.Model):
     date = models.CharField(max_length=50)
     user = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user}: {self.date_created.strftime("%Y-%m-%d %H:%M:%S")}'
+        return f'{self.user}: {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
 
     @classmethod
     def user_totals(self):
@@ -127,6 +128,7 @@ class Phone_calls(models.Model):
     phone_calls = models.CharField(max_length=50)
     user = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.user}: {self.phone_calls} - {self.date_created.strftime("%Y-%m-%d")}'
+        return f'{self.user}: {self.phone_calls} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'

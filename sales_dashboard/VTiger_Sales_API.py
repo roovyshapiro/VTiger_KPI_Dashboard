@@ -168,7 +168,7 @@ class Vtiger_api:
         num_items = module_amount['result'][0]['count']
 
         opportunities = self.api_call(f"{self.host}/query?query=SELECT * FROM Potentials WHERE assigned_user_id = {user_id} AND current_stage_entry_time >= '{date}';")
-        
+
         #All sales stages are added to this dict with '0' as the default value.
         #Here's what this ends up looking like as an example:
         #{'Demo Scheduled': 2, 'Demo Given': 0, 'Quote Sent': 3, 'Pilot': 0, 'Needs Analysis': 0, 'Closed Won': 3, 'Closed Lost': 3}

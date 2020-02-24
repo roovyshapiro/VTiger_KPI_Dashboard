@@ -80,8 +80,8 @@ def retrieve_stats():
     #Wether its every 1, 5 or 10 minutes, this function will return
     #all the data point since the last entry in the database.
     try:
-        latest_item = Sales_stats.objects.latest('date_created')
-        update_timespan = latest_item.date_created
+        latest_item = Sales_stats.objects.latest('date_modified')
+        update_timespan = latest_item.date_modified
     except:
         #If the database is empty, then the most recent item can't be checked
         #We pass 'today' which vtigerapi.retrieve_data will use to gather
