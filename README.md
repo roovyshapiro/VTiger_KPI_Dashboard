@@ -6,7 +6,7 @@
 VTiger Sales Dashboard is a Django application which shows live data from your VTiger sales team. We gather phone calls and the opportunity stages which have been changed in a given day and assign a point value to each. The goal is for the salesperson to reach 100 points in a day by whatever means necessary. They can reach their goal by making 100 phone calls, or by making 50 phone calls and conducting 5 demos, etc. The various sales stages will change depending on the way you've configured your Opportunities, stages and sales pipelines within VTiger.
 
 ### Connecting to VTiger
-sales_dashboard/VTiger_Sales_API.py uses VTiger's API to gather the data we need and pass it into the Django database.
+The file sales_dashboard/VTiger_Sales_API.py uses VTiger's API to gather the data we need and pass it into the Django database.
 
 See here for VTiger's API documentation: https://www.vtiger.com/docs/rest-api-for-vtiger
 
@@ -14,6 +14,18 @@ Make sure to have a file named 'credentials.json' within the main 'sales_dashboa
 ```python
 {"username": "<vtiger_username>", "access_key": "<access_key>", "host": "https://< custom_hostname>vtiger.com/restapi/v1/vtiger/default"}
 ```
+
+### Changing Opportunity Stages Multiple Times per Day
+Its possible to change an opportunity stage multiple times in the same day. 
+However, the "stage last changed at" field only tells you which stage its currently at. 
+Therefore, we need to create a way to capture when each of the stages have been changed throughout the day.
+There are some custom VTiger configuration changes necessary to make within VTiger.
+- 1. Create read-only text fields within the opportunity to capture the 'Modified Time' times when the sales stage was changed.
+[![](https://i.imgur.com/nolUje5.png)](https://i.imgur.com/nolUje5.png)
+- 2. Create a multi-path workflow to update these fields with the time from modified time.
+[![](https://i.imgur.com/nTO3BsQ.png)](https://i.imgur.com/nTO3BsQ.png)
+- 3. Create a multi-path workflow to update the fields upon opportunity creation. In this example, I've only set it for Demo Scheduled, but depending on your situation, you'll need to do this for each stage.
+[![](https://i.imgur.com/uuTfdF1.png)](https://i.imgur.com/uuTfdF1.png)
 
 
 ### Celery Beat / Gathering VTiger Data on a Schedule
@@ -39,14 +51,15 @@ $ source /env/bin/activate
 (env)$
 ```
 
-Next, make sure to install the dependencies in requirements.txt using,
+Make sure to install the dependencies in requirements.txt using,
 `pip3 install -r requirements.txt
 `
 
-Next, run the django migrations to ensure your database is setup properly.
+Run the django migrations to ensure your database is setup properly.
 `python3 manage.py migrate
 `
-The final step is to start the server. You can use the 'startapps.sh' file which will 
+
+Finally, start the server. You can use the 'startapps.sh' file which will 
 - run the redis-server (broker for celery)
 - run the celery worker
 - run the celery beat scheduler
