@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Sum
 from django.utils import timezone
 import VTiger_Sales_API
 import json, os
@@ -43,9 +42,6 @@ class Sales_stats(models.Model):
         vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
         users = vtigerapi.get_users()
         
-        stats = Sales_stats.objects.all()
-        phone_calls = Phone_calls.objects.all()
-
         #Determine the beginning and end of the day.
         today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
         today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0)
@@ -55,24 +51,24 @@ class Sales_stats(models.Model):
             username = f"{value[0]}_{value[1]}".lower()
             #Displays the SUM of all items in the database per username
             #Only displays data for today.
-            demo_scheduled_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('demo_scheduled'))
-            demo_given_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('demo_given'))
-            quote_sent_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('quote_sent'))
-            pilot_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('pilot'))
-            needs_analysis_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('needs_analysis'))
-            closed_won_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_won'))
-            closed_lost_sum = stats.filter(user=f'{username}', date__gte=today_start, date__lte=today_end).aggregate(Sum('closed_lost'))
-            phone_calls_sum = phone_calls.filter(user=f'{username}', date_created__gte=today_start, date_created__lte=today_end).aggregate(Sum('phone_calls'))
+            demo_scheduled_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].demo_scheduled)
+            demo_given_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].demo_given)
+            quote_sent_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].quote_sent)
+            pilot_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].pilot)
+            needs_analysis_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].needs_analysis)
+            closed_won_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].closed_won)
+            closed_lost_result = int(Sales_stats.objects.filter(user=f'{username}', date__gte=today_start, date__lte=today_end)[0].closed_lost)
+            phone_calls_result = int(Phone_calls.objects.filter(user=f'{username}', date_created__gte=today_start, date_created__lte=today_end)[0].phone_calls)
            
             username = f"{value[0]} {value[1]}".title()
-            stat_dict = {username: [demo_scheduled_sum['demo_scheduled__sum'],
-                                    demo_given_sum['demo_given__sum'],
-                                    quote_sent_sum['quote_sent__sum'],
-                                    pilot_sum['pilot__sum'],
-                                    needs_analysis_sum['needs_analysis__sum'],
-                                    closed_won_sum['closed_won__sum'],
-                                    closed_lost_sum['closed_lost__sum'],
-                                    phone_calls_sum['phone_calls__sum'],
+            stat_dict = {username: [demo_scheduled_result,
+                                    demo_given_result,
+                                    quote_sent_result,
+                                    pilot_result,
+                                    needs_analysis_result,
+                                    closed_won_result,
+                                    closed_lost_result,
+                                    phone_calls_result,
                                     ]
                         }
             user_stat_dict.append(stat_dict)

@@ -16,7 +16,9 @@ def home_view(request):
         user_stat_dict, user_score_dict = sales_stats.user_totals()
 
         return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict, 'score_total':user_score_dict,})
-    except TypeError:
+    #If the database is empty, then an IndexError will be generated from models.user_totals()
+    #Because the database queries return no results.
+    except (IndexError):
         return HttpResponseRedirect('/populate/')
 
 def populate_db(request):
