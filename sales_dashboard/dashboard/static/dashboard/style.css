@@ -49,19 +49,22 @@ input[type=submit]{
 
 
 /* Score Key and Tables*/
-
 .score_key_and_tables{
-    margin-top:10px;
+    margin-top:5px;
     display:flex;
 }
+
 /* Score Key */
 .score_key{
-    margin-left: 30px;
-    border-radius:5px;
-    overflow:auto;
     border: 1px solid blue;
+    border-radius:5px;
+    margin-left: 30px;
     margin-top:33px;
-    height:250px;
+    height:225px;
+}
+
+.auto_refresh_box{
+    margin-top:10px;
 }
 
 .score_key p{
@@ -90,8 +93,6 @@ input[type=submit]{
 .points{
     display:flex;
     flex-direction:row;
-    padding-top:10px;
-    padding-bottom:30px;
 }
 .score_box{
     flex:1;
