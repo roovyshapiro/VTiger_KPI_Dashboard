@@ -30,7 +30,7 @@ def populate_db(request):
     {james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
     '''
     from .tasks import populate_db_celery
-    populate_db_celery()
+    populate_db_celery.delay()
     return HttpResponseRedirect('/')
 
 def delete_all_items(request):
