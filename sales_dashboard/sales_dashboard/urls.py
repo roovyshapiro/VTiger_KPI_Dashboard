@@ -23,6 +23,6 @@ urlpatterns = [
     path('populate/', views.populate_db, name='populate'),
     path('deleteall/', views.delete_all_items, name='delete_all'),
     path('test/', views.test_method, name='test'),
-
+    path('datepicker/', views.date_picker, name='date_picker'),
 ]
 
