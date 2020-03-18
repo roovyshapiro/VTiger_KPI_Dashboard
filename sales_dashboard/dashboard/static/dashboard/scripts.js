@@ -3,12 +3,37 @@ var countdown_update_label_timer;
 var refresh_minutes;
 var refresh_seconds;
 var checkbox_status;
+var date;
 
 
 //WHEN the page reloads reload the values from local storage
 //retrieve_saved_data will also continue the countdown timer
 //if the checkbox was enabled before the page was reloaded
 window.onload = retrieve_saved_data;
+
+//Called when the page is reloaded
+function retrieve_saved_data() {
+    checkbox_status = localStorage.getItem("checkbox_status");
+    checkbox_status_bool = (checkbox_status == 'true');
+    refresh_minutes = localStorage.getItem("refresh_minutes");
+    refresh_seconds = refresh_minutes * 60;
+    localStorage.setItem("refresh_seconds", refresh_seconds);
+    document.getElementById("minutes_input").value = refresh_minutes;
+    document.getElementById("checkbox_autoupdate").checked = checkbox_status_bool;
+    //Get the previously selected date, or get today's date
+    retrieve_date();
+    //If the checkbox is already clicked when the page reloads
+    if (checkbox_status_bool){
+        document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
+        checkbox_click();
+    }
+}
+
+//
+//
+//   AUTO-REFRESH BOX + MINUTES SELECTOR
+//
+//
 
 //WHEN the auto refresh check box is clicked
 function checkbox_click() {
@@ -44,22 +69,6 @@ function update_refresh_time() {
     checkbox_click();
 }
 
-//Called when the page is reloaded
-function retrieve_saved_data() {
-    checkbox_status = localStorage.getItem("checkbox_status");
-    checkbox_status_bool = (checkbox_status == 'true');
-    refresh_minutes = localStorage.getItem("refresh_minutes");
-    refresh_seconds = refresh_minutes * 60;
-    localStorage.setItem("refresh_seconds", refresh_seconds);
-    document.getElementById("minutes_input").value = refresh_minutes;
-    document.getElementById("checkbox_autoupdate").checked = checkbox_status_bool;
-    //If the checkbox is already clicked when the page reloads
-    if (checkbox_status_bool){
-        document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
-        checkbox_click();
-    }
-}
-
 //While countdown_timer starts a one time countdown to refresh the page,
 //countdown_update_label_timer starts an interval timer that shows
 //how much time is remaining before the page refreshes 
@@ -73,4 +82,40 @@ function countdown_update(){
         localStorage.setItem('refresh_seconds', refresh_seconds);
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
     }, 1000);
+}
+
+//
+//
+//   DATE PICKER
+//
+//
+
+//Every time the date is changed, update local storage
+function date_changed(){
+    var date = document.getElementById('datepicker').value;
+    localStorage.setItem('date', date);
+}
+
+//Set the previously selected date. If none, then choose today's date.
+//Today's date is the default date.
+function retrieve_date(){
+    date = localStorage.getItem('date');
+    if (date == '' || date == undefined){
+        date = date_picker_today();
+        localStorage.setItem('date', date);
+    }
+    date = localStorage.getItem('date');
+    document.getElementById('datepicker').value = date;
+}
+
+//Returns today's date as a value formatted for datepicker.
+function date_picker_today(){
+    var date_today = new Date();
+    var day = date_today.getDate();
+    var month = date_today.getMonth() + 1;
+    var year = date_today.getFullYear();
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+    var today = year + "-" + month + "-" + day;
+    return today;
 }
