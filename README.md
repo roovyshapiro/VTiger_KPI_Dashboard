@@ -35,6 +35,37 @@ https://www.merixstudio.com/blog/django-celery-beat/
 
 Javascript is then used to refresh the page every few minutes if the 'Auto Refresh' button is checked. There is a countdown timer until the page refreshes.
 
+
+### Killing Orphaned Celery Processes
+[![](https://i.imgur.com/K7dKal0.png)](https://i.imgur.com/K7dKal0.png)
+It's a good idea to manually kill celery processes when significant changes have been made or if they're no longer needed.
+Use this command to show a snapshot of all current running processes:
+
+`ps -aux
+`
+
+Show processes with 'worker' in the name:
+
+`ps -aux | grep 'worker'
+`
+
+Kill processes with 'worker' in the name:
+
+`pkill -f 'worker'
+`
+
+Read more information about this here:
+https://docs.celeryproject.org/en/stable/userguide/workers.html#stopping-the-worker
+
+
+### Flower - Real-Time Celery Monitor
+[![](https://i.imgur.com/YziqxVn.png)](https://i.imgur.com/YziqxVn.png)
+"Flower is a web based tool for monitoring and administrating Celery clusters."
+It's very helpful for troublehsooting and showing how many times the periodic celery tasks have run.
+The server is started by running the .startapps.sh file and can be accessed at http://localhost:5555
+https://flower.readthedocs.io/en/latest/features.html
+
+
 ### Starting the Server
 It's a good idea to use a virtual environment with Python applications especially with Django. Here's a great article explaining the process:
 https://realpython.com/python-virtual-environments-a-primer/
@@ -63,6 +94,7 @@ Finally, start the server. You can use the 'startapps.sh' file which will
 - run the redis-server (broker for celery)
 - run the celery worker
 - run the celery beat scheduler
+- run the flower server (celery monitor)
 - run the built-in django web server.
 
 ```bash
@@ -71,9 +103,11 @@ Finally, start the server. You can use the 'startapps.sh' file which will
 redis-server &
 celery -A sales_dashboard worker &
 celery -A sales_dashboard beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler &
+celery -A sales_dashboard flower &
 python3 manage.py runserver 0.0.0.0:8000
 ```
-Afterwards, you should be able to navigate to access it by opening up a web browser and navigating to http://127.0.0.1:8000
+Afterwards, you should be able to access the dashboard locally at http://127.0.0.1:8000
+Flower can be accessed locally at http://127.0.0.1:5555
 
 ### Changing Opportunity Sales Stages
 Unfortunately, there are many places where the sales stages are hard coded in. If your sales stages are different, you'll need to edit them in
