@@ -257,13 +257,25 @@ class Vtiger_api:
 
         return full_stat_dict
 
+    def retrieve_todays_cases(self):
+        '''
+        Returns a list of all the cases that have been closed since the beginning of today.
+        '''
+        today = datetime.datetime.now().strftime("%Y-%m-%d") + ' 00:00:00'
+        cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE modifiedtime >= '{today}' limit 0, 100;")
+
+        self.today_case_list = []
+        for case in cases['result']:
+            self.today_case_list.append(case)
+        return self.today_case_list
+
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_data()
+        response = vtigerapi.retrieve_todays_cases()
         data = json.dumps(response,  indent=4, sort_keys=True)
         with open('potentials.json', 'w') as f:
             f.write(data)
