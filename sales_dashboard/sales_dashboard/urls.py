@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from dashboard import views
+from case_dashboard import case_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,5 +25,6 @@ urlpatterns = [
     path('deleteall/', views.delete_all_items, name='delete_all'),
     path('test/', views.test_method, name='test'),
     path('datepicker/', views.date_picker, name='date_picker'),
+    path('cases/', case_views.main_dashboard, name='cases'),
 ]
 
