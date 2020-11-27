@@ -99,12 +99,14 @@ def populate_db_celery_cases():
 
     for case in today_case_list:
         #Attempt to find data in the database from today, if no objects are found, create new ones.
-        case_query = db_cases.filter(date_created__gte=today_start, date_created__lte=today_end)
-        if len(case_query) == 0:
-            new_case = Cases()
+        #case_query = db_cases.filter(date_created__gte=today_start, date_created__lte=today_end)
+        #if len(case_query) == 0:
+        #    new_case = Cases()
         #If objects exists for today, update the existing ones instead of creating new ones.
-        else:
-            new_case = case_query[0]
+        #else:
+        #    new_case = case_query[0]
+
+        new_case = Cases()
 
         new_case.assigned_user_id = case['assigned_user_id']
         new_case.case_no = case['case_no']

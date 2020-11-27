@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils import timezone
-import VTiger_Sales_API
 import json, os
 
 class Cases(models.Model):
