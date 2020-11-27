@@ -65,7 +65,9 @@ class Cases(models.Model):
         "title": "Video needed in FMS for Truck 20",
         "total_time": "0",
         "wait_count": "",
-        "work_location": ""
+        "work_location": "",
+        "assigned_username" = "Bradley Spenkins",
+        "assigned_groupname" = "Tech Support",
     },
     '''
     assigned_user_id = models.CharField(max_length=50)
@@ -80,6 +82,8 @@ class Cases(models.Model):
     modifiedtime = models.CharField(max_length=50)
     title = models.CharField(max_length=250)
     time_spent = models.CharField(max_length=50)
+    assigned_username = models.CharField(max_length=75)
+    assigned_groupname = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 

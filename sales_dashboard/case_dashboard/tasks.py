@@ -71,7 +71,9 @@ def populate_db_celery_cases():
         "title": "Video needed in FMS for Truck 20",
         "total_time": "0",
         "wait_count": "",
-        "work_location": ""
+        "work_location": "",
+        "assigned_username" = "Bradley Spenkins",
+        "assigned_groupname" = "Tech Support",
     },
     assigned_user_id = models.CharField(max_length=50)
     case_no = models.CharField(max_length=50)
@@ -85,6 +87,8 @@ def populate_db_celery_cases():
     modifiedtime = models.CharField(max_length=50)
     title = models.CharField(max_length=250)
     time_spent = models.CharField(max_length=50)
+    assigned_username = models.CharField(max_length=75)
+    assigned_groupname = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -114,6 +118,8 @@ def populate_db_celery_cases():
         new_case.modifiedtime = case['modifiedtime']
         new_case.title = case['title']
         new_case.time_spent = case['time_spent']
+        new_case.assigned_username = case['assigned_username']
+        new_case.assigned_groupname = case['assigned_groupname']
 
         new_case.save()
 
