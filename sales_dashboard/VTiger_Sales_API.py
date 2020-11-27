@@ -107,12 +107,15 @@ class Vtiger_api:
         return first_name, last_name, email, utc_offset
 
 
-    def get_users(self):    
+    def get_users(self, get_all_users=False):    
         '''
         Accepts User List and returns a dictionary of the username, first, last and id
         '''
-        group_dict = self.get_groups()
-        user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users WHERE user_primary_group = '{group_dict['Sales']}';")
+        if get_all_users == False:
+            group_dict = self.get_groups()
+            user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users WHERE user_primary_group = '{group_dict['Sales']}';")
+        else:
+            user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users;")
 
         num_of_users = len(user_list['result'])
         username_list = []
@@ -130,12 +133,21 @@ class Vtiger_api:
         return user_dict
 
 
+    def get_groups_id_first(self):
+        '''
+        Returns a dict with group IDs as they keys and groupnames as the values.
+        '''
+        group_list = self.api_call(f"{self.host}/query?query=Select * FROM Groups;")
+        group_dict = {}
+        for group in group_list['result']:
+            group_dict[group['id']] = group['groupname']
+        return group_dict
+
     def get_groups(self):    
         '''
         Accepts Group List and returns a dictionary of the Group Name and ID
         '''
         group_list = self.api_call(f"{self.host}/query?query=Select * FROM Groups;")
-
         num_of_groups = len(group_list['result'])
         groupname_list = []
         for group in range(num_of_groups):
@@ -275,7 +287,7 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_todays_cases()
+        response = vtigerapi.get_groups_id_first()
         data = json.dumps(response,  indent=4, sort_keys=True)
         with open('potentials.json', 'w') as f:
             f.write(data)
