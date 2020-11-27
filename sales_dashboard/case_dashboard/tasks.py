@@ -73,18 +73,18 @@ def populate_db_celery_cases():
         "wait_count": "",
         "work_location": ""
     },
-    assigned_user_id = case['case_no']
-    case_no = case['case_no']
-    casestatus = case['case_no']
-    contact_id = case['case_no']
-    created_user_id = case['case_no']
-    createdtime = case['case_no']
-    group_id = case['case_no']
-    case_id = case['case_no']
-    modifiedby = case['case_no']
-    modifiedtime = case['case_no']
+    assigned_user_id = models.CharField(max_length=50)
+    case_no = models.CharField(max_length=50)
+    casestatus = models.CharField(max_length=50)
+    contact_id = models.CharField(max_length=50)
+    created_user_id = models.CharField(max_length=50)
+    createdtime = models.CharField(max_length=50)
+    group_id = models.CharField(max_length=50)
+    case_id = models.CharField(max_length=50)
+    modifiedby = models.CharField(max_length=50)
+    modifiedtime = models.CharField(max_length=50)
     title = models.CharField(max_length=250)
-    time_spent = case['case_no']
+    time_spent = models.CharField(max_length=50)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 
@@ -94,19 +94,13 @@ def populate_db_celery_cases():
     today_case_list = retrieve_case_data()
     db_cases = Cases.objects.all()
 
-    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0) 
-
     for case in today_case_list:
-        #Attempt to find data in the database from today, if no objects are found, create new ones.
-        #case_query = db_cases.filter(date_created__gte=today_start, date_created__lte=today_end)
-        #if len(case_query) == 0:
-        #    new_case = Cases()
-        #If objects exists for today, update the existing ones instead of creating new ones.
-        #else:
-        #    new_case = case_query[0]
-
-        new_case = Cases()
+        #If the case_id exists in the database, then the case will be updated
+        #If the case_id doesn't exist, then the case will be added to the db
+        try:
+            new_case = db_cases.get(case_id = case['id'])
+        except:
+            new_case = Cases()
 
         new_case.assigned_user_id = case['assigned_user_id']
         new_case.case_no = case['case_no']
