@@ -7,9 +7,22 @@ from .models import Cases
 def main_dashboard(request):
     '''
     Send all cases from the Cases db to the html template to be used in the html table.
+    Send all unique group names in the context so that it can be used in a dropdown.
     '''
+    #Returns all cases with the most recently modified first if no filter is applied
     full_cases = Cases.objects.all().order_by('-modifiedtime')
-    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases})
+    #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
+    #We pass these groups to the html to populate the drop down menu for filtering
+    case_groups = Cases.objects.values('assigned_groupname').distinct()
+
+    #We get the form submission from the drop down and use it to then filter the "full_case"
+    #query set to only return and display the cases which match that group.
+    group_request = request.GET.get('group_dropdown')
+    if group_request != '' and group_request is not None and group_request != '--Select Group--':
+        full_cases = full_cases.filter(assigned_groupname=group_request)
+
+    #After returning the request, return the html file to go to, and the context to send to the html
+    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups})
 
 def populate_cases(request):
     populate_db_celery_cases()

@@ -2,16 +2,24 @@
 
 {% block content %}
             
-
+<form method="GET" action=".">
+    <select name="group_dropdown">
+        <option selected>--Select Group--</option>
+        {% for group  in case_groups %}
+        <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
+        {% endfor %} 
+    </select>
+    <button type="submit">Submit</button>
+</form>
 
 <table>
     <tbody>
         <tr>
             <th>Case Number</th>
-            <th>Case Group</th>
+            <th>Group</th>
             <th>Assigned To</th>
             <th>Title</th>
-            <th>Case Status</th>
+            <th>Status</th>
             <th>Created Time</th>
             <th>Modified Time</th>
             <th>Time Spent</th>
