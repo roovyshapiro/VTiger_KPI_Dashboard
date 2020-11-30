@@ -75,11 +75,11 @@ class Cases(models.Model):
     casestatus = models.CharField(max_length=50)
     contact_id = models.CharField(max_length=50)
     created_user_id = models.CharField(max_length=50)
-    createdtime = models.CharField(max_length=50)
+    createdtime = models.DateTimeField()
     group_id = models.CharField(max_length=50)
     case_id = models.CharField(max_length=50)
     modifiedby = models.CharField(max_length=50)
-    modifiedtime = models.CharField(max_length=50)
+    modifiedtime = models.DateTimeField()
     title = models.CharField(max_length=250)
     time_spent = models.CharField(max_length=50)
     assigned_username = models.CharField(max_length=75)
@@ -88,4 +88,4 @@ class Cases(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.case_no}: {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
+        return f'{self.assigned_groupname} - {self.assigned_username} - {self.case_no} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
