@@ -8,6 +8,7 @@ def main_dashboard(request):
     '''
     Send all cases from the Cases db to the html template to be used in the html table.
     Send all unique group names in the context so that it can be used in a dropdown.
+    Get the data from the form inputs like "group name" and filter the cases to be displayed.
     '''
     #Returns all cases with the most recently modified first if no filter is applied
     full_cases = Cases.objects.all().order_by('-modifiedtime')
