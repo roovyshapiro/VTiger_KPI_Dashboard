@@ -1,5 +1,35 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
-<h1>Future Home of the Case Dashboard!</h1>
+            
+
+
+<table>
+    <tbody>
+        <tr>
+            <th>Case Number</th>
+            <th>Case Group</th>
+            <th>Assigned To</th>
+            <th>Title</th>
+            <th>Case Status</th>
+            <th>Created Time</th>
+            <th>Modified Time</th>
+            <th>Time Spent</th>
+        </tr>
+        {% for case in full_cases %}
+            <tr>
+                <td>{{ case.case_no }}</td>
+                <td>{{ case.assigned_groupname }}</td>
+                <td>{{ case.assigned_username }}</td>
+                <td>{{ case.title }}</td>
+                <td>{{ case.casestatus }}</td>
+                <td>{{ case.createdtime }}</td>
+                <td>{{ case.modifiedtime }}</td>
+                <td>{{ case.time_spent }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
 {% endblock %}

@@ -5,8 +5,11 @@ from .tasks import populate_db_celery_cases
 from .models import Cases
 
 def main_dashboard(request):
-    print('cases!')
-    return render(request, "dashboard/case_dashboard.html")
+    '''
+    Send all cases from the Cases db to the html template to be used in the html table.
+    '''
+    full_cases = Cases.objects.all().order_by('-modifiedtime')
+    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases})
 
 def populate_cases(request):
     populate_db_celery_cases()
