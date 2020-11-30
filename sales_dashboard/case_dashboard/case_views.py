@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
+from django.db.models import Q
 
 from .tasks import populate_db_celery_cases
 from .models import Cases
@@ -31,8 +32,20 @@ def main_dashboard(request):
     if date_end_request != '' and date_end_request is not None:
         full_cases = full_cases.filter(modifiedtime__lt=date_end_request)
 
+    #Prepare calculated data to present as a simple summary overview of the cases
+    case_stats_dict = {}
+    case_stats = full_cases
+    case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
+    case_stats_dict['closed'] = len(case_stats_closed)
+    if date_start_request != '' and date_start_request is not None and date_end_request != '' and date_end_request is not None:
+        try:
+            case_stats_opened = case_stats.filter(createdtime__gte=date_start_request, createdtime__lte=date_end_request)
+            case_stats_dict['opened'] = len(case_stats_opened)
+        except ValueError:
+            case_stats_dict['opened'] = 0
+
     #After returning the request, return the html file to go to, and the context to send to the html
-    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups})
+    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups, "case_stat_dict":case_stats_dict})
 
 def populate_cases(request):
     populate_db_celery_cases()
