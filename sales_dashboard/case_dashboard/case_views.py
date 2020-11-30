@@ -22,6 +22,15 @@ def main_dashboard(request):
     if group_request != '' and group_request is not None and group_request != '--Select Group--':
         full_cases = full_cases.filter(assigned_groupname=group_request)
 
+    date_start_request = request.GET.get('date_start')
+    date_end_request = request.GET.get('date_end')
+
+    if date_start_request != '' and date_start_request is not None:
+        full_cases = full_cases.filter(modifiedtime__gte=date_start_request)
+
+    if date_end_request != '' and date_end_request is not None:
+        full_cases = full_cases.filter(modifiedtime__lt=date_end_request)
+
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups})
 
