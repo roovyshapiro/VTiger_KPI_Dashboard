@@ -32,6 +32,23 @@ def main_dashboard(request):
     if date_end_request != '' and date_end_request is not None:
         full_cases = full_cases.filter(modifiedtime__lt=date_end_request)
 
+    #Prepare the date and group that was chosen, so it can be displayed on the dashboard
+    date_group_dict = {}
+    date_group_dict['date_start'] = date_start_request
+    date_group_dict['date_end'] = date_end_request
+    date_group_dict['group'] = group_request
+
+    #If no date was selected, we'll display the time frame from the first modified case to the last
+    if group_request == '' or group_request == None:
+        date_group_dict['group'] = 'All Groups'
+    if date_start_request == '' or date_start_request == None:
+        first_case = full_cases.order_by('modifiedtime').first()
+        date_group_dict['date_start'] = first_case.modifiedtime
+    if date_end_request == '' or date_end_request == None:
+        last_case = full_cases.order_by('modifiedtime').last()
+        date_group_dict['date_end'] = last_case.modifiedtime
+
+
     #Prepare calculated data to present as a simple summary overview of the cases
     case_stats_dict = {}
     case_stats = full_cases
@@ -72,9 +89,15 @@ def main_dashboard(request):
             #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
             case_stats_dict['kill_rate'] = int(case_stats_dict['closed'] * 100)
 
+    context = {
+        "full_cases":full_cases,
+        "case_groups":case_groups,
+        "case_stat_dict":case_stats_dict,
+        "date_group_dict":date_group_dict,
+    }
 
     #After returning the request, return the html file to go to, and the context to send to the html
-    return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups, "case_stat_dict":case_stats_dict})
+    return render(request, "dashboard/case_dashboard.html", context)
 
 def populate_cases(request):
     populate_db_celery_cases()
