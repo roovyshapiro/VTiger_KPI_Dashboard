@@ -18,14 +18,15 @@
     <input type="date" name="date_end" id="date_end" min="2020-01-01" max="2030-01-01">
     <button type="submit">Submit</button>
 </form>
-<p>Group: {{ date_group_dict.group }} </p>
-<p>Date Start: {{ date_group_dict.date_start }} </p>
-<p>Date End: {{ date_group_dict.date_end }} </p>
 
+<br>
+<p>Group: {{ date_group_dict.group }} </p>
+<p>{{ date_group_dict.date_start }} - {{ date_group_dict.date_end }}</p>
+<br>
 <p>Opened Cases: {{ case_stat_dict.opened }} </p>
 <p>Closed/Resolved Cases: {{ case_stat_dict.closed }} </p>
 <p>Kill Rate: {{ case_stat_dict.kill_rate }}% </p>
-
+<br>
 
 <table>
     <tbody>
