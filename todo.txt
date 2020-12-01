@@ -1,0 +1,24 @@
+---ToDo---
+
+APP WIDE
+
+- make a simple front end html welcome page with big buttons directing the user to the different dashboards
+- Setup authentication so user can only access from authenticated google account
+
+CASE DASHBOARD
+
+- deleted cases should be removed from case dashboard. Perhaps it could check if cases "date_modified" is older than 30 minutes, it should be deleted? Need to investigate
+- pretty up the case dashboard display CSS!
+- choose the date automatically for case dashboard for day, week, and month data based on the date selected
+- manually do a one time upload of all cases from the past year to the django db
+- see if the full case upload will make it easy to show all cases that aren't closed or resolved to see a total number and then we can forgo any other api calls
+- setup celery to auto-populate the case data once every 10 minutes (update all most recent 100 cases)
+- rename repository and folders so its obvious that cases and sales are separate apps within the same project
+- adjust the readme.md to update with information for case dashboard
+
+SALES DASHBOARD
+
+- salesdashboard db should get full phone calls and opportunities so that it can be stored and retrieved similar to case dashboard
+- point calculation should only be done on db data after the fact so the API calls are simplified and the process takes less time
+- datepicker applied to sales dashboard
+- in general, large overhaul to sales dashboard to emulate the improvements that were done in the case dashboard
