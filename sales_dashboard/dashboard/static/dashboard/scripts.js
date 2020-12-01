@@ -21,7 +21,7 @@ function retrieve_saved_data() {
     document.getElementById("minutes_input").value = refresh_minutes;
     document.getElementById("checkbox_autoupdate").checked = checkbox_status_bool;
     //Get the previously selected date, or get today's date
-    retrieve_date();
+    //retrieve_date();
     //If the checkbox is already clicked when the page reloads
     if (checkbox_status_bool){
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
@@ -84,6 +84,7 @@ function countdown_update(){
     }, 1000);
 }
 
+/*
 //
 //
 //   DATE PICKER
@@ -96,7 +97,7 @@ function date_changed(){
     localStorage.setItem('date', date);
 }
 
-/*
+
 //Set the previously selected date. If none, then choose today's date.
 //Today's date is the default date.
 function retrieve_date(){
