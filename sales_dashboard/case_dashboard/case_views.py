@@ -35,8 +35,21 @@ def main_dashboard(request):
     #Prepare calculated data to present as a simple summary overview of the cases
     case_stats_dict = {}
     case_stats = full_cases
-    case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
-    case_stats_dict['closed'] = len(case_stats_closed)
+
+    #These calculations are based on not having any date selected
+    if date_start_request == '' or date_start_request is  None or date_end_request == '' or date_end_request is None:
+        case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
+        case_stats_dict['closed'] = len(case_stats_closed)
+
+        case_stats_opened = case_stats.filter(~Q(casestatus="Resolved") | ~Q(casestatus="Closed"))
+        case_stats_dict['opened'] = len(case_stats_opened)
+        try:
+            case_stats_dict['kill_rate'] = int((case_stats_dict['closed'] / case_stats_dict['opened']) * 100)
+        except ZeroDivisionError:
+            #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
+            case_stats_dict['kill_rate'] = int(case_stats_dict['closed'] * 100)
+
+    #If a date is selected, the calculations should only affect that time frame.
     if date_start_request != '' and date_start_request is not None and date_end_request != '' and date_end_request is not None:
         try:
             case_stats_opened = case_stats.filter(createdtime__gte=date_start_request, createdtime__lte=date_end_request)
@@ -45,9 +58,20 @@ def main_dashboard(request):
             case_stats_dict['opened'] = 0
 
         try:
+            case_stats = case_stats.filter(modifiedtime__gte=date_start_request, modifiedtime__lte=date_end_request)
+            case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
+            case_stats_dict['closed'] = len(case_stats_closed)
+        except ValueError:
+            case_stats_dict['closed'] = 0
+
+        try:
             case_stats_dict['kill_rate'] = int((case_stats_dict['closed'] / case_stats_dict['opened']) * 100)
         except ValueError:
             case_stats_dict['kill_rate'] = int(0)
+        except ZeroDivisionError:
+            #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
+            case_stats_dict['kill_rate'] = int(case_stats_dict['closed'] * 100)
+
 
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups, "case_stat_dict":case_stats_dict})
