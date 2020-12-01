@@ -24,12 +24,7 @@ urlpatterns = [
     path('populate/', views.populate_db, name='populate'),
     path('deleteall/', views.delete_all_items, name='delete_all'),
     path('test/', views.test_method, name='test'),
-    path('datepicker/', views.date_picker, name='date_picker'),
     path('cases/', case_views.main_dashboard, name='cases'),
     path('populatecases/', case_views.populate_cases, name='populate_cases'),
     path('deletecases/', case_views.delete_all_cases, name='delete_all_cases'),
-
-
 ]
-
-

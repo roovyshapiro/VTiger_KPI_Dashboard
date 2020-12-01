@@ -96,6 +96,7 @@ function date_changed(){
     localStorage.setItem('date', date);
 }
 
+/*
 //Set the previously selected date. If none, then choose today's date.
 //Today's date is the default date.
 function retrieve_date(){
@@ -119,3 +120,4 @@ function date_picker_today(){
     var today = year + "-" + month + "-" + day;
     return today;
 }
+*/

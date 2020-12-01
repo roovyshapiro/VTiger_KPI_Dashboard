@@ -61,11 +61,3 @@ def test_method(request):
     from dashboard.tasks import populate_db_celery
     populate_db_celery.delay()
     return HttpResponseRedirect('/')
-
-def date_picker(request):
-    date_chosen = datetime.datetime.strptime(request.GET['date'], '%Y-%m-%d')
-    day_begin = date_chosen.replace(hour=0, minute=0, second=0, microsecond=0)
-    day_end = date_chosen.replace(hour=23, minute=59, second=59, microsecond=0)
-    print(day_begin)
-    print(day_end)
-    return HttpResponseRedirect('/')
