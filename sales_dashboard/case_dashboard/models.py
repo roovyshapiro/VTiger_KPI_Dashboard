@@ -89,3 +89,6 @@ class Cases(models.Model):
 
     def __str__(self):
         return f'{self.assigned_groupname} - {self.assigned_username} - {self.case_no} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
+    
+    def modifiedtime_date(self):
+        return self.modifiedtime.strftime('%Y-%m-%d')
