@@ -41,7 +41,7 @@ def main_dashboard(request):
     #If no date was selected, we'll display the time frame from the first modified case to the last
     #We use the custom "modifiedtime_date" method so we can display the time in the same format as the
     #date picker: "modifiedtime.strftime('%Y-%m-%d')"
-    if group_request == '' or group_request == None:
+    if group_request == '' or group_request == None or group_request == '--Select Group--':
         date_group_dict['group'] = 'All Groups'
     if date_start_request == '' or date_start_request == None:
         first_case = full_cases.order_by('modifiedtime').first()
