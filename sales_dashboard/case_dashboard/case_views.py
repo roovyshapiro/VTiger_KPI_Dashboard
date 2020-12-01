@@ -60,8 +60,11 @@ def main_dashboard(request):
         case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
         case_stats_dict['closed'] = len(case_stats_closed)
 
-        case_stats_opened = case_stats.filter(~Q(casestatus="Resolved") | ~Q(casestatus="Closed"))
+        case_stats_opened = case_stats.filter(createdtime__gte=first_case.modifiedtime, createdtime__lte=last_case.modifiedtime)
         case_stats_dict['opened'] = len(case_stats_opened)
+
+        case_stats_dict['modified'] = len(case_stats)
+
         try:
             case_stats_dict['kill_rate'] = int((case_stats_dict['closed'] / case_stats_dict['opened']) * 100)
         except ZeroDivisionError:
@@ -77,11 +80,17 @@ def main_dashboard(request):
             case_stats_dict['opened'] = 0
 
         try:
-            case_stats = case_stats.filter(modifiedtime__gte=date_start_request, modifiedtime__lte=date_end_request)
-            case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
+            case_stats_modified = case_stats.filter(modifiedtime__gte=date_start_request, modifiedtime__lte=date_end_request)
+            case_stats_closed = case_stats_modified.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
             case_stats_dict['closed'] = len(case_stats_closed)
         except ValueError:
             case_stats_dict['closed'] = 0
+
+        try:
+            case_stats = case_stats.filter(modifiedtime__gte=date_start_request, modifiedtime__lte=date_end_request)
+            case_stats_dict['modified'] = len(case_stats)
+        except ValueError:
+            case_stats_dict['modified'] = 0
 
         try:
             case_stats_dict['kill_rate'] = int((case_stats_dict['closed'] / case_stats_dict['opened']) * 100)
