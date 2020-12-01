@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'dashboard',
     'celery',
     'django_celery_beat',
+    'case_dashboard',
 ]
 
 MIDDLEWARE = [

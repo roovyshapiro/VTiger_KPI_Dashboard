@@ -107,12 +107,15 @@ class Vtiger_api:
         return first_name, last_name, email, utc_offset
 
 
-    def get_users(self):    
+    def get_users(self, get_all_users=False):    
         '''
         Accepts User List and returns a dictionary of the username, first, last and id
         '''
-        group_dict = self.get_groups()
-        user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users WHERE user_primary_group = '{group_dict['Sales']}';")
+        if get_all_users == False:
+            group_dict = self.get_groups()
+            user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users WHERE user_primary_group = '{group_dict['Sales']}';")
+        else:
+            user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users;")
 
         num_of_users = len(user_list['result'])
         username_list = []
@@ -130,12 +133,21 @@ class Vtiger_api:
         return user_dict
 
 
+    def get_groups_id_first(self):
+        '''
+        Returns a dict with group IDs as they keys and groupnames as the values.
+        '''
+        group_list = self.api_call(f"{self.host}/query?query=Select * FROM Groups;")
+        group_dict = {}
+        for group in group_list['result']:
+            group_dict[group['id']] = group['groupname']
+        return group_dict
+
     def get_groups(self):    
         '''
         Accepts Group List and returns a dictionary of the Group Name and ID
         '''
         group_list = self.api_call(f"{self.host}/query?query=Select * FROM Groups;")
-
         num_of_groups = len(group_list['result'])
         groupname_list = []
         for group in range(num_of_groups):
@@ -257,13 +269,65 @@ class Vtiger_api:
 
         return full_stat_dict
 
+    def get_users_and_groups_file(self):
+        '''
+        Get all users and groups with their corresponding IDs and save to a file for reference.
+        '''
+        group_dict = self.get_groups_id_first()
+        user_dict = self.get_users(get_all_users=True)
+        full_dict = {}
+        full_dict['groups'] = group_dict
+        full_dict['users'] = user_dict
+        data = json.dumps(full_dict,  indent=4, sort_keys=True)
+        with open('users_and_groups.json', 'w') as f:
+            f.write(data)
+        return full_dict
+
+    def retrieve_todays_cases(self):
+        '''
+        Returns a list of all the cases that have been closed since the beginning of today.
+        self.get_users_and_groups_file() retrieves all Users and Groups with their IDs and names
+        and writes it to a file. The data in this file is used to translate the IDs that
+        are retrieved in the cases. This way, we don't want unnecessary API calls to translate
+        User and Group IDs everytime we retrieve the cases from today.
+        If the username, groupname, or file isn't present or returns any errors,
+        the function to populate this data is called again and continues as normal.
+        This should take care of any situation where a new user is added, a group name is changed,
+        or the file is deleted for any reason.
+        '''
+        today = datetime.datetime.now().strftime("%Y-%m-%d") + ' 00:00:00'
+        cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE modifiedtime >= '{today}' limit 0, 100;")
+
+
+        try:
+            self.today_case_list = []
+            with open('users_and_groups.json') as f:
+                data = json.load(f)
+                for case in cases['result']:
+                    assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
+                    assigned_groupname = data['groups'][case['group_id']]
+                    case['assigned_username'] = assigned_username
+                    case['assigned_groupname'] = assigned_groupname
+                    self.today_case_list.append(case)
+        except:
+            self.today_case_list = []
+            data = self.get_users_and_groups_file()
+            for case in cases['result']:
+                assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
+                assigned_groupname = data['groups'][case['group_id']]
+                case['assigned_username'] = assigned_username
+                case['assigned_groupname'] = assigned_groupname
+                self.today_case_list.append(case)
+
+        return self.today_case_list
+
 
 if __name__ == '__main__':
         with open('credentials.json') as f:
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_data()
+        response = vtigerapi.retrieve_todays_cases()
         data = json.dumps(response,  indent=4, sort_keys=True)
         with open('potentials.json', 'w') as f:
             f.write(data)

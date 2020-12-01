@@ -1,0 +1,27 @@
+{% load static %}
+
+<HTML>
+    <head>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link rel="stylesheet" type="text/css" href="{% static 'dashboard/style.css' %}">
+    </head>
+    <body>
+
+		<section class ="header">
+            <div class ="header-title">
+                <p>VTiger Sales Dashboard</p>
+            </div>
+            <div class = "header_buttons">
+                <button class = "header_sales" onclick="location.href = '/'">Sales</button>
+                </button>
+                <button class = "header_cases" onclick="location.href = '/cases'">Cases</button>
+                </button>
+            </div>
+        </section>
+
+            {% block content %}
+            {% endblock %}
+
+        <script type="text/javascript" src="{% static 'dashboard/scripts.js' %}"></script>
+    </body>
+</HTML>

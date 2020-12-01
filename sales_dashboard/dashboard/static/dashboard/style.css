@@ -33,6 +33,20 @@ body{
     margin-right:10px;
 }
 
+.header_buttons{
+    display:flex;
+    padding:15px;
+}
+
+.header_sales:hover {
+    border-radius: 5px;
+    border: 1px solid blue;
+}
+.header_cases:hover {
+    border-radius: 5px;
+    border: 1px solid blue;
+}
+
 input[type=submit]{
     background-color: orange;
     border: none;

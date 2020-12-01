@@ -1,0 +1,68 @@
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+            
+<form method="GET" action=".">
+    <label for="group_dropdown">Group:</label>
+    <select name="group_dropdown" id = "group_dropdown">
+        <option selected>--Select Group--</option>
+        {% for group  in case_groups %}
+        <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
+        {% endfor %} 
+    </select>
+    </br>
+    <label for="date_start">Modified Time Start:</label>
+    <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
+    </br>
+    <label for="date_end">Modified Time End:</label>
+    <input type="date" name="date_end" id="date_end" min="2020-01-01" max="2030-01-01">
+    <button type="submit">Submit</button>
+</form>
+
+<br>
+<p>Group: {{ date_group_dict.group }} </p>
+<p>{{ date_group_dict.date_start }} - {{ date_group_dict.date_end }}</p>
+<br>
+<p>Opened Cases: {{ case_stat_dict.opened }} </p>
+<p>Closed/Resolved Cases: {{ case_stat_dict.closed }} </p>
+<p>Kill Rate: {{ case_stat_dict.kill_rate }}% </p>
+<br>
+
+{% if sorted_user_closed|length > 0 %}
+    <p>Closed Cases by User</p>
+    {% for score  in sorted_user_closed %}
+        <p> {{ score.0 }} - {{ score.1 }} </p>
+    {% endfor %}
+{% endif %}
+
+
+
+<table>
+    <tbody>
+        <tr>
+            <th>Case Number</th>
+            <th>Group</th>
+            <th>Assigned To</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created Time</th>
+            <th>Modified Time</th>
+            <th>Time Spent</th>
+        </tr>
+        {% for case in full_cases %}
+            <tr>
+                <td>{{ case.case_no }}</td>
+                <td>{{ case.assigned_groupname }}</td>
+                <td>{{ case.assigned_username }}</td>
+                <td>{{ case.title }}</td>
+                <td>{{ case.casestatus }}</td>
+                <td>{{ case.createdtime }}</td>
+                <td>{{ case.modifiedtime }}</td>
+                <td>{{ case.time_spent }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}
