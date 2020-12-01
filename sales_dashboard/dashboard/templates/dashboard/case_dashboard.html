@@ -28,6 +28,15 @@
 <p>Kill Rate: {{ case_stat_dict.kill_rate }}% </p>
 <br>
 
+{% if sorted_user_closed|length > 0 %}
+    <p>Closed Cases by User</p>
+    {% for score  in sorted_user_closed %}
+        <p> {{ score.0 }} - {{ score.1 }} </p>
+    {% endfor %}
+{% endif %}
+
+
+
 <table>
     <tbody>
         <tr>

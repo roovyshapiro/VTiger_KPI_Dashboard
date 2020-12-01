@@ -91,11 +91,35 @@ def main_dashboard(request):
             #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
             case_stats_dict['kill_rate'] = int(case_stats_dict['closed'] * 100)
 
+    #We calculate how many cases were closed per user and add it to the context to be displayed
+    #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
+    all_users = Cases.objects.values('assigned_username').distinct()
+
+    #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0}
+    user_dict = {}
+    for user in all_users:
+        user_dict[user['assigned_username']] = 0
+
+    #user_dict = {'James Fulcrumstein':3, 'Mary Littlelamb':5, 'Kent Breakfield':0}
+    for case in full_cases.filter(Q(casestatus="Resolved") | Q(casestatus="Closed")):
+        if case.assigned_username in user_dict:
+            user_dict[case.assigned_username] += 1
+
+    #If a value is equal to 0, then we remove that key. 
+    #No need to see which users didn't close any cases.
+    #user_closed ={'James Fulcrumstein':3, 'Mary Littlelamb':5,}
+    user_closed_dict = {key:value for key, value in user_dict.items() if value != 0}
+
+    #Sort the dictionary so that the the dictionary with the highest value is displayed first
+    #sorted_user_closed = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
+    sorted_user_closed = sorted(user_closed_dict.items(), key=lambda x: x[1], reverse=True)
+
     context = {
         "full_cases":full_cases,
         "case_groups":case_groups,
         "case_stat_dict":case_stats_dict,
         "date_group_dict":date_group_dict,
+        "sorted_user_closed":sorted_user_closed,
     }
 
     #After returning the request, return the html file to go to, and the context to send to the html
