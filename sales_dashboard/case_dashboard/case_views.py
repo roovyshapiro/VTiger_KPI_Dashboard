@@ -44,6 +44,11 @@ def main_dashboard(request):
         except ValueError:
             case_stats_dict['opened'] = 0
 
+        try:
+            case_stats_dict['kill_rate'] = int((case_stats_dict['closed'] / case_stats_dict['opened']) * 100)
+        except ValueError:
+            case_stats_dict['kill_rate'] = int(0)
+
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", {"full_cases":full_cases, "case_groups":case_groups, "case_stat_dict":case_stats_dict})
 
