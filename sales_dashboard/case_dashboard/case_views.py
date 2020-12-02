@@ -58,7 +58,9 @@ def main_dashboard(request):
     #These calculations are based on not having any date selected
     if date_start_request == '' or date_start_request is  None or date_end_request == '' or date_end_request is None:
         case_stats_closed = case_stats.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
-        case_stats_dict['closed'] = len(case_stats_closed)
+        case_stats_resolved = case_stats_closed.filter(case_resolved__gte=first_case.modifiedtime, case_resolved__lte=last_case.modifiedtime)
+
+        case_stats_dict['closed'] = len(case_stats_resolved)
 
         case_stats_opened = case_stats.filter(createdtime__gte=first_case.modifiedtime, createdtime__lte=last_case.modifiedtime)
         case_stats_dict['opened'] = len(case_stats_opened)
@@ -80,7 +82,7 @@ def main_dashboard(request):
             case_stats_dict['opened'] = 0
 
         try:
-            case_stats_modified = case_stats.filter(modifiedtime__gte=date_start_request, modifiedtime__lte=date_end_request)
+            case_stats_modified = case_stats.filter(case_resolved__gte=date_start_request, case_resolved__lte=date_end_request)
             case_stats_closed = case_stats_modified.filter(Q(casestatus="Resolved") | Q(casestatus="Closed"))
             case_stats_dict['closed'] = len(case_stats_closed)
         except ValueError:
