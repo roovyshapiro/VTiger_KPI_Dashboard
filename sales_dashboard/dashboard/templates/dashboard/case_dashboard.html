@@ -48,6 +48,7 @@
             <th>Status</th>
             <th>Created (UTC)</th>
             <th>Modified (UTC)</th>
+            <th>Resolved (UTC)</th>
             <th>Time Spent</th>
         </tr>
         {% for case in full_cases %}
@@ -59,6 +60,7 @@
                 <td>{{ case.casestatus }}</td>
                 <td>{{ case.createdtime }}</td>
                 <td>{{ case.modifiedtime }}</td>
+                <td>{{ case.case_resolved }}</td>
                 <td>{{ case.time_spent_hr }}</td>
             </tr>
         {% endfor %}
