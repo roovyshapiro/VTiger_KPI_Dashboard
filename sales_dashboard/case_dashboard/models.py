@@ -85,7 +85,7 @@ class Cases(models.Model):
     time_spent_hr = models.CharField(max_length=75)
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
-    case_resolved = models.DateTimeField()
+    case_resolved = models.DateTimeField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
 

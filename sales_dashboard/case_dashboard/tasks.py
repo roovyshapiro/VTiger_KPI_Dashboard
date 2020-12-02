@@ -130,7 +130,10 @@ def populate_db_celery_cases():
             new_case.time_spent_hr = case['time_spent']
         new_case.assigned_username = case['assigned_username']
         new_case.assigned_groupname = case['assigned_groupname']
-        new_case.case_resolved = case['sla_actual_closureon']
+        if case['sla_actual_closureon'] == '':
+            new_case.case_resolved = None
+        else:
+            new_case.case_resolved = case['sla_actual_closureon']
 
         new_case.save()
 
