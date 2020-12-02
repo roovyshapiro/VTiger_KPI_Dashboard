@@ -82,6 +82,7 @@ class Cases(models.Model):
     modifiedtime = models.DateTimeField()
     title = models.CharField(max_length=250)
     time_spent = models.CharField(max_length=50)
+    time_spent_hr = models.CharField(max_length=75)
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
     date_created = models.DateTimeField(auto_now_add=True)

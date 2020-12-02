@@ -41,13 +41,13 @@
 <table>
     <tbody>
         <tr>
-            <th>Case Number</th>
+            <th>Number</th>
             <th>Group</th>
             <th>Assigned To</th>
             <th>Title</th>
             <th>Status</th>
-            <th>Created Time</th>
-            <th>Modified Time</th>
+            <th>Created (UTC)</th>
+            <th>Modified (UTC)</th>
             <th>Time Spent</th>
         </tr>
         {% for case in full_cases %}
@@ -59,7 +59,7 @@
                 <td>{{ case.casestatus }}</td>
                 <td>{{ case.createdtime }}</td>
                 <td>{{ case.modifiedtime }}</td>
-                <td>{{ case.time_spent }}</td>
+                <td>{{ case.time_spent_hr }}</td>
             </tr>
         {% endfor %}
     </tbody>
