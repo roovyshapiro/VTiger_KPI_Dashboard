@@ -12,7 +12,6 @@ CASE DASHBOARD
 - choose the date automatically for case dashboard for day, week, and month data based on the date selected
 - manually do a one time upload of all cases from the past year to the django db
 - see if the full case upload will make it easy to show all cases that aren't closed or resolved to see a total number and then we can forgo any other api calls
-- setup celery to auto-populate the case data once every 10 minutes (update all most recent 100 cases)
 - rename repository and folders so its obvious that cases and sales are separate apps within the same project
 - adjust the readme.md to update with information for case dashboard
 
