@@ -123,8 +123,11 @@ def populate_db_celery_cases():
         new_case.time_spent = case['time_spent']
         #Converts the time spent from a number of hours into something more human-readable
         #838.928 -> 34 Days, 22 Hours, 55 Minutes
-        time_spent = float(case['time_spent'])
-        new_case.time_spent_hr = f"{int(time_spent / 24)} Days, {int(time_spent % 24)} Hours, {int(((time_spent % 24) - int(time_spent % 24)) * 60)} Minutes"
+        try:
+            time_spent = float(case['time_spent'])
+            new_case.time_spent_hr = f"{int(time_spent / 24)} Days, {int(time_spent % 24)} Hours, {int(((time_spent % 24) - int(time_spent % 24)) * 60)} Minutes"
+        except ValueError:
+            new_case.time_spent_hr = case['time_spent']
         new_case.assigned_username = case['assigned_username']
         new_case.assigned_groupname = case['assigned_groupname']
 
