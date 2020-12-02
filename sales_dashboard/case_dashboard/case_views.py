@@ -136,6 +136,22 @@ def main_dashboard(request):
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", context)
 
+def retrieve_dates():
+    '''
+    For whichever day of the week it is, this past Monday at 12:00am is returned.
+    For whichever day of the month it is, the first day of the month is returned.
+    today = (datetime.datetime(2020, 12, 4, 0, 0) 
+    first_of_week= (datetime.datetime(2020, 11, 30, 0, 0) 
+    first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
+    '''
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    #0 = monday, 5 = Saturday, 6 = Sunday 
+    day = today.weekday()
+    first_of_week = today + timezone.timedelta(days = -day)
+    first_of_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+    return today, first_of_week, first_of_month
+
 def populate_cases(request):
     populate_db_celery_cases()
     return HttpResponseRedirect("/cases")
