@@ -9,7 +9,6 @@ CASE DASHBOARD
 
 - deleted cases should be removed from case dashboard. Perhaps it could check if cases "date_modified" is older than 30 minutes, it should be deleted? Need to investigate
 - pretty up the case dashboard display CSS!
-- choose the date automatically for case dashboard for day, week, and month data based on the date selected
 - manually do a one time upload of all cases from the past year to the django db
 - see if the full case upload will make it easy to show all cases that aren't closed or resolved to see a total number and then we can forgo any other api calls
 - rename repository and folders so its obvious that cases and sales are separate apps within the same project
