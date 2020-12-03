@@ -1,7 +1,7 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
 from django.db.models import Q
-import datetime
+import datetime, calendar
 from .tasks import populate_db_celery_cases
 from .models import Cases
 
@@ -28,21 +28,17 @@ def main_dashboard(request):
     if group_request != '' and group_request is not None and group_request != '--Select Group--':
         full_cases = full_cases.filter(assigned_groupname=group_request)
         date_group_dict['group'] = group_request
-
     else:
         date_group_dict['group'] = 'All Groups'
 
-    today, first_of_week, first_of_month = retrieve_dates()
-
     date_request = request.GET.get('date_start')
-    if date_request == '' or date_request == None:
-        date_request = today
-    else:
-        date_request = datetime.datetime.strptime(date_request, '%Y-%m-%d')
 
-    date_request_end = date_request.replace(hour=23, minute = 59, second = 59, microsecond = 0)
-    
-    date_group_dict['date_start'] = date_request.strftime('%A, %B %d')
+    today, end_of_day, first_of_week, end_of_week, first_of_month, last_of_month = retrieve_dates(date_request)
+
+    date_group_dict['date_start'] = today.strftime('%A, %B %d')
+
+    date_request = today
+    date_request_end = end_of_day
 
     #Prepare calculated data to present as a simple summary overview of the cases
     full_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
@@ -110,7 +106,7 @@ def main_dashboard(request):
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", context)
 
-def retrieve_dates():
+def retrieve_dates(date_request):
     '''
     For whichever day of the week it is, this past Monday at 12:00am is returned.
     For whichever day of the month it is, the first day of the month is returned.
@@ -118,13 +114,26 @@ def retrieve_dates():
     first_of_week= (datetime.datetime(2020, 11, 30, 0, 0) 
     first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
     '''
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    if date_request == '' or date_request == None:
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        today = datetime.datetime.strptime(date_request, '%Y-%m-%d')
+
+    end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
+
     #0 = monday, 5 = Saturday, 6 = Sunday 
     day = today.weekday()
     first_of_week = today + timezone.timedelta(days = -day)
-    first_of_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    end_of_week = first_of_week + timezone.timedelta(days = 6)
+    end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
 
-    return today, first_of_week, first_of_month
+    first_of_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    year = first_of_month.year
+    month = first_of_month.month
+    last_day = calendar.monthrange(year,month)[1]
+    end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+
+    return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
 def populate_cases(request):
     populate_db_celery_cases()
