@@ -33,12 +33,36 @@ def main_dashboard(request):
 
     date_request = request.GET.get('date_start')
 
-    today, end_of_day, first_of_week, end_of_week, first_of_month, last_of_month = retrieve_dates(date_request)
+    today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
 
     date_group_dict['date_start'] = today.strftime('%A, %B %d')
 
-    date_request = today
-    date_request_end = end_of_day
+    case_stats_dict, sorted_user_closed, full_cases_day = retrieve_case_data(full_cases, today, end_of_day)
+    case_stats_dict_week, sorted_user_closed_week, full_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
+    case_stats_dict_month, sorted_user_closed_month, full_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
+
+
+    context = {
+        "case_groups":case_groups,
+        "date_group_dict":date_group_dict,
+
+        "full_cases_day":full_cases_day,
+        "case_stats_dict":case_stats_dict,
+        "sorted_user_closed":sorted_user_closed,
+
+        "full_cases_week":full_cases_week,
+        "case_stats_dict_week":case_stats_dict_week,
+        "sorted_user_closed_week":sorted_user_closed_week,
+
+        "full_cases_month":full_cases_month,
+        "case_stats_dict_month":case_stats_dict_month,
+        "sorted_user_closed_month":sorted_user_closed_month,
+    }
+
+    #After returning the request, return the html file to go to, and the context to send to the html
+    return render(request, "dashboard/case_dashboard.html", context) 
+
+def retrieve_case_data(full_cases, date_request, date_request_end):
 
     #Prepare calculated data to present as a simple summary overview of the cases
     full_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
@@ -95,16 +119,7 @@ def main_dashboard(request):
     #sorted_user_closed = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
     sorted_user_closed = sorted(user_closed_dict.items(), key=lambda x: x[1], reverse=True)
 
-    context = {
-        "full_cases":full_cases,
-        "case_groups":case_groups,
-        "case_stat_dict":case_stats_dict,
-        "date_group_dict":date_group_dict,
-        "sorted_user_closed":sorted_user_closed,
-    }
-
-    #After returning the request, return the html file to go to, and the context to send to the html
-    return render(request, "dashboard/case_dashboard.html", context)
+    return case_stats_dict, sorted_user_closed, full_cases
 
 def retrieve_dates(date_request):
     '''

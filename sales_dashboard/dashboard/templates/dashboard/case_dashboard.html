@@ -21,10 +21,10 @@
 <p>Group: {{ date_group_dict.group }} </p>
 <p>{{ date_group_dict.date_start }}</p>
 <br>
-<p>Modified Cases: {{ case_stat_dict.modified }} </p>
-<p>Created Cases: {{ case_stat_dict.opened }} </p>
-<p>Resolved Cases: {{ case_stat_dict.closed }} </p>
-<p>Kill Rate: {{ case_stat_dict.kill_rate }}% </p>
+<p>Modified Cases: {{ case_stats_dict.modified }} </p>
+<p>Created Cases: {{ case_stats_dict.opened }} </p>
+<p>Resolved Cases: {{ case_stats_dict.closed }} </p>
+<p>Kill Rate: {{ case_stats_dict.kill_rate }}% </p>
 <br>
 
 {% if sorted_user_closed|length > 0 %}
@@ -49,7 +49,7 @@
             <th>Resolved (UTC)</th>
             <th>Time Spent</th>
         </tr>
-        {% for case in full_cases %}
+        {% for case in full_cases_day %}
             <tr>
                 <td>{{ case.case_no }}</td>
                 <td>{{ case.assigned_groupname }}</td>
@@ -65,5 +65,95 @@
     </tbody>
 </table>
 
+<br>
+<p>Week</p>
+<p>Modified Cases: {{ case_stats_dict_week.modified }} </p>
+<p>Created Cases: {{ case_stats_dict_week.opened }} </p>
+<p>Resolved Cases: {{ case_stats_dict_week.closed }} </p>
+<p>Kill Rate: {{ case_stats_dict_week.kill_rate }}% </p>
+<br>
 
+{% if sorted_user_closed_week|length > 0 %}
+    <p>Closed Cases by User</p>
+    {% for score in sorted_user_closed_week %}
+        <p> {{ score.0 }} - {{ score.1 }} </p>
+    {% endfor %}
+{% endif %}
+
+
+
+<table>
+    <tbody>
+        <tr>
+            <th>Number</th>
+            <th>Group</th>
+            <th>Assigned To</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created (UTC)</th>
+            <th>Modified (UTC)</th>
+            <th>Resolved (UTC)</th>
+            <th>Time Spent</th>
+        </tr>
+        {% for case in full_cases_week %}
+            <tr>
+                <td>{{ case.case_no }}</td>
+                <td>{{ case.assigned_groupname }}</td>
+                <td>{{ case.assigned_username }}</td>
+                <td>{{ case.title }}</td>
+                <td>{{ case.casestatus }}</td>
+                <td>{{ case.createdtime }}</td>
+                <td>{{ case.modifiedtime }}</td>
+                <td>{{ case.case_resolved }}</td>
+                <td>{{ case.time_spent_hr }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<br>
+<p>Month<p>
+<p>Modified Cases: {{ case_stats_dict_month.modified }} </p>
+<p>Created Cases: {{ case_stats_dict_month.opened }} </p>
+<p>Resolved Cases: {{ case_stats_dict_month.closed }} </p>
+<p>Kill Rate: {{ case_stats_dict_month.kill_rate }}% </p>
+<br>
+
+{% if sorted_user_closed_month|length > 0 %}
+    <p>Closed Cases by User</p>
+    {% for score  in sorted_user_closed_month %}
+        <p> {{ score.0 }} - {{ score.1 }} </p>
+    {% endfor %}
+{% endif %}
+
+
+
+<table>
+    <tbody>
+        <tr>
+            <th>Number</th>
+            <th>Group</th>
+            <th>Assigned To</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Created (UTC)</th>
+            <th>Modified (UTC)</th>
+            <th>Resolved (UTC)</th>
+            <th>Time Spent</th>
+        </tr>
+        {% for case in full_cases_month %}
+            <tr>
+                <td>{{ case.case_no }}</td>
+                <td>{{ case.assigned_groupname }}</td>
+                <td>{{ case.assigned_username }}</td>
+                <td>{{ case.title }}</td>
+                <td>{{ case.casestatus }}</td>
+                <td>{{ case.createdtime }}</td>
+                <td>{{ case.modifiedtime }}</td>
+                <td>{{ case.case_resolved }}</td>
+                <td>{{ case.time_spent_hr }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
