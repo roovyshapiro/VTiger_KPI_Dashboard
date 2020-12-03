@@ -14,14 +14,12 @@
     <label for="date_start">Modified Time Start:</label>
     <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
     </br>
-    <label for="date_end">Modified Time End:</label>
-    <input type="date" name="date_end" id="date_end" min="2020-01-01" max="2030-01-01">
     <button type="submit">Submit</button>
 </form>
 
 <br>
 <p>Group: {{ date_group_dict.group }} </p>
-<p>{{ date_group_dict.date_start }} - {{ date_group_dict.date_end }}</p>
+<p>{{ date_group_dict.date_start }}</p>
 <br>
 <p>Modified Cases: {{ case_stat_dict.modified }} </p>
 <p>Created Cases: {{ case_stat_dict.opened }} </p>
