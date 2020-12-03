@@ -35,7 +35,11 @@ def main_dashboard(request):
 
     today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
 
-    date_group_dict['date_start'] = today.strftime('%A, %B %d')
+    date_group_dict['today'] = today.strftime('%A, %B %d')
+    date_group_dict['first_of_week'] = first_of_week.strftime('%A, %B %d')
+    date_group_dict['end_of_week'] = end_of_week.strftime('%A, %B %d')
+    date_group_dict['first_of_month'] = first_of_month.strftime('%A, %B %d')
+    date_group_dict['end_of_month'] = end_of_month.strftime('%A, %B %d')
 
     case_stats_dict, sorted_user_closed, full_cases_day = retrieve_case_data(full_cases, today, end_of_day)
     case_stats_dict_week, sorted_user_closed_week, full_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)

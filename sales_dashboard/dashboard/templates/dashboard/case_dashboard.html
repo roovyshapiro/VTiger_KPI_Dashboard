@@ -18,8 +18,9 @@
 </form>
 
 <br>
+<p>TODAY</p>
 <p>Group: {{ date_group_dict.group }} </p>
-<p>{{ date_group_dict.date_start }}</p>
+<p>{{ date_group_dict.today }}</p>
 <br>
 <p>Modified Cases: {{ case_stats_dict.modified }} </p>
 <p>Created Cases: {{ case_stats_dict.opened }} </p>
@@ -66,7 +67,10 @@
 </table>
 
 <br>
-<p>Week</p>
+<p>WEEK</p>
+<p>Group: {{ date_group_dict.group }} </p>
+<p>{{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
+<br>
 <p>Modified Cases: {{ case_stats_dict_week.modified }} </p>
 <p>Created Cases: {{ case_stats_dict_week.opened }} </p>
 <p>Resolved Cases: {{ case_stats_dict_week.closed }} </p>
@@ -112,7 +116,10 @@
 </table>
 
 <br>
-<p>Month<p>
+<p>MONTH</p>
+<p>Group: {{ date_group_dict.group }} </p>
+<p>{{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
+<br>
 <p>Modified Cases: {{ case_stats_dict_month.modified }} </p>
 <p>Created Cases: {{ case_stats_dict_month.opened }} </p>
 <p>Resolved Cases: {{ case_stats_dict_month.closed }} </p>
