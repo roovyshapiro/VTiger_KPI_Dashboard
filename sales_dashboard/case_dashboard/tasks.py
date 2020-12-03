@@ -152,5 +152,6 @@ def retrieve_case_data():
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     today_case_list = vtigerapi.retrieve_todays_cases()
+    #today_case_list = vtigerapi.retrieve_all_cases('2020-11-15')
 
     return today_case_list
