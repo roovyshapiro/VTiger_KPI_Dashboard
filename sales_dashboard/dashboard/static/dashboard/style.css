@@ -146,3 +146,15 @@ td, th{
     border: 1px solid orange;
     padding:10px;
 }
+
+
+/* Case Tables */
+.fixed_header tbody{
+    display:block;
+    overflow:auto;
+    height:300px;
+    width:100%;
+  }
+  .fixed_header thead tr{
+    display:block;
+  }
