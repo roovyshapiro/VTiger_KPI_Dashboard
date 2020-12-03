@@ -11,6 +11,7 @@ def main_dashboard(request):
     Send all cases from the Cases db to the html template to be used in the html table.
     Send all unique group names in the context so that it can be used in a dropdown.
     Get the data from the form inputs like "group name" and filter the cases to be displayed.
+    Retrieves user stats and date info and sends it to context.
     '''
     #Prepare the date and group that was chosen, so it can be displayed on the dashboard
     date_group_dict = {}
@@ -67,7 +68,23 @@ def main_dashboard(request):
     return render(request, "dashboard/case_dashboard.html", context) 
 
 def retrieve_case_data(full_cases, date_request, date_request_end):
+    '''
+    Returns data regards to the cases and users specified for the supplied time frame.
+    Using a first of week and end of week for the "Shipping" group will retrieve data
+    points that when rendered in the context to the HTML can look like this:
+    
+    WEEK
+    Group: Shipping
+    Monday, November 30 - Sunday, December 06
+    Modified Cases: 33
+    Created Cases: 8
+    Resolved Cases: 15
+    Kill Rate: 187%
 
+    Closed Cases by User
+    Jason Carlchuck  - 9
+    Cornelius Pavlovsky - 6
+    '''
     #Prepare calculated data to present as a simple summary overview of the cases
     full_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
     case_stats_dict = {}
@@ -127,11 +144,14 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
 
 def retrieve_dates(date_request):
     '''
-    For whichever day of the week it is, this past Monday at 12:00am is returned.
-    For whichever day of the month it is, the first day of the month is returned.
     today = (datetime.datetime(2020, 12, 4, 0, 0) 
-    first_of_week= (datetime.datetime(2020, 11, 30, 0, 0) 
+    end_of_day = (datetime.datetime(2020, 12, 4, 23, 59) 
+
+    first_of_week = (datetime.datetime(2020, 11, 30, 0, 0) 
+    end_of_week = (datetime.datetime(2020, 12, 6, 23, 59) 
+
     first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
+    end_of_month = (datetime.datetime(2020, 12, 31, 23, 59)
     '''
     if date_request == '' or date_request == None:
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
