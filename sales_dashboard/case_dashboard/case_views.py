@@ -146,7 +146,7 @@ def retrieve_dates(date_request):
     end_of_week = first_of_week + timezone.timedelta(days = 6)
     end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
 
-    first_of_month = timezone.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     year = first_of_month.year
     month = first_of_month.month
     last_day = calendar.monthrange(year,month)[1]
