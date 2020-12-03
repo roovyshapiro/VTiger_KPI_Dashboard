@@ -68,6 +68,7 @@ class Vtiger_api:
             self.seconds_to_wait = abs(int(header_dict['X-FloodControl-Reset']) - int(time.time()))
             time.sleep(self.seconds_to_wait)
             self.seconds_to_wait = 0
+
         r_text = json.loads(r.text)
         return r_text
 
@@ -269,6 +270,10 @@ class Vtiger_api:
 
         return full_stat_dict
 
+    ####################
+    ###Case Dashboard###
+    ####################
+
     def get_users_and_groups_file(self):
         '''
         Get all users and groups with their corresponding IDs and save to a file for reference.
@@ -282,6 +287,83 @@ class Vtiger_api:
         with open('users_and_groups.json', 'w') as f:
             f.write(data)
         return full_dict
+
+    def case_count(self, created_time):
+        '''
+        Get the amount of cases from after "created_time" and return the number as an int.
+        '''
+        case_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE createdtime >= '{created_time}' ;")
+        print(case_count)
+        total_count = case_count['result'][0]['count']
+        print('total_cases', total_count)
+        return total_count
+
+    def retrieve_all_cases(self, created_time):
+        '''
+        This method is meant to be used only once to populate the entire db of cases from a certain date.
+        It can be used to get all the cases for an entire year or more.
+        This is called from case_dashboard.tasks.
+    
+        A module can only return a maximum of 100 results. 
+        To circumvent that, an offset can be supplied which starts returning data from after the offset.
+        The amount must be looped through in order to retrieve all the results.
+        For instance if there are 250 cases, first 100 is retrieved, then another 100, and then 50.
+        A list is returned of each dictionary that was retrieved this way.
+        For 5000 cases, 50 API calls will be used.
+        '''
+        num_items = self.case_count(created_time)
+        num_items = int(num_items)
+        vtiger_item_list = []
+        offset = 0
+        if num_items > 100:
+            while num_items > 100:
+                item_batch = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE createdtime >= '{created_time}' limit {offset}, 100;")
+                print('api_call_complete', num_items)
+                vtiger_item_list.append(item_batch['result'])
+                offset += 100
+                num_items = num_items - 100
+                if num_items <= 100:
+                    break
+        if num_items <= 100:
+            item_batch = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE createdtime >= '{created_time}' limit {offset}, 100;")
+            print('api_call_complete', num_items)
+            vtiger_item_list.append(item_batch['result'])
+        
+        #Combine the multiple lists of dictionaries into one list
+        #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
+        #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+        full_item_list = []
+        for item_list in vtiger_item_list:
+            full_item_list += item_list
+
+        try:
+            self.case_list = []
+            with open('users_and_groups.json') as f:
+                data = json.load(f)
+                for case in full_item_list:
+                    assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
+                    assigned_groupname = data['groups'][case['group_id']]
+                    case['assigned_username'] = assigned_username
+                    case['assigned_groupname'] = assigned_groupname
+                    self.case_list.append(case)
+        except:
+            self.case_list = []
+            data = self.get_users_and_groups_file()
+            for case in full_item_list:
+                try:
+                    assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
+                except KeyError:
+                    assigned_username = ''
+                try:
+                    assigned_groupname = data['groups'][case['group_id']]
+                except KeyError:
+                    assigned_groupname = ''
+
+                case['assigned_username'] = assigned_username
+                case['assigned_groupname'] = assigned_groupname
+                self.case_list.append(case)
+
+        return self.case_list
 
     def retrieve_todays_cases(self):
         '''
@@ -298,7 +380,6 @@ class Vtiger_api:
         today = datetime.datetime.now().strftime("%Y-%m-%d") + ' 00:00:00'
         cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE modifiedtime >= '{today}' limit 0, 100;")
 
-
         try:
             self.today_case_list = []
             with open('users_and_groups.json') as f:
@@ -313,8 +394,15 @@ class Vtiger_api:
             self.today_case_list = []
             data = self.get_users_and_groups_file()
             for case in cases['result']:
-                assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
-                assigned_groupname = data['groups'][case['group_id']]
+                try:
+                    assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
+                except KeyError:
+                    assigned_username = ''
+                try:
+                    assigned_groupname = data['groups'][case['group_id']]
+                except KeyError:
+                    assigned_groupname = ''
+
                 case['assigned_username'] = assigned_username
                 case['assigned_groupname'] = assigned_groupname
                 self.today_case_list.append(case)
@@ -327,7 +415,7 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_todays_cases()
+        response = vtigerapi.retrieve_all_cases()
         data = json.dumps(response,  indent=4, sort_keys=True)
-        with open('potentials.json', 'w') as f:
+        with open('all_cases.json', 'w') as f:
             f.write(data)
