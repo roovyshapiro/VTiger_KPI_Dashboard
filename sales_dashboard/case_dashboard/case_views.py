@@ -32,6 +32,9 @@ def main_dashboard(request):
     else:
         date_group_dict['group'] = 'All Groups'
 
+    all_open_cases = {}
+    all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
+
     date_request = request.GET.get('date_start')
 
     today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
@@ -50,6 +53,8 @@ def main_dashboard(request):
     context = {
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
+        "all_open_cases":all_open_cases,
+
 
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
