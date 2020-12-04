@@ -84,41 +84,12 @@ function countdown_update(){
     }, 1000);
 }
 
-/*
-//
-//
-//   DATE PICKER
-//
-//
-
-//Every time the date is changed, update local storage
-function date_changed(){
-    var date = document.getElementById('datepicker').value;
-    localStorage.setItem('date', date);
+/* Show Hide Case Table */
+function showHideCaseTable(time) {
+    var table = document.getElementById(`case_table_${time}`);
+    if (table.style.display === "none") {
+        table.style.display = "block";
+      } else {
+        table.style.display = "none";
+      }
 }
-
-
-//Set the previously selected date. If none, then choose today's date.
-//Today's date is the default date.
-function retrieve_date(){
-    date = localStorage.getItem('date');
-    if (date == '' || date == undefined){
-        date = date_picker_today();
-        localStorage.setItem('date', date);
-    }
-    date = localStorage.getItem('date');
-    document.getElementById('datepicker').value = date;
-}
-
-//Returns today's date as a value formatted for datepicker.
-function date_picker_today(){
-    var date_today = new Date();
-    var day = date_today.getDate();
-    var month = date_today.getMonth() + 1;
-    var year = date_today.getFullYear();
-    if (month < 10) month = "0" + month;
-    if (day < 10) day = "0" + day;
-    var today = year + "-" + month + "-" + day;
-    return today;
-}
-*/

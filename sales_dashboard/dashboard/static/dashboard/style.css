@@ -149,12 +149,12 @@ td, th{
 
 
 /* Case Tables */
-.fixed_header tbody{
+.scrollable_table tbody{
     display:block;
     overflow:auto;
     height:300px;
     width:100%;
   }
-  .fixed_header thead tr{
+  .scrollable_table thead tr{
     display:block;
   }

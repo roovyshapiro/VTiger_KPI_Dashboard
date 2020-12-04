@@ -18,9 +18,12 @@
 </form>
 
 <br>
-<p>TODAY</p>
-<p>All Open Cases: {{ all_open_cases.open_cases }}</p>
 <p>Group: {{ date_group_dict.group }} </p>
+<p>All Open Cases: {{ all_open_cases.open_cases }}</p>
+<hr>
+<br>
+
+<p>TODAY</p>
 <p>{{ date_group_dict.today }}</p>
 <br>
 <p>Modified Cases: {{ case_stats_dict.modified }} </p>
@@ -36,40 +39,43 @@
     {% endfor %}
 {% endif %}
 
-
-
-<table class = "fixed_header">
-    <tbody>
-        <tr>
-            <th>Number</th>
-            <th>Group</th>
-            <th>Assigned To</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Created (UTC)</th>
-            <th>Modified (UTC)</th>
-            <th>Resolved (UTC)</th>
-            <th>Time Spent</th>
-        </tr>
-        {% for case in full_cases_day %}
+<button onclick="showHideCaseTable('day')">Show/Hide Case Table</button>
+<div id = "case_table_day">
+    <table class = "scrollable_table">
+        <tbody>
             <tr>
-                <td>{{ case.case_no }}</td>
-                <td>{{ case.assigned_groupname }}</td>
-                <td>{{ case.assigned_username }}</td>
-                <td>{{ case.title }}</td>
-                <td>{{ case.casestatus }}</td>
-                <td>{{ case.createdtime }}</td>
-                <td>{{ case.modifiedtime }}</td>
-                <td>{{ case.case_resolved }}</td>
-                <td>{{ case.time_spent_hr }}</td>
+                <th>Number</th>
+                <th>Group</th>
+                <th>Assigned To</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created (UTC)</th>
+                <th>Modified (UTC)</th>
+                <th>Resolved (UTC)</th>
+                <th>Time Spent</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            {% for case in full_cases_day %}
+                <tr>
+                    <td>{{ case.case_no }}</td>
+                    <td>{{ case.assigned_groupname }}</td>
+                    <td>{{ case.assigned_username }}</td>
+                    <td>{{ case.title }}</td>
+                    <td>{{ case.casestatus }}</td>
+                    <td>{{ case.createdtime }}</td>
+                    <td>{{ case.modifiedtime }}</td>
+                    <td>{{ case.case_resolved }}</td>
+                    <td>{{ case.time_spent_hr }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <br>
+<hr>
+<br>
+
 <p>WEEK</p>
-<p>Group: {{ date_group_dict.group }} </p>
 <p>{{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
 <br>
 <p>Modified Cases: {{ case_stats_dict_week.modified }} </p>
@@ -85,40 +91,43 @@
     {% endfor %}
 {% endif %}
 
-
-
-<table class = "fixed_header">
-    <tbody>
-        <tr>
-            <th>Number</th>
-            <th>Group</th>
-            <th>Assigned To</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Created (UTC)</th>
-            <th>Modified (UTC)</th>
-            <th>Resolved (UTC)</th>
-            <th>Time Spent</th>
-        </tr>
-        {% for case in full_cases_week %}
+<button onclick="showHideCaseTable('week')">Show/Hide Case Table</button>
+<div id = "case_table_week">
+    <table class = "scrollable_table">
+        <tbody>
             <tr>
-                <td>{{ case.case_no }}</td>
-                <td>{{ case.assigned_groupname }}</td>
-                <td>{{ case.assigned_username }}</td>
-                <td>{{ case.title }}</td>
-                <td>{{ case.casestatus }}</td>
-                <td>{{ case.createdtime }}</td>
-                <td>{{ case.modifiedtime }}</td>
-                <td>{{ case.case_resolved }}</td>
-                <td>{{ case.time_spent_hr }}</td>
+                <th>Number</th>
+                <th>Group</th>
+                <th>Assigned To</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created (UTC)</th>
+                <th>Modified (UTC)</th>
+                <th>Resolved (UTC)</th>
+                <th>Time Spent</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            {% for case in full_cases_week %}
+                <tr>
+                    <td>{{ case.case_no }}</td>
+                    <td>{{ case.assigned_groupname }}</td>
+                    <td>{{ case.assigned_username }}</td>
+                    <td>{{ case.title }}</td>
+                    <td>{{ case.casestatus }}</td>
+                    <td>{{ case.createdtime }}</td>
+                    <td>{{ case.modifiedtime }}</td>
+                    <td>{{ case.case_resolved }}</td>
+                    <td>{{ case.time_spent_hr }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
 <br>
+<hr>
+<br>
+
 <p>MONTH</p>
-<p>Group: {{ date_group_dict.group }} </p>
 <p>{{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
 <br>
 <p>Modified Cases: {{ case_stats_dict_month.modified }} </p>
@@ -134,33 +143,35 @@
     {% endfor %}
 {% endif %}
 
-
-<table class = "fixed_header">
-    <tbody>
-        <tr>
-            <th>Number</th>
-            <th>Group</th>
-            <th>Assigned To</th>
-            <th>Title</th>
-            <th>Status</th>
-            <th>Created (UTC)</th>
-            <th>Modified (UTC)</th>
-            <th>Resolved (UTC)</th>
-            <th>Time Spent</th>
-        </tr>
-        {% for case in full_cases_month %}
+<button onclick="showHideCaseTable('month')">Show/Hide Case Table</button>
+<div id = "case_table_month">
+    <table class = "scrollable_table">
+        <tbody>
             <tr>
-                <td>{{ case.case_no }}</td>
-                <td>{{ case.assigned_groupname }}</td>
-                <td>{{ case.assigned_username }}</td>
-                <td>{{ case.title }}</td>
-                <td>{{ case.casestatus }}</td>
-                <td>{{ case.createdtime }}</td>
-                <td>{{ case.modifiedtime }}</td>
-                <td>{{ case.case_resolved }}</td>
-                <td>{{ case.time_spent_hr }}</td>
+                <th>Number</th>
+                <th>Group</th>
+                <th>Assigned To</th>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Created (UTC)</th>
+                <th>Modified (UTC)</th>
+                <th>Resolved (UTC)</th>
+                <th>Time Spent</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            {% for case in full_cases_month %}
+                <tr>
+                    <td>{{ case.case_no }}</td>
+                    <td>{{ case.assigned_groupname }}</td>
+                    <td>{{ case.assigned_username }}</td>
+                    <td>{{ case.title }}</td>
+                    <td>{{ case.casestatus }}</td>
+                    <td>{{ case.createdtime }}</td>
+                    <td>{{ case.modifiedtime }}</td>
+                    <td>{{ case.case_resolved }}</td>
+                    <td>{{ case.time_spent_hr }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
