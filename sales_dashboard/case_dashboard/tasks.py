@@ -100,6 +100,7 @@ def populate_db_celery_cases(get_all_cases=False):
      '''
     if get_all_cases == True:
         today_case_list = retrieve_case_data(get_all_cases = True)
+        Cases.objects.all().delete()
     else:
         today_case_list = retrieve_case_data(get_all_cases = False)
     db_cases = Cases.objects.all()
