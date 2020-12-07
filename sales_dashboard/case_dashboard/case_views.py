@@ -188,6 +188,47 @@ def populate_all_cases(request):
     populate_db_celery_cases(get_all_cases=True)
     return HttpResponseRedirect("/cases")
 
+
+def testing(request):
+    '''
+    A work in progress. Trying to determine the best for how to delete old cases.
+    Best attempt so far is that since ".save()" updated the "date_modified" field, if a case
+    is deleted from VTiger, the "date_modified" field will eventually fall behind. If we look at all the
+    cases that were modified in a single day, and for some of those, the "date_modified" is more than 20 or 30
+    minutes old, then its probably been deleted. This will not work for older cases which have been deleted.
+    The only option there is to refresh all the older cases. But we can't run both of these at the same time
+    since only 100 cases are updated and all the cases that are uploaded to the db from "populate_all_cases" can be
+    in the thousands so of course most of them will begin to have their "date_modified" time fall behind.
+    I'm not sure how to reconcile this yet.
+    Maybe only if there are fewer than 1500 cases that were modified in a single day, do we check for recently deleted
+    cases, but some of them will fall through the cracks. I was thinking to run the "populate_all_data" on a schedule maybe
+    once a week on Sunday, but then we will lose all older data than the currently opened cases earliest created date.
+    Maybe that isn't such a big problem though, but it would mean that we'd be unable to save cases for years and years.
+    Need to still work on this issue.
+    '''
+    all_cases = Cases.objects.all().order_by('date_modified')
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    all_cases = all_cases.filter(date_modified__gte=today)
+    recently_created = all_cases.last()
+    recent_date = recently_created.date_modified
+    #all_cases = all_cases[:101]
+    if len(all_cases) > 1000:
+        print('1000 cases modified in a single day, must be a full db update was done!')
+    print('len all cases', len(all_cases))
+    print('len all cases', len(all_cases[:101]))
+
+    print(recent_date)
+    for case in all_cases:
+        mytimedelta = recent_date - case.date_modified
+        minutes = int(mytimedelta.total_seconds()) / 60
+        if minutes > 500:
+            print(case)
+            print(case.date_modified)
+            print(minutes)
+            print()
+    return HttpResponseRedirect("/cases")
+
+
 def delete_all_cases(request):
     '''
     Delete all the cases in the database from today only.
