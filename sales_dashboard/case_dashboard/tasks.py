@@ -9,7 +9,7 @@ import VTiger_Sales_API
 import json, os
 
 @shared_task
-def populate_db_celery_cases():
+def populate_db_celery_cases(get_all_cases=False):
     '''
     Example Case:
 
@@ -98,7 +98,10 @@ def populate_db_celery_cases():
 
         datetime.datetime.strptime('%Y-%m-%d %H:%M:%S', '2020-11-25 19:03:26')
      '''
-    today_case_list = retrieve_case_data()
+    if get_all_cases == True:
+        today_case_list = retrieve_case_data(get_all_cases = True)
+    else:
+        today_case_list = retrieve_case_data(get_all_cases = False)
     db_cases = Cases.objects.all()
 
     for case in today_case_list:
@@ -137,7 +140,7 @@ def populate_db_celery_cases():
 
         new_case.save()
 
-def retrieve_case_data():
+def retrieve_case_data(get_all_cases=False):
     '''
     Prior to running this function,
     Create a file named 'credentials.json' with VTiger credentials
@@ -151,7 +154,9 @@ def retrieve_case_data():
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    today_case_list = vtigerapi.retrieve_todays_cases()
-    #today_case_list = vtigerapi.retrieve_all_cases('2020-11-15')
+    if get_all_cases == True:
+        today_case_list = vtigerapi.retrieve_all_cases()
+    else:
+        today_case_list = vtigerapi.retrieve_todays_cases()
 
     return today_case_list
