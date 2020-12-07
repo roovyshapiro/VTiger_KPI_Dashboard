@@ -59,18 +59,39 @@
 <p>TODAY</p>
 <p>{{ date_group_dict.today }}</p>
 <br>
-<p>Modified Cases: {{ case_stats_dict.modified }} </p>
-<p>Created Cases: {{ case_stats_dict.opened }} </p>
-<p>Resolved Cases: {{ case_stats_dict.closed }} </p>
-<p>Kill Rate: {{ case_stats_dict.kill_rate }}% </p>
-<br>
+<section class="points">
+            <div class = "score_box">
+                <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict.modified }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ case_stats_dict.opened }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ case_stats_dict.closed }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ case_stats_dict.kill_rate }}%</span>
+            </div>
+            <div>
+                {% if sorted_user_closed|length > 0 %}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>USER</th>
+                                <th>CLOSED CASES</th>
+                            </tr>
+                            {% for score  in sorted_user_closed %}
+                                <tr>
+                                    <th>{{ score.0 }} </th>
+                                    <th>{{ score.1 }} </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+</section>
 
-{% if sorted_user_closed|length > 0 %}
-    <p>Closed Cases by User</p>
-    {% for score  in sorted_user_closed %}
-        <p> {{ score.0 }} - {{ score.1 }} </p>
-    {% endfor %}
-{% endif %}
 
 <button onclick="showHideCaseTable('day')">Show/Hide Case Table</button>
 <div id = "case_table_day">
@@ -111,18 +132,38 @@
 <p>WEEK</p>
 <p>{{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
 <br>
-<p>Modified Cases: {{ case_stats_dict_week.modified }} </p>
-<p>Created Cases: {{ case_stats_dict_week.opened }} </p>
-<p>Resolved Cases: {{ case_stats_dict_week.closed }} </p>
-<p>Kill Rate: {{ case_stats_dict_week.kill_rate }}% </p>
-<br>
-
-{% if sorted_user_closed_week|length > 0 %}
-    <p>Closed Cases by User</p>
-    {% for score in sorted_user_closed_week %}
-        <p> {{ score.0 }} - {{ score.1 }} </p>
-    {% endfor %}
-{% endif %}
+<section class="points">
+            <div class = "score_box">
+                <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_week.modified }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ case_stats_dict_week.opened }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ case_stats_dict_week.closed }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ case_stats_dict_week.kill_rate }}%</span>
+            </div>
+            <div>
+                {% if sorted_user_closed_week|length > 0 %}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>USER</th>
+                                <th>CLOSED CASES</th>
+                            </tr>
+                            {% for score  in sorted_user_closed_week %}
+                                <tr>
+                                    <th>{{ score.0 }} </th>
+                                    <th>{{ score.1 }} </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+</section>
 
 <button onclick="showHideCaseTable('week')">Show/Hide Case Table</button>
 <div id = "case_table_week">
@@ -163,18 +204,38 @@
 <p>MONTH</p>
 <p>{{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
 <br>
-<p>Modified Cases: {{ case_stats_dict_month.modified }} </p>
-<p>Created Cases: {{ case_stats_dict_month.opened }} </p>
-<p>Resolved Cases: {{ case_stats_dict_month.closed }} </p>
-<p>Kill Rate: {{ case_stats_dict_month.kill_rate }}% </p>
-<br>
-
-{% if sorted_user_closed_month|length > 0 %}
-    <p>Closed Cases by User</p>
-    {% for score  in sorted_user_closed_month %}
-        <p> {{ score.0 }} - {{ score.1 }} </p>
-    {% endfor %}
-{% endif %}
+<section class="points">
+            <div class = "score_box">
+                <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_month.modified }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ case_stats_dict_month.opened }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ case_stats_dict_month.closed }}</span>
+            </div>
+            <div class = "score_box">
+                <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ case_stats_dict_month.kill_rate }}%</span>
+            </div>
+            <div>
+                {% if sorted_user_closed_month|length > 0 %}
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>USER</th>
+                                <th>CLOSED CASES</th>
+                            </tr>
+                            {% for score  in sorted_user_closed_month %}
+                                <tr>
+                                    <th>{{ score.0 }} </th>
+                                    <th>{{ score.1 }} </th>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+</section>
 
 <button onclick="showHideCaseTable('month')">Show/Hide Case Table</button>
 <div id = "case_table_month">
