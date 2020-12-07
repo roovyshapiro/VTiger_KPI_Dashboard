@@ -34,6 +34,7 @@ def main_dashboard(request):
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
+    all_open_cases['full_cases'] = full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed"))
 
     date_request = request.GET.get('date_start')
 
@@ -181,6 +182,10 @@ def retrieve_dates(date_request):
 
 def populate_cases(request):
     populate_db_celery_cases()
+    return HttpResponseRedirect("/cases")
+
+def populate_all_cases(request):
+    populate_db_celery_cases(get_all_cases=True)
     return HttpResponseRedirect("/cases")
 
 def delete_all_cases(request):
