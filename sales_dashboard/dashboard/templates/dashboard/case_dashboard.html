@@ -20,7 +20,10 @@
 <br>
 <p>Group: {{ date_group_dict.group }} </p>
 <p>All Open Cases: {{ all_open_cases.open_cases }}</p>
-<button onclick="showHideCaseTable('all')">Show/Hide Case Table</button>
+
+<input type=checkbox id="show_all">
+<label for="show_all" class="show_all_label">SHOW TABLE</label>
+
 <div id = "case_table_all">
     <table class = "scrollable_table">
         <tbody>
