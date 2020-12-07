@@ -288,6 +288,47 @@ class Vtiger_api:
             f.write(data)
         return full_dict
 
+    def retrieve_all_open_cases_created_time(self):
+        '''
+        The intention of this function is to find the case with the earliest created date. This created date will then be used to populate
+        the entire db with cases from that date. This population will be a one time event to fill up the db or can be used to refill
+        the data in case of an emergency. We only need cases from the open cases earliest created date so that the total number of open
+        cases will be accurate on the display.
+        '''
+        case_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE casestatus != 'Closed' AND casestatus != 'Resolved';")
+        total_count = case_count['result'][0]['count']
+        num_items = int(total_count)
+        vtiger_item_list = []
+        offset = 0
+        if num_items > 100:
+            while num_items > 100:
+                item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM Cases WHERE casestatus != 'Closed' AND casestatus != 'Resolved' limit {offset}, 100;")
+                print('api_call_complete', num_items)
+                vtiger_item_list.append(item_batch['result'])
+                offset += 100
+                num_items = num_items - 100
+                if num_items <= 100:
+                    break
+        if num_items <= 100:
+            item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM Cases WHERE casestatus != 'Closed' AND casestatus != 'Resolved'  limit {offset}, 100;")
+            print('api_call_complete', num_items)
+            vtiger_item_list.append(item_batch['result'])
+        
+        #Combine the multiple lists of dictionaries into one list
+        #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
+        #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+        full_item_list = []
+        for item_list in vtiger_item_list:
+            full_item_list += item_list
+
+        self.earliest_created_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        for case in full_item_list:
+            if case['createdtime'] < self.earliest_created_time:
+                self.earliest_created_time = case['createdtime']
+
+        return self.earliest_created_time
+
+
     def case_count(self, created_time):
         '''
         Get the amount of cases from after "created_time" and return the number as an int.
@@ -298,9 +339,11 @@ class Vtiger_api:
         print('total_cases', total_count)
         return total_count
 
-    def retrieve_all_cases(self, created_time):
+    def retrieve_all_cases(self):
         '''
         This method is meant to be used only once to populate the entire db of cases from a certain date.
+        The date is determined by finding the earliest created date from all open cases using
+        self.retrieve_all_open_cases_created_time()
         It can be used to get all the cases for an entire year or more.
         This is called from case_dashboard.tasks.
     
@@ -311,6 +354,8 @@ class Vtiger_api:
         A list is returned of each dictionary that was retrieved this way.
         For 5000 cases, 50 API calls will be used.
         '''
+        created_time = self.retrieve_all_open_cases_created_time()
+
         num_items = self.case_count(created_time)
         num_items = int(num_items)
         vtiger_item_list = []
@@ -415,7 +460,7 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_all_cases()
+        response = vtigerapi.retrieve_all_open_cases()
         data = json.dumps(response,  indent=4, sort_keys=True)
         with open('all_cases.json', 'w') as f:
             f.write(data)
