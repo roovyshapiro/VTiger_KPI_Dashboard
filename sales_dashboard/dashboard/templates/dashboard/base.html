@@ -6,26 +6,19 @@
         <link rel="stylesheet" type="text/css" href="{% static 'dashboard/style.css' %}">
     </head>
     <body>
+		<nav class ="header">
+            <a class = "header_title" href="/">VTiger Dashboard</a>
+            <a class = "header_sales" href="/">Sales</a>
+            <a class = "header_cases" href="/cases">Cases</a>
+        </nav>
 
-		<section class ="header">
-            <div class ="header-title">
-                <p>VTiger Sales Dashboard</p>
-            </div>
-            <div class = "header_buttons">
-                <button class = "header_sales" onclick="location.href = '/'">Sales</button>
-                </button>
-                <button class = "header_cases" onclick="location.href = '/cases'">Cases</button>
-                </button>
-            </div>
-        </section>
-            <div class = "auto_refresh_box">
-                <label id="number_input" for="minutes">Minutes:</label>
-                <input type="number" value='5' id="minutes_input" name="minutes" min="1" max="20" onchange="update_refresh_time()">
-                </br>
-                <input type="checkbox" id="checkbox_autoupdate" onclick="checkbox_click()" unchecked/>
-                <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
-                </br>
-            </div>
+        <div class = "auto_refresh_box">
+            <label id="number_input" for="minutes">Minutes:</label>
+            <input type="number" value='5' id="minutes_input" name="minutes" min="1" max="20" onchange="update_refresh_time()">
+            <input type="checkbox" id="checkbox_autoupdate" onclick="checkbox_click()" unchecked/>
+            <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
+            </br>
+        </div>
 
             {% block content %}
             {% endblock %}
