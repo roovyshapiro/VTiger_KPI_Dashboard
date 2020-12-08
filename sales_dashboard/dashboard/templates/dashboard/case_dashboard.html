@@ -21,8 +21,8 @@
 <p>Group: {{ date_group_dict.group }} </p>
 <p>All Open Cases: {{ all_open_cases.open_cases }}</p>
 
-<input type=checkbox id="show_all">
-<label for="show_all" class="show_all_label">SHOW TABLE</label>
+<input type=checkbox id="show_label_all">
+<label for="show_label_all" class="show_label">SHOW TABLE</label>
 
 <div id = "case_table_all">
     <table class = "scrollable_table">
@@ -96,7 +96,9 @@
 </section>
 
 
-<button onclick="showHideCaseTable('day')">Show/Hide Case Table</button>
+<input type=checkbox id="show_label_day">
+<label for="show_label_day" class="show_label">SHOW TABLE</label>
+
 <div id = "case_table_day">
     <table class = "scrollable_table">
         <tbody>
@@ -168,7 +170,9 @@
             </div>
 </section>
 
-<button onclick="showHideCaseTable('week')">Show/Hide Case Table</button>
+<input type=checkbox id="show_label_week">
+<label for="show_label_week" class="show_label">SHOW TABLE</label>
+
 <div id = "case_table_week">
     <table class = "scrollable_table">
         <tbody>
@@ -240,7 +244,9 @@
             </div>
 </section>
 
-<button onclick="showHideCaseTable('month')">Show/Hide Case Table</button>
+<input type=checkbox id="show_label_month">
+<label for="show_label_month" class="show_label">SHOW TABLE</label>
+
 <div id = "case_table_month">
     <table class = "scrollable_table">
         <tbody>

@@ -83,13 +83,3 @@ function countdown_update(){
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
     }, 1000);
 }
-
-/* Show Hide Case Table */
-function showHideCaseTable(time) {
-    var table = document.getElementById(`case_table_${time}`);
-    if (table.style.display === "none") {
-        table.style.display = "block";
-      } else {
-        table.style.display = "none";
-      }
-}

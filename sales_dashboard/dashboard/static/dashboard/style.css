@@ -159,37 +159,54 @@ td, th{
     display:block;
   }
 
+/* Show Table Buttons and hide/show ability for each table*/
 
-label.show_all_label {
-	box-shadow:inset 0px 1px 0px 0px #97c4fe;
-	background:linear-gradient(to bottom, #3d94f6 5%, #1e62d0 100%);
-	background-color:#3d94f6;
-	border-radius:6px;
-	border:1px solid #337fed;
-	display:inline-block;
-	cursor:pointer;
-	color:#ffffff;
-	font-family:Arial;
-	font-size:15px;
-	font-weight:bold;
-	padding:6px 24px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #1570cd;
+label.show_label {
+    box-shadow: 0px 0px 0px 2px #9fb4f2;
+    background-color:#222b37;
+    border-radius:10px;
+    border:1px solid #0000ff;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:14px;
+    padding:5px 15px;
+    text-shadow:0px 1px 0px #283966;
 }
-label.show_all_label:hover {
-	background:linear-gradient(to bottom, #1e62d0 5%, #3d94f6 100%);
-	background-color:#1e62d0;
+label.show_label:hover {
+    background-color:#0000ff;
+    border:1px solid #222b37;
 }
-label.show_all_label:active {
-	position:relative;
-	top:1px;
+label.show_label:active {
+    position:relative;
+    top:1px;
 }
+  
 
-
-
-#show_all,#case_table_all{
+#case_table_all,#show_label_all {
     display:none;
 }
-#show_all:checked~#case_table_all{
+#show_label_all:checked ~ #case_table_all{
+    display:block;
+}
+
+#case_table_day,#show_label_day {
+    display:none;
+}
+#show_label_day:checked ~ #case_table_day{
+    display:block;
+}
+
+#case_table_week,#show_label_week {
+    display:none;
+}
+#show_label_week:checked ~ #case_table_week{
+    display:block;
+}
+
+#case_table_month,#show_label_month {
+    display:none;
+}
+#show_label_month:checked ~ #case_table_month{
     display:block;
 }
