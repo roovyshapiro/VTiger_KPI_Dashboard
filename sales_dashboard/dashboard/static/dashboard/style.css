@@ -106,6 +106,7 @@ nav > a{
     display:flex;
     flex-direction:row;
     margin-bottom:5px;
+    margin-top:10px;
 }
 .score_box{
     flex:1;
