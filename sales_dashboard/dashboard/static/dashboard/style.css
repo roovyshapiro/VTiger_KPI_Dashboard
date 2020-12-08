@@ -148,16 +148,23 @@ td, th{
     padding:10px;
 }
 
+/* Case Body */
+
+#body_sizing{
+    margin-left:20px;
+    margin-right:20px;
+}
 /* Case Header */
 
 #case_header{
     display:flex;
     flex-direction:row;
-    padding: 10px 20px 0px 20px;
+    margin-top:10px;
 }
 
 #all_open_cases{
     margin-left:auto;
+    margin-right:0px;
     flex: 0 0 25%;
 }
 
