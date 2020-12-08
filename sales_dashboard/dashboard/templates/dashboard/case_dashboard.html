@@ -1,25 +1,37 @@
 {% extends 'dashboard/base.html' %}
 
 {% block content %}
-            
-<form method="GET" action=".">
-    <label for="group_dropdown">Group:</label>
-    <select name="group_dropdown" id = "group_dropdown">
-        <option selected>--Select Group--</option>
-        {% for group  in case_groups %}
-        <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
-        {% endfor %} 
-    </select>
-    </br>
-    <label for="date_start">Modified Time Start:</label>
-    <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
-    </br>
-    <button type="submit" onclick="save_group_date()">Submit</button>
-</form>
 
-<br>
-<p>Group: {{ date_group_dict.group }} </p>
-<p>All Open Cases: {{ all_open_cases.open_cases }}</p>
+<div id="case_header">
+
+    <div id="selected_group_date">
+        <div>
+            <p id="group_name">{{ date_group_dict.group }} </p>
+        </div>
+        <div id ="group_date_selector">
+            <form method="GET" action=".">
+                <label for="group_dropdown">Group:</label>
+                <select name="group_dropdown" id = "group_dropdown">
+                    <option selected>--Select Group--</option>
+                    {% for group  in case_groups %}
+                    <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
+                    {% endfor %} 
+                </select>
+                </br>
+                <label for="date_start">Modified Time Start:</label>
+                <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
+                </br>
+                <button type="submit" onclick="save_group_date()">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class = "score_box" id="all_open_cases">
+        <span class ="score_name">All Open Cases</span> </br> <span class="score_num">{{ all_open_cases.open_cases }}</span>
+    </div>
+</div>
+
 
 <input type=checkbox id="show_label_all">
 <label for="show_label_all" class="show_label">SHOW TABLE</label>
