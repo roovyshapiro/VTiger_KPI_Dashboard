@@ -19,10 +19,10 @@
                         {% endfor %} 
                     </select>
                     </br>
-                    <label for="date_start">Modified Time Start:</label>
+                    <label for="date_start">Date:</label>
                     <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
                     </br>
-                    <button type="submit" onclick="save_group_date()">Submit</button>
+                    <button type="submit" id="submit" onclick="save_group_date()">SUBMIT</button>
                 </form>
             </div>
         </div>
@@ -67,14 +67,10 @@
             </tbody>
         </table>
     </div>
-
-
     <hr>
-    <br>
-
-    <p>TODAY</p>
-    <p>{{ date_group_dict.today }}</p>
-    <br>
+    <div class="points_header">
+        <p><span class="bold">TODAY:</span> {{ date_group_dict.today }}</p>
+    </div>
     <section class="points">
                 <div class = "score_box">
                     <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict.modified }}</span>
@@ -108,10 +104,8 @@
                 </div>
     </section>
 
-
     <input type=checkbox id="show_label_day">
     <label for="show_label_day" class="show_label">SHOW CASES</label>
-
     <div id = "case_table_day">
         <table class = "scrollable_table">
             <tbody>
@@ -142,14 +136,10 @@
             </tbody>
         </table>
     </div>
-
-    <br>
     <hr>
-    <br>
-
-    <p>WEEK</p>
-    <p>{{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
-    <br>
+    <div class="points_header">
+        <p><span class="bold">WEEK:</span> {{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
+    </div>
     <section class="points">
                 <div class = "score_box">
                     <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_week.modified }}</span>
@@ -216,14 +206,10 @@
             </tbody>
         </table>
     </div>
-
-    <br>
     <hr>
-    <br>
-
-    <p>MONTH</p>
-    <p>{{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
-    <br>
+    <div class="points_header">
+        <p><span class="bold">MONTH:</span> {{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
+    </div>
     <section class="points">
                 <div class = "score_box">
                     <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_month.modified }}</span>
