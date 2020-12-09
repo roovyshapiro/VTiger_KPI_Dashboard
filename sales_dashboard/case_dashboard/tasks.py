@@ -2,6 +2,7 @@ from __future__ import absolute_import, unicode_literals
 from celery import Celery
 from celery import shared_task
 from django.utils import timezone
+from django.utils.timezone import make_aware
 import datetime
 
 from .models import Cases
@@ -118,11 +119,11 @@ def populate_db_celery_cases(get_all_cases=False):
         new_case.casestatus = case['casestatus']
         new_case.contact_id = case['contact_id']
         new_case.created_user_id = case['created_user_id']
-        new_case.createdtime = datetime.datetime.strptime(case['createdtime'],'%Y-%m-%d %H:%M:%S')
+        new_case.createdtime = make_aware(datetime.datetime.strptime(case['createdtime'],'%Y-%m-%d %H:%M:%S'))
         new_case.group_id = case['group_id']
         new_case.case_id = case['id']
         new_case.modifiedby = case['modifiedby']
-        new_case.modifiedtime = datetime.datetime.strptime(case['modifiedtime'] ,'%Y-%m-%d %H:%M:%S')
+        new_case.modifiedtime = make_aware(datetime.datetime.strptime(case['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
         new_case.title = case['title']
         new_case.time_spent = case['time_spent']
         #Converts the time spent from a number of hours into something more human-readable
@@ -137,7 +138,7 @@ def populate_db_celery_cases(get_all_cases=False):
         if case['sla_actual_closureon'] == '':
             new_case.case_resolved = None
         else:
-            new_case.case_resolved = case['sla_actual_closureon']
+            new_case.case_resolved = make_aware(datetime.datetime.strptime(case['sla_actual_closureon'] ,'%Y-%m-%d %H:%M:%S'))
 
         new_case.save()
     #After we update the cases from today, we see if any outdated cases from today can be deleted from the db

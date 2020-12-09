@@ -9,10 +9,9 @@ APP WIDE
 
 CASE DASHBOARD
 
-- deleted cases should be removed from case dashboard. Perhaps it could check if cases "date_modified" is older than 30 minutes, it should be deleted? Need to investigate
+- although deleted cases from today are removed from dashboard, deleted cases from yesterday aren't. Perhaps there should be a check in place to see if all open cases match and if they don't, then we need to make a lot of api calls by running '/populateallcases' or something like it
 - rename repository and folders so its obvious that cases and sales are separate apps within the same project
 - adjust the readme.md to update with information for case dashboard
-- [2020-12-09 15:50:12,489: WARNING/ForkPoolWorker-2] /mnt/c/Users/rshap/Documents/Dev/sales_dashboard/env/lib/python3.6/site-packages/django/db/models/fields/__init__.py:1368: RuntimeWarning: DateTimeField Cases.modifiedtime received a naive datetime (2020-12-09 15:48:42) while time zone support is active.
 
 SALES DASHBOARD
 
