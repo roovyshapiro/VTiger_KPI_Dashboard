@@ -26,7 +26,7 @@ def main_dashboard(request):
     #query set to only return and display the cases which match that group. If no group is 
     #selected, data is displayed from all groups and "All Groups" is sent to be displayed.
     group_request = request.GET.get('group_dropdown')
-    if group_request != '' and group_request is not None and group_request != '--Select Group--':
+    if group_request != '' and group_request is not None and group_request != 'All Groups':
         full_cases = full_cases.filter(assigned_groupname=group_request)
         date_group_dict['group'] = group_request
     else:

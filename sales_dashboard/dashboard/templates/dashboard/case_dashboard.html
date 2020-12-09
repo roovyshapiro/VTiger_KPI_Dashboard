@@ -13,7 +13,7 @@
                 <form method="GET" action=".">
                     <label for="group_dropdown">Group:</label>
                     <select name="group_dropdown" id = "group_dropdown">
-                        <option selected>--Select Group--</option>
+                        <option selected>All Groups</option>
                         {% for group  in case_groups %}
                             <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
                         {% endfor %} 
