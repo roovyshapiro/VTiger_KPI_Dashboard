@@ -412,7 +412,11 @@ class Vtiger_api:
 
     def retrieve_todays_cases(self):
         '''
-        Returns a list of all the cases that have been closed since the beginning of today.
+        Returns a list of all the cases that have been modified since the beginning of today.
+        In most cases, this should be less than 100. Since there could be a scenario where more than 100
+        cases would be modified in a single day, we'll need to account for that and therefore must utilize 2 API
+        calls for "count" instead of just retrieving cases as there is a maximum of 100 returned cases per call.
+
         self.get_users_and_groups_file() retrieves all Users and Groups with their IDs and names
         and writes it to a file. The data in this file is used to translate the IDs that
         are retrieved in the cases. This way, we don't want unnecessary API calls to translate
@@ -422,14 +426,40 @@ class Vtiger_api:
         This should take care of any situation where a new user is added, a group name is changed,
         or the file is deleted for any reason.
         '''
+
         today = datetime.datetime.now().strftime("%Y-%m-%d") + ' 00:00:00'
-        cases = self.api_call(f"{self.host}/query?query=Select * FROM Cases WHERE modifiedtime >= '{today}' limit 0, 100;")
+
+        case_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE modifiedtime >= '{today}';")
+        total_count = case_count['result'][0]['count']
+        num_items = int(total_count)
+        vtiger_item_list = []
+        offset = 0
+        if num_items > 100:
+            while num_items > 100:
+                item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM Cases WHERE modifiedtime >= '{today}' limit {offset}, 100;")
+                print('API_call_complete. # of cases returned: ', num_items)
+                vtiger_item_list.append(item_batch['result'])
+                offset += 100
+                num_items = num_items - 100
+                if num_items <= 100:
+                    break
+        if num_items <= 100:
+            item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM Cases WHERE modifiedtime >= '{today}'  limit {offset}, 100;")
+            print('API_call_complete. # of cases returned: ', num_items)
+            vtiger_item_list.append(item_batch['result'])
+
+        #Combine the multiple lists of dictionaries into one list
+        #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
+        #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+        all_cases = []
+        for item_list in vtiger_item_list:
+            all_cases += item_list
 
         try:
             self.today_case_list = []
             with open('users_and_groups.json') as f:
                 data = json.load(f)
-                for case in cases['result']:
+                for case in all_cases:
                     assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
                     assigned_groupname = data['groups'][case['group_id']]
                     case['assigned_username'] = assigned_username
@@ -438,7 +468,7 @@ class Vtiger_api:
         except:
             self.today_case_list = []
             data = self.get_users_and_groups_file()
-            for case in cases['result']:
+            for case in all_cases:
                 try:
                     assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
                 except KeyError:
