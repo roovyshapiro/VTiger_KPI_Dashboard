@@ -3,6 +3,7 @@ from celery import Celery
 from celery import shared_task
 from django.utils import timezone
 from django.utils.timezone import make_aware
+from django.db.models import Q
 import datetime
 
 from .models import Cases
@@ -98,7 +99,7 @@ def populate_db_celery_cases(get_all_cases=False):
         return f'{self.case_no}: {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
 
         datetime.datetime.strptime('%Y-%m-%d %H:%M:%S', '2020-11-25 19:03:26')
-     '''
+    '''  
     if get_all_cases == True:
         today_case_list = retrieve_case_data(get_all_cases = True)
         Cases.objects.all().delete()
@@ -144,6 +145,16 @@ def populate_db_celery_cases(get_all_cases=False):
     #After we update the cases from today, we see if any outdated cases from today can be deleted from the db
     delete_old_cases()
 
+    #This is used to check if the amount of open cases in the db doesn't match the number of open cases in VTiger.
+    #If it doesn't match, we'll need to repopulate the entire db. 
+    #This can happen if a user deletes a case from VTiger who's modified time was more than a day ago.
+    #If a user deletes a case from today, we'll catch it in "delete_old_cases()"
+    num_all_open_cases_db = len(Cases.objects.all().filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
+    num_all_open_cases = retrieve_case_data(get_all_count = True)
+    if num_all_open_cases != num_all_open_cases_db:
+        print("Open Cases don't match!")
+        populate_db_celery_cases(get_all_cases=True)
+
 def delete_old_cases():
     '''
     Deletes the cases from today which have an outdated date_modified field.
@@ -186,7 +197,7 @@ def delete_old_cases():
                 if int(case_time_delta.total_seconds()) // 60 > 30:
                     case.delete()
 
-def retrieve_case_data(get_all_cases=False):
+def retrieve_case_data(get_all_cases=False, get_all_count=False):
     '''
     Prior to running this function,
     Create a file named 'credentials.json' with VTiger credentials
@@ -200,9 +211,12 @@ def retrieve_case_data(get_all_cases=False):
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    if get_all_cases == True:
+    if get_all_cases == True and get_all_count == False:
         today_case_list = vtigerapi.retrieve_all_cases()
-    else:
+    if get_all_cases == False and get_all_count == False:
         today_case_list = vtigerapi.retrieve_todays_cases()
+    if get_all_cases == False and get_all_count == True:
+        today_case_list = vtigerapi.retrieve_all_open_cases_count()    
 
     return today_case_list
+

@@ -288,6 +288,17 @@ class Vtiger_api:
             f.write(data)
         return full_dict
 
+    def retrieve_all_open_cases_count(self):
+        '''
+        Function to retrieve all open cases. One of its functions is to perform regular checks to see if any older vtiger cases have been deleted,
+        If so, case_dashboard.tasks will run /populateallcases.
+        '''
+        case_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE casestatus != 'Closed' AND casestatus != 'Resolved';")
+        total_count = case_count['result'][0]['count']
+        num_items = int(total_count)
+        return num_items
+
+
     def retrieve_all_open_cases_created_time(self):
         '''
         The intention of this function is to find the case with the earliest created date. This created date will then be used to populate
@@ -295,9 +306,7 @@ class Vtiger_api:
         the data in case of an emergency. We only need cases from the open cases earliest created date so that the total number of open
         cases will be accurate on the display.
         '''
-        case_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Cases WHERE casestatus != 'Closed' AND casestatus != 'Resolved';")
-        total_count = case_count['result'][0]['count']
-        num_items = int(total_count)
+        num_items = self.retrieve_all_open_cases_count()
         vtiger_item_list = []
         offset = 0
         if num_items > 100:
