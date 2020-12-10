@@ -58,6 +58,6 @@ def test_method(request):
     localhost:8000/test
     Useful for testing functionality
     '''
-    from dashboard.tasks import get_opportunities
-    get_opportunities()
+    from dashboard.tasks import get_phonecalls
+    get_phonecalls()
     return HttpResponseRedirect('/')

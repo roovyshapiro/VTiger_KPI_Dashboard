@@ -127,6 +127,74 @@ class Phone_calls(models.Model):
     def __str__(self):
         return f'{self.user}: {self.phone_calls} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
 
+class Phone_call(models.Model):
+    '''
+    Example Phone Call:
+    {
+        "CreatedTime": "2020-12-10 14:48:02",
+        "assigned_groupname": "",
+        "assigned_user_id": "19x27",
+        "assigned_username": "Randall Hoberman",
+        "billduration": "56",
+        "billrate": "0.0000",
+        "callid": "",
+        "callstatus": "completed",
+        "campaign_name": "",
+        "campaign_number": "",
+        "cases_id": "",
+        "created_user_id": "19x27",
+        "customer": "2x930718",
+        "customernumber": "9545556480",
+        "customertype": "Leads",
+        "direction": "outbound",
+        "disposition_name": "",
+        "endtime": "2020-12-10 09:49:21",
+        "gateway": "Asterisk",
+        "id": "43x930719",
+        "isclosed": "0",
+        "modifiedby": "19x27",
+        "modifiedtime": "2020-12-10 14:48:02",
+        "notes": "",
+        "potentials_id": "",
+        "recordingurl": "http://voipserver.com:4001/recordings/90a897aeb4e34d129749ca436728ace7",
+        "source": "CRM",
+        "sourceuuid": "90a897aeb4e34d129749ca436728ace7",
+        "starred": "",
+        "starttime": "2020-12-10 09:48:02",
+        "tags": "",
+        "ticket_id": "",
+        "totalduration": "56",
+        "transcription": "",
+        "transferred_number": "",
+        "transferred_user": "",
+        "user": "19x27"
+    },
+    '''
+    createdtime = models.DateTimeField(null=True)
+    modifiedtime = models.DateTimeField(null=True)
+    endtime = models.DateTimeField(null=True)
+
+    assigned_user_id = models.CharField(max_length=50)
+    created_user_id = models.CharField(max_length=50)
+    modified_by = models.CharField(max_length=50)
+    assigned_username = models.CharField(max_length=50)
+    assigned_groupname = models.CharField(max_length=50)
+
+    phonecall_id = models.CharField(max_length=50)
+    call_status = models.CharField(max_length=50)
+    direction = models.CharField(max_length=50)
+    total_duration = models.CharField(max_length=50)
+    customer = models.CharField(max_length=50)
+    customer_number = models.CharField(max_length=50)
+    recording_url = models.CharField(max_length=250)
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.assigned_username}: {self.customer_number} - {self.modifiedtime.strftime("%Y-%m-%d %H:%M:%S")}'
+
+
 
 class Opportunities(models.Model):
     '''

@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware
 from django.db.models import Q
 
 
-from .models import Sales_stats, Phone_calls, Opportunities
+from .models import Sales_stats, Phone_calls, Phone_call, Opportunities
 import VTiger_Sales_API
 import json, os, datetime
 
@@ -162,8 +162,8 @@ def get_opportunities():
     db_opps = Opportunities.objects.all()
 
     for opp in today_opp_list:
-        #If the case_id exists in the database, then the case will be updated
-        #If the case_id doesn't exist, then the case will be added to the db
+        #If the opp_id exists in the database, then the opp will be updated
+        #If the opp_id doesn't exist, then the opp will be added to the db
         try:
             new_opp = db_opps.get(opp_id = opp['id'])
         except:
@@ -269,7 +269,41 @@ def get_phonecalls():
         "user": "19x27"
     },
     '''
-    pass
+    today_phonecall_list = retrieve_stats(module = 'PhoneCalls')
+    db_phonecalls = Phone_call.objects.all()
+
+    for phone_call in today_phonecall_list:
+        #If the phone_call_id exists in the database, then the phone_call will be updated
+        #If the phone_call_id doesn't exist, then the phone_call will be added to the db
+        try:
+            new_phone_call = db_phonecalls.get(phonecall_id = phone_call['id'])
+        except:
+            new_phone_call = Phone_call()               
+
+        new_phone_call.phonecall_id = phone_call['id']
+        new_phone_call.customer = phone_call['customer']
+
+        phone_call_start = make_aware(datetime.datetime.strptime(phone_call['CreatedTime'],'%Y-%m-%d %H:%M:%S'))
+        new_phone_call.createdtime = phone_call_start
+        new_phone_call.modifiedtime = make_aware(datetime.datetime.strptime(phone_call['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
+
+        duration = datetime.timedelta(seconds=int(phone_call['totalduration']))
+        new_phone_call.endtime = phone_call_start + duration
+
+        new_phone_call.created_user_id = phone_call['created_user_id']
+        new_phone_call.modifiedby = phone_call['modifiedby']
+        new_phone_call.assigned_user_id = phone_call['assigned_user_id']
+
+        new_phone_call.assigned_username = phone_call['assigned_username']
+        new_phone_call.assigned_groupname = phone_call['assigned_groupname']
+
+        new_phone_call.call_status = phone_call['callstatus']
+        new_phone_call.direction = phone_call['direction']
+        new_phone_call.total_duration = phone_call['totalduration']
+        new_phone_call.customer_number = phone_call['customernumber']
+        new_phone_call.recording_url = phone_call['recordingurl']
+
+        new_phone_call.save()
 
 def retrieve_stats(module = None):
     '''
@@ -290,5 +324,6 @@ def retrieve_stats(module = None):
         response = vtigerapi.retrieve_data()
     if module == 'Potentials':
         response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
-
+    if module == 'PhoneCalls':
+        response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
     return response
