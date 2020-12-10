@@ -128,7 +128,7 @@ class Phone_calls(models.Model):
         return f'{self.user}: {self.phone_calls} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
 
 
-class Opportunity(models.Model):
+class Opportunities(models.Model):
     '''
     Example Opportunity:
     {
@@ -205,14 +205,14 @@ class Opportunity(models.Model):
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
 
-    current_stage_entry_time = models.DateTimeField()
-    demo_scheduled_changed_at = models.DateTimeField()
-    demo_given_changed_at = models.DateTimeField()
-    quote_sent_changed_at = models.DateTimeField()
-    pilot_changed_at = models.DateTimeField()
-    needs_analysis_changed_at = models.DateTimeField()
-    closed_lost_changed_at = models.DateTimeField()
-    closed_won_changed_at = models.DateTimeField()
+    current_stage_entry_time = models.DateTimeField(null=True)
+    demo_scheduled_changed_at = models.DateTimeField(null=True)
+    demo_given_changed_at = models.DateTimeField(null=True)
+    quote_sent_changed_at = models.DateTimeField(null=True)
+    pilot_changed_at = models.DateTimeField(null=True)
+    needs_analysis_changed_at = models.DateTimeField(null=True)
+    closed_lost_changed_at = models.DateTimeField(null=True)
+    closed_won_changed_at = models.DateTimeField(null=True)
 
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)

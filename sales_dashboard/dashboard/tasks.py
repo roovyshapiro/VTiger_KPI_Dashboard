@@ -2,10 +2,13 @@ from __future__ import absolute_import, unicode_literals
 from celery import Celery
 from celery import shared_task
 from django.utils import timezone
+from django.utils.timezone import make_aware
+from django.db.models import Q
 
-from .models import Sales_stats, Phone_calls
+
+from .models import Sales_stats, Phone_calls, Opportunities
 import VTiger_Sales_API
-import json, os
+import json, os, datetime
 
 @shared_task
 def populate_db_celery():
@@ -120,8 +123,109 @@ def get_opportunities():
         "starred": "",
         "tags": ""
     },
+    opp_id = models.CharField(max_length=50)
+    contact_id = models.CharField(max_length=50)
+
+    opp_no = models.CharField(max_length=50)
+    opp_name = models.CharField(max_length=250)
+    opp_stage = models.CharField(max_length=50)
+
+    createdtime = models.DateTimeField()
+    modifiedtime = models.DateTimeField()
+
+    created_user_id = models.CharField(max_length=50)
+    modifiedby = models.CharField(max_length=50)
+    assigned_user_id = models.CharField(max_length=50)
+
+    assigned_username = models.CharField(max_length=75)
+    assigned_groupname = models.CharField(max_length=75)
+
+    current_stage_entry_time = models.DateTimeField()
+    demo_scheduled_changed_at = models.DateTimeField()
+    demo_given_changed_at = models.DateTimeField()
+    quote_sent_changed_at = models.DateTimeField()
+    pilot_changed_at = models.DateTimeField()
+    needs_analysis_changed_at = models.DateTimeField()
+    closed_lost_changed_at = models.DateTimeField()
+    closed_won_changed_at = models.DateTimeField()
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.assigned_username} - {self.opp_name} - {self.opp_no} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
+
+    def modifiedtime_date(self):
+        return self.modifiedtime.strftime('%Y-%m-%d')
     '''
-    pass
+    today_opp_list = retrieve_stats(module = 'Potentials')
+    db_opps = Opportunities.objects.all()
+
+    for opp in today_opp_list:
+        #If the case_id exists in the database, then the case will be updated
+        #If the case_id doesn't exist, then the case will be added to the db
+        try:
+            new_opp = db_opps.get(opp_id = opp['id'])
+        except:
+            new_opp = Opportunities()
+
+        new_opp.opp_id = opp['id']
+        new_opp.contact_id = opp['contact_id']
+        new_opp.opp_no = opp['potential_no']
+        new_opp.opp_name = opp['potentialname']
+        new_opp.opp_stage = opp['sales_stage']
+
+        new_opp.createdtime = make_aware(datetime.datetime.strptime(opp['createdtime'],'%Y-%m-%d %H:%M:%S'))
+        new_opp.modifiedtime = make_aware(datetime.datetime.strptime(opp['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
+
+        new_opp.created_user_id = opp['created_user_id']
+        new_opp.modifiedby = opp['modifiedby']
+        new_opp.assigned_user_id = opp['assigned_user_id']
+
+        new_opp.assigned_username = opp['assigned_username']
+        new_opp.assigned_groupname = opp['assigned_groupname']
+
+        if opp['current_stage_entry_time'] != '':
+            new_opp.current_stage_entry_time = make_aware(datetime.datetime.strptime(opp['current_stage_entry_time'],'%Y-%m-%d %H:%M:%S'))
+        else:
+            new_opp.current_stage_entry_time = None
+
+        if opp['cf_potentials_demoscheduledchangedat'] != '':
+            new_opp.demo_scheduled_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_demoscheduledchangedat'],'%m-%d-%Y %H:%M %p'))
+        else:
+            new_opp.demo_scheduled_changed_at = None
+
+        if opp['cf_potentials_demogivenchangedat'] != '':
+            new_opp.demo_given_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_demogivenchangedat'],'%m-%d-%Y %H:%M %p'))
+        else:
+            new_opp.demo_given_changed_at = None
+
+        if opp['cf_potentials_quotesentchangedat'] != '':
+            new_opp.quote_sent_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_quotesentchangedat'],'%m-%d-%Y %H:%M %p')) 
+        else:
+            new_opp.quote_sent_changed_at = None
+
+        if opp['cf_potentials_pilotchangedat'] != '':
+            new_opp.pilot_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_pilotchangedat'],'%m-%d-%Y %H:%M %p'))
+        else:
+            new_opp.pilot_changed_at = None
+
+        if opp['cf_potentials_needsanalysischangedat'] != '':
+            new_opp.needs_analysis_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_needsanalysischangedat'],'%m-%d-%Y %H:%M %p'))
+        else:
+            new_opp.needs_analysis_changed_at = None
+
+        if opp['cf_potentials_closedlostchangedat'] != '':
+            new_opp.closed_lost_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_closedlostchangedat'],'%m-%d-%Y %H:%M %p'))
+        else:
+            new_opp.closed_lost_changed_at = None
+
+        if opp['cf_potentials_closedwonchangedat'] != '':
+            new_opp.closed_won_changed_at = make_aware(datetime.datetime.strptime(opp['cf_potentials_closedwonchangedat'], '%m-%d-%Y %H:%M %p'))
+        else: 
+            new_opp.closed_won_changed_at = None
+
+        new_opp.save()
 
 def get_phonecalls():
     '''
@@ -167,7 +271,7 @@ def get_phonecalls():
     '''
     pass
 
-def retrieve_stats():
+def retrieve_stats(module = None):
     '''
     Prior to running this function,
     Create a file named 'credentials.json' with VTiger credentials
@@ -181,6 +285,10 @@ def retrieve_stats():
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    user_stat_dict = vtigerapi.retrieve_data()
 
-    return user_stat_dict
+    if module == None:
+        response = vtigerapi.retrieve_data()
+    if module == 'Potentials':
+        response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+
+    return response
