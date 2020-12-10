@@ -499,7 +499,7 @@ if __name__ == '__main__':
             data = f.read()
         credential_dict = json.loads(data)
         vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.get_module_data('Potentials')
+        response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
         data = json.dumps(response,  indent=4, sort_keys=True)
-        with open('potentials.json', 'w') as f:
+        with open('PhoneCalls.json', 'w') as f:
             f.write(data)
