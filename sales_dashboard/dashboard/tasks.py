@@ -64,7 +64,7 @@ def populate_db_celery():
         result.user = value[9]
         result.save()
 
-
+@shared_task
 def get_opportunities():
     '''
     {
@@ -227,6 +227,7 @@ def get_opportunities():
 
         new_opp.save()
 
+@shared_task
 def get_phonecalls():
     '''
     {

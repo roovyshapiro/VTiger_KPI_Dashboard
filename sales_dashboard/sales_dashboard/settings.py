@@ -140,10 +140,18 @@ CELERY_TIMEZONE = 'America/New_York'
 CELERY_BEAT_SCHEDULE = {
  'populate_sales': {
        'task': 'dashboard.tasks.populate_db_celery',
-       'schedule': 630.0,
+       'schedule': 1500.0,
     },
     'populate_cases':{
         'task': 'case_dashboard.tasks.populate_db_celery_cases',
         'schedule': 530.0,
-    }
+    },
+     'get_opportunities': {
+       'task': 'dashboard.tasks.get_opportunities',
+       'schedule': 750.0,
+    },
+     'get_phonecalls': {
+       'task': 'dashboard.tasks.get_phonecalls',
+       'schedule': 800.0,
+    },
 }
