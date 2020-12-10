@@ -470,7 +470,13 @@ class Vtiger_api:
                 data = json.load(f)
                 for item in all_items:
                     assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
-                    assigned_groupname = data['groups'][item['group_id']]
+                    if 'group_id' in item and item['group_id'] == '':
+                        assigned_groupname = ''
+                    if 'group_id' not in item:
+                        users_primary_group_id = data['users'][item['assigned_user_id']][3]
+                        assigned_groupname = data['groups'][users_primary_group_id]
+                    else:
+                        assigned_groupname = data['groups'][item['group_id']]
                     item['assigned_username'] = assigned_username
                     item['assigned_groupname'] = assigned_groupname
                     self.today_item_list.append(item)
@@ -485,7 +491,13 @@ class Vtiger_api:
                 try:
                     assigned_groupname = data['groups'][item['group_id']]
                 except KeyError:
-                    assigned_groupname = ''
+                    #Some modules like "Potentials" dont have group_id's as part of the item.
+                    #Others like Cases can have a group_id, but it might be blank.
+                    if 'group_id' in item:
+                        assigned_groupname = ''
+                    else:
+                        users_primary_group_id = data['users'][item['assigned_user_id']][3]
+                        assigned_groupname = data['groups'][users_primary_group_id]
 
                 item['assigned_username'] = assigned_username
                 item['assigned_groupname'] = assigned_groupname
