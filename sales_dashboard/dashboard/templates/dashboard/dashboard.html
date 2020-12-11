@@ -53,9 +53,8 @@
             </section>
 
             <section class="score_tables">
-                {% for stat in stat_total %}
-                    {% for key, value in stat.items %}
-                        <p class="score_table_title">{{ key }}</p>
+                {% for user, value in user_opp_dict.items %}
+                    <p class="score_table_title">{{ user }}</p>
                         <table>
                             <th>Demo Scheduled</th>
                             <th>Demo Given</th>
@@ -66,45 +65,15 @@
                             <th>Closed Lost</th>
                             <th>Phone Calls</th>
                             <tr>
-                                {% for num in value %}
+                    {% for item, points in value.items %}
                                     <td>
-                                        {{ num }}
+                                        {{ points }}
                                     </td>
                                 {% endfor %}
                             </tr>
                         <table>
-                    {% endfor %}
                 {% endfor %}
             </section>
         </div>
-
-<div> 
-
-    <hr>
-    <p>user opt dict</p>
-    {% for key, value in user_opp_dict.items %}
-        <p><b>{{ key }}</b></p>
-        {% for k, v in value.items %}
-            <p>{{ k }} - {{ v }}</p>
-        {% endfor %}    
-    {% endfor %}    
-    <hr>
-    <p>phone calls</p>
-    {% for key, value in user_total_calls.items %}
-        <p>{{ key }} {{ value }} </p>
-    {% endfor %}
-    <hr>
-    <p>all opps</p>
-    {% for value in today_opps %}
-        <p>{{ value }} </p>
-    {% endfor %}
-    <hr>
-    <p>all calls</p>
-    {% for value in today_phone_calls %}
-        <p>{{ value }} </p>
-    {% endfor %}
-
-
-</div>
 
 {% endblock %}

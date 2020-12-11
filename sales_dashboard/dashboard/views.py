@@ -37,9 +37,9 @@ def home_view(request):
 
     sales_users = Opportunities.objects.all().values('assigned_username').distinct()
 
-    today_opps = Opportunities.objects.all().filter(modifiedtime__gte=first_of_week, modifiedtime__lte=end_of_week)
+    today_opps = Opportunities.objects.all().filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
 
-    today_phone_calls = Phone_call.objects.all().filter(modifiedtime__gte=first_of_week, modifiedtime__lte=end_of_week)
+    today_phone_calls = Phone_call.objects.all().filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
 
     #user_dict is the total score for both phone calls and opportunity changes
     user_total_score = {}
@@ -57,8 +57,8 @@ def home_view(request):
             'Quote Sent':0,
             'Pilot':0,
             'Needs Analysis':0,
-            'Closed Lost':0,
             'Closed Won':0,
+            'Closed Lost':0,
             'Phone Calls':0,
         }
 
@@ -79,10 +79,11 @@ def home_view(request):
             user_opp_dict[opp.assigned_username]['Pilot'] += 1
         if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > first_of_week and opp.needs_analysis_changed_at < end_of_week:
             user_opp_dict[opp.assigned_username]['Needs Analysis'] += 1
-        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
         if opp.closed_won_changed_at != None and opp.closed_won_changed_at > first_of_week and opp.closed_won_changed_at < end_of_week:
             user_opp_dict[opp.assigned_username]['Closed Won'] += 1
+        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
+
 
 
     for call in today_phone_calls:
@@ -100,9 +101,6 @@ def home_view(request):
         'today_phone_calls':today_phone_calls,
     }
 
-    print(user_total_score)
-    print(user_opp_dict)
-    print(user_total_calls)
     return render(request, "dashboard/dashboard.html", context) 
 
 def populate_db(request):
