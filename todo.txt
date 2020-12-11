@@ -15,3 +15,5 @@ SALES DASHBOARD
 
 - datepicker applied to sales dashboard
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
+- populate phone calls/opps databases with historical data. Maybe for a month back?
+- provide week/month data perhaps?
