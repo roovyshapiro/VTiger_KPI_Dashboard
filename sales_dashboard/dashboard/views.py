@@ -4,26 +4,10 @@ from .models import Sales_stats, Phone_calls, Phone_call, Opportunities
 import VTiger_Sales_API
 import datetime
 
-# Create your views here.
-def home_view_bak(request):
-    '''
-    Loads the main page. 
-    If there is no data in the database, then the populate url is called
-    Which automatically pulls data from the database.
-    '''
-    try:
-        sales_stats = Sales_stats
-        stats = sales_stats.objects.all()
-        user_stat_dict, user_score_dict = sales_stats.user_totals()
-
-        return render(request, 'dashboard/dashboard.html', {'stats':stats, 'stat_total':user_stat_dict, 'score_total':user_score_dict,})
-    #If the database is empty, then an IndexError will be generated from models.user_totals()
-    #Because the database queries return no results.
-    except (IndexError):
-        return HttpResponseRedirect('/populate/')
-
 def home_view(request):
     '''
+    The primary view for the Sales Dashboard where all the calculations take place.
+    Celery populates the opportunities and phone calls from today periodically.
     '''
     today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
@@ -60,9 +44,9 @@ def home_view(request):
             'Closed Lost':0,
             'Phone Calls':0,
         }
-        user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
-        user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
-
+        #If we want to display opp and phone call data per user
+        #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
+        #user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
 
 
     for opp in today_opps:
@@ -138,6 +122,10 @@ def test_method(request):
     localhost:8000/test
     Useful for testing functionality
     '''
-    from dashboard.tasks import get_opportunities
-    get_opportunities()
+    #from dashboard.tasks import get_opportunities
+    #get_opportunities()
+
+    from dashboard.tasks import get_phonecalls
+    get_phonecalls()
+
     return HttpResponseRedirect('/')
