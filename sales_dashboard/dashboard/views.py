@@ -42,58 +42,67 @@ def home_view(request):
     today_phone_calls = Phone_call.objects.all().filter(modifiedtime__gte=first_of_week, modifiedtime__lte=end_of_week)
 
     #user_dict is the total score for both phone calls and opportunity changes
-    user_dict = {}
+    user_total_score = {}
     #user_call_dict is the total amount of phone calls only
-    user_call_dict = {}
+    user_total_calls = {}
     #user_opp_dict is how many times each sales stage changed in the given time frame
     user_opp_dict = {}
 
     for user in sales_users:
-        user_dict[user['assigned_username']] = 0
-        user_call_dict[user['assigned_username']] = 0
+        user_total_score[user['assigned_username']] = 0
+        user_total_calls[user['assigned_username']] = 0
         user_opp_dict[user['assigned_username']] = {
-            'demo_scheduled_changed_at':0,
-            'demo_given_changed_at':0,
-            'quote_sent_changed_at':0,
-            'pilot_changed_at':0,
-            'needs_analysis_changed_at':0,
-            'closed_lost_changed_at':0,
-            'closed_won_changed_at':0,
+            'Demo Scheduled':0,
+            'Demo Given':0,
+            'Quote Sent':0,
+            'Pilot':0,
+            'Needs Analysis':0,
+            'Closed Lost':0,
+            'Closed Won':0,
+            'Phone Calls':0,
         }
 
 
     for opp in today_opps:
-        if opp.assigned_username in user_dict:
-            user_dict[opp.assigned_username] += 1
+        if opp.assigned_username in user_total_score:
+            user_total_score[opp.assigned_username] += 1
 
         if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > first_of_week and opp.demo_scheduled_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['demo_scheduled_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Demo Scheduled'] += 1
+            user_total_score[opp.assigned_username] += 5
         if opp.demo_given_changed_at != None and opp.demo_given_changed_at > first_of_week and opp.demo_given_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['demo_given_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Demo Given'] += 1
+            user_total_score[opp.assigned_username] += 10
         if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > first_of_week and opp.quote_sent_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['quote_sent_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Quote Sent'] += 1
         if opp.pilot_changed_at != None and opp.pilot_changed_at > first_of_week and opp.pilot_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['pilot_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Pilot'] += 1
         if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > first_of_week and opp.needs_analysis_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['needs_analysis_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Needs Analysis'] += 1
         if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['closed_lost_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
         if opp.closed_won_changed_at != None and opp.closed_won_changed_at > first_of_week and opp.closed_won_changed_at < end_of_week:
-            user_opp_dict[opp.assigned_username]['closed_won_changed_at'] += 1
+            user_opp_dict[opp.assigned_username]['Closed Won'] += 1
 
 
     for call in today_phone_calls:
-        if call.assigned_username in user_dict:
-            user_dict[call.assigned_username] += 1
-            user_call_dict[call.assigned_username] += 1
+        if call.assigned_username in user_total_score:
+            user_total_score[call.assigned_username] += 1
+            user_total_calls[call.assigned_username] += 1
+            user_opp_dict[call.assigned_username]['Phone Calls'] += 1
+
 
     context = {
-        'user_opps':user_dict,
+        'user_total_score':user_total_score,
+        'user_total_calls':user_total_calls,
+        'user_opp_dict': user_opp_dict,
         'today_opps':today_opps,
+        'today_phone_calls':today_phone_calls,
     }
 
-    print(user_dict)
+    print(user_total_score)
     print(user_opp_dict)
+    print(user_total_calls)
     return render(request, "dashboard/dashboard.html", context) 
 
 def populate_db(request):

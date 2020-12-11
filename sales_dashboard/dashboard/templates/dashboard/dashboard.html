@@ -3,12 +3,10 @@
 {% block content %}
 
         <section class="points">
-            {% for user_score in score_total %}
-                {% for key, value in user_score.items %}
+            {% for user, score in user_total_score.items %}
                     <div class = "score_box">
-                        <span class ="score_name">{{ key }}</span> </br> <span class="score_num">{{ value }}</span>
+                        <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
                     </div>
-                {% endfor %}
             {% endfor %}
         </section>
 
@@ -80,12 +78,29 @@
             </section>
         </div>
 
-<div>
-    {% for key, value in user_opps.items %}
+<div> 
+
+    <hr>
+    <p>user opt dict</p>
+    {% for key, value in user_opp_dict.items %}
+        <p><b>{{ key }}</b></p>
+        {% for k, v in value.items %}
+            <p>{{ k }} - {{ v }}</p>
+        {% endfor %}    
+    {% endfor %}    
+    <hr>
+    <p>phone calls</p>
+    {% for key, value in user_total_calls.items %}
         <p>{{ key }} {{ value }} </p>
     {% endfor %}
-
+    <hr>
+    <p>all opps</p>
     {% for value in today_opps %}
+        <p>{{ value }} </p>
+    {% endfor %}
+    <hr>
+    <p>all calls</p>
+    {% for value in today_phone_calls %}
         <p>{{ value }} </p>
     {% endfor %}
 
