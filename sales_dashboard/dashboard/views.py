@@ -41,7 +41,7 @@ def home_view(request):
 
     today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
 
-    #user_dict is the total score for both phone calls and opportunity changes
+    #user_dict is the total score for both phone calls and opportunity stage changes
     user_total_score = {}
     #user_opp_dict is how many times each sales stage changed in the given time frame
     user_opp_dict = {}
@@ -87,15 +87,10 @@ def home_view(request):
         if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
             user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
 
-
-
     for call in today_phone_calls:
         if call.assigned_username in user_total_score:
             user_total_score[call.assigned_username] += 1
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
-
-
-
 
     context = {
         'user_total_score':user_total_score,

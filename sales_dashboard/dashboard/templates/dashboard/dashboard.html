@@ -10,7 +10,6 @@
             {% endfor %}
         </section>
 
-
         <div class="score_key_and_tables">
             <section class="score_key_and_refresh">
                 <div class = "score_key">
@@ -73,9 +72,12 @@
                             </tr>
                         <table>
 
+                    <!--Displays individual opp tables per user.
+                    Commenting out because unsure if I want to go this route
+                    display wise.
                     {% for username, opps in user_opps.items %}
                         {% if username == user %}
-                                <table>
+                                <table class="scrollable_table">
                                     <th>Number</th>
                                     <th>Name</th>
                                     <th>Stage</th>
@@ -95,6 +97,7 @@
                                 </table>
                         {% endif %}
                     {% endfor %}
+                    -->
                 {% endfor %}
             </section>
         </div>
