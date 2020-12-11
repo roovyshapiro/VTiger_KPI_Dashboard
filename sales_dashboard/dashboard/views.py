@@ -37,9 +37,8 @@ def home_view(request):
 
     sales_users = all_sales_opps.values('assigned_username').distinct()
 
-    today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
-
-    today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
+    today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
 
     #user_dict is the total score for both phone calls and opportunity stage changes
     user_total_score = {}
@@ -70,21 +69,21 @@ def home_view(request):
         #if opp.assigned_username in user_total_score:
         #    user_total_score[opp.assigned_username] += 1
 
-        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > first_of_week and opp.demo_scheduled_changed_at < end_of_week:
+        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > today and opp.demo_scheduled_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Demo Scheduled'] += 1
             user_total_score[opp.assigned_username] += 5
-        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > first_of_week and opp.demo_given_changed_at < end_of_week:
+        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > today and opp.demo_given_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Demo Given'] += 1
             user_total_score[opp.assigned_username] += 10
-        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > first_of_week and opp.quote_sent_changed_at < end_of_week:
+        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > today and opp.quote_sent_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Quote Sent'] += 1
-        if opp.pilot_changed_at != None and opp.pilot_changed_at > first_of_week and opp.pilot_changed_at < end_of_week:
+        if opp.pilot_changed_at != None and opp.pilot_changed_at > today and opp.pilot_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Pilot'] += 1
-        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > first_of_week and opp.needs_analysis_changed_at < end_of_week:
+        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > today and opp.needs_analysis_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Needs Analysis'] += 1
-        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > first_of_week and opp.closed_won_changed_at < end_of_week:
+        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > today and opp.closed_won_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Closed Won'] += 1
-        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
+        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > today and opp.closed_lost_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
 
     for call in today_phone_calls:

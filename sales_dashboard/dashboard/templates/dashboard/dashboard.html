@@ -70,7 +70,7 @@
                                     </td>
                                 {% endfor %}
                             </tr>
-                        <table>
+                        </table>
 
                     <!--Displays individual opp tables per user.
                     Commenting out because unsure if I want to go this route
@@ -100,6 +100,58 @@
                     -->
                 {% endfor %}
             </section>
+        </div> 
+
+        <input type=checkbox id="show_today_opps">
+        <label for="show_today_opps" class="show_label">SHOW OPPs</label>
+
+        <input type=checkbox id="show_today_calls">
+        <label for="show_today_calls" class="show_label">SHOW CALLs</label>
+
+        <div id = "today_opp_table">
+            <table class="scrollable_table">
+                <th>Number</th>
+                <th>User</th>
+                <th>Name</th>
+                <th>Stage</th>
+                <th>Current Stage Changed</th>
+                <th>Modified Time</th>
+                <th>Created Time</th>
+                {% for opp in today_opps %}
+                    <tr>
+                        <td>{{ opp.opp_no }}</td>
+                        <td>{{ opp.assigned_username }}</td>
+                        <td>{{ opp.opp_name }}</td>
+                        <td>{{ opp.opp_stage }}</td>
+                        <td>{{ opp.current_stage_entry_time }}</td>
+                        <td>{{ opp.modifiedtime }}</td>
+                        <td>{{ opp.createdtime }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <div id = "today_call_table">
+            <table class="scrollable_table">
+                <th>User</th>
+                <th>Call Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+                <th>Direction</th>
+                <th>Duration</th>
+                <th>Customer Number</th>
+                {% for call in today_phone_calls %}
+                    <tr>
+                        <td>{{ call.assigned_username }}</td>
+                        <td>{{ call.modifiedtime }}</td>
+                        <td>{{ call.endtime }}</td>
+                        <td>{{ call.call_status }}</td>
+                        <td>{{ call.direction }}</td>
+                        <td>{{ call.total_duration }}</td>
+                        <td>{{ call.customer_number }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         </div>
 
 {% endblock %}

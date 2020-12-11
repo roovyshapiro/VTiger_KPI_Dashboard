@@ -267,3 +267,18 @@ label.show_label:active {
 #show_label_month:checked ~ #case_table_month{
     display:block;
 }
+
+/* Sales Dashboard */
+#today_opp_table,#show_today_opps {
+    display:none;
+}
+#show_today_opps:checked ~ #today_opp_table{
+    display:block;
+}
+
+#today_call_table,#show_today_calls {
+    display:none;
+}
+#show_today_calls:checked ~ #today_call_table{
+    display:block;
+}
