@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
-from .models import Sales_stats, Phone_calls, Phone_call, Opportunities
+from .models import Phone_call, Opportunities
 import VTiger_Sales_API
 import datetime
 

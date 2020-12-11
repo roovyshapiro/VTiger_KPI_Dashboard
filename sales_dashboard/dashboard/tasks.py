@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware
 from django.db.models import Q
 
 
-from .models import Sales_stats, Phone_calls, Phone_call, Opportunities
+from .models import Phone_call, Opportunities
 import VTiger_Sales_API
 import json, os, datetime
 
