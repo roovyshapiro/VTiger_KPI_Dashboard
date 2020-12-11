@@ -29,5 +29,4 @@ urlpatterns = [
     path('populateallcases/', case_views.populate_all_cases, name='populate_all_cases'),
     path('deletecases/', case_views.delete_all_cases, name='delete_all_cases'),
     path('casestest/', case_views.testing, name='cases_test'),
-
 ]
