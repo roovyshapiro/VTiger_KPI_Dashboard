@@ -88,14 +88,14 @@ def home_view(request):
 
 def populate_db(request):
     '''
-    Populates the database with stats from vtigerapi.db_update()
-    This function is run on a schedule by Celery but it can be run manually by navigating
-    to localhost:8000/populate for testing.
-    demo_scheduled, demo_given, quote_sent, pilot, needs_analysis, closed_won, closed_lost, phone_calls, date, user
-    {james_frinkle:[0, 1, 15, 0, 0, 3, 6, '215', '2020-01-28 21:30:00', 'james_frinkle']}
+    Populates the opportunities and phone calls databases.
     '''
-    from .tasks import populate_db_celery
-    populate_db_celery.delay()
+    from dashboard.tasks import get_opportunities
+    get_opportunities()
+
+    from dashboard.tasks import get_phonecalls
+    get_phonecalls()
+
     return HttpResponseRedirect('/')
 
 def delete_all_items(request):
@@ -122,10 +122,5 @@ def test_method(request):
     localhost:8000/test
     Useful for testing functionality
     '''
-    #from dashboard.tasks import get_opportunities
-    #get_opportunities()
-
-    from dashboard.tasks import get_phonecalls
-    get_phonecalls()
-
+    print('test!')
     return HttpResponseRedirect('/')
