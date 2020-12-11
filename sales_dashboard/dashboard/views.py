@@ -35,22 +35,19 @@ def home_view(request):
     all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
     all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
-    sales_users = Opportunities.objects.all().values('assigned_username').distinct()
+    sales_users = all_sales_opps.values('assigned_username').distinct()
 
-    today_opps = Opportunities.objects.all().filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
+    today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
 
-    today_phone_calls = Phone_call.objects.all().filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
+    today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day)
 
     #user_dict is the total score for both phone calls and opportunity changes
     user_total_score = {}
-    #user_call_dict is the total amount of phone calls only
-    user_total_calls = {}
     #user_opp_dict is how many times each sales stage changed in the given time frame
     user_opp_dict = {}
 
     for user in sales_users:
         user_total_score[user['assigned_username']] = 0
-        user_total_calls[user['assigned_username']] = 0
         user_opp_dict[user['assigned_username']] = {
             'Demo Scheduled':0,
             'Demo Given':0,
@@ -64,8 +61,8 @@ def home_view(request):
 
 
     for opp in today_opps:
-        if opp.assigned_username in user_total_score:
-            user_total_score[opp.assigned_username] += 1
+        #if opp.assigned_username in user_total_score:
+        #    user_total_score[opp.assigned_username] += 1
 
         if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > first_of_week and opp.demo_scheduled_changed_at < end_of_week:
             user_opp_dict[opp.assigned_username]['Demo Scheduled'] += 1
@@ -89,13 +86,11 @@ def home_view(request):
     for call in today_phone_calls:
         if call.assigned_username in user_total_score:
             user_total_score[call.assigned_username] += 1
-            user_total_calls[call.assigned_username] += 1
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
 
 
     context = {
         'user_total_score':user_total_score,
-        'user_total_calls':user_total_calls,
         'user_opp_dict': user_opp_dict,
         'today_opps':today_opps,
         'today_phone_calls':today_phone_calls,
