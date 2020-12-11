@@ -1,11 +1,11 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
-from .models import Sales_stats, Phone_calls
+from .models import Sales_stats, Phone_calls, Phone_call, Opportunities
 import VTiger_Sales_API
 import datetime
 
 # Create your views here.
-def home_view(request):
+def home_view_bak(request):
     '''
     Loads the main page. 
     If there is no data in the database, then the populate url is called
@@ -21,6 +21,80 @@ def home_view(request):
     #Because the database queries return no results.
     except (IndexError):
         return HttpResponseRedirect('/populate/')
+
+def home_view(request):
+    '''
+    '''
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
+    day = today.weekday()
+    first_of_week = today + timezone.timedelta(days = -day)
+    end_of_week = first_of_week + timezone.timedelta(days = 6)
+    end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
+
+    all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
+    all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
+
+    sales_users = Opportunities.objects.all().values('assigned_username').distinct()
+
+    today_opps = Opportunities.objects.all().filter(modifiedtime__gte=first_of_week, modifiedtime__lte=end_of_week)
+
+    today_phone_calls = Phone_call.objects.all().filter(modifiedtime__gte=first_of_week, modifiedtime__lte=end_of_week)
+
+    #user_dict is the total score for both phone calls and opportunity changes
+    user_dict = {}
+    #user_call_dict is the total amount of phone calls only
+    user_call_dict = {}
+    #user_opp_dict is how many times each sales stage changed in the given time frame
+    user_opp_dict = {}
+
+    for user in sales_users:
+        user_dict[user['assigned_username']] = 0
+        user_call_dict[user['assigned_username']] = 0
+        user_opp_dict[user['assigned_username']] = {
+            'demo_scheduled_changed_at':0,
+            'demo_given_changed_at':0,
+            'quote_sent_changed_at':0,
+            'pilot_changed_at':0,
+            'needs_analysis_changed_at':0,
+            'closed_lost_changed_at':0,
+            'closed_won_changed_at':0,
+        }
+
+
+    for opp in today_opps:
+        if opp.assigned_username in user_dict:
+            user_dict[opp.assigned_username] += 1
+
+        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > first_of_week and opp.demo_scheduled_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['demo_scheduled_changed_at'] += 1
+        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > first_of_week and opp.demo_given_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['demo_given_changed_at'] += 1
+        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > first_of_week and opp.quote_sent_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['quote_sent_changed_at'] += 1
+        if opp.pilot_changed_at != None and opp.pilot_changed_at > first_of_week and opp.pilot_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['pilot_changed_at'] += 1
+        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > first_of_week and opp.needs_analysis_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['needs_analysis_changed_at'] += 1
+        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > first_of_week and opp.closed_lost_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['closed_lost_changed_at'] += 1
+        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > first_of_week and opp.closed_won_changed_at < end_of_week:
+            user_opp_dict[opp.assigned_username]['closed_won_changed_at'] += 1
+
+
+    for call in today_phone_calls:
+        if call.assigned_username in user_dict:
+            user_dict[call.assigned_username] += 1
+            user_call_dict[call.assigned_username] += 1
+
+    context = {
+        'user_opps':user_dict,
+        'today_opps':today_opps,
+    }
+
+    print(user_dict)
+    print(user_opp_dict)
+    return render(request, "dashboard/dashboard.html", context) 
 
 def populate_db(request):
     '''
@@ -58,6 +132,6 @@ def test_method(request):
     localhost:8000/test
     Useful for testing functionality
     '''
-    from dashboard.tasks import get_phonecalls
-    get_phonecalls()
+    from dashboard.tasks import get_opportunities
+    get_opportunities()
     return HttpResponseRedirect('/')

@@ -80,4 +80,16 @@
             </section>
         </div>
 
+<div>
+    {% for key, value in user_opps.items %}
+        <p>{{ key }} {{ value }} </p>
+    {% endfor %}
+
+    {% for value in today_opps %}
+        <p>{{ value }} </p>
+    {% endfor %}
+
+
+</div>
+
 {% endblock %}
