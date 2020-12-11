@@ -65,13 +65,36 @@
                             <th>Closed Lost</th>
                             <th>Phone Calls</th>
                             <tr>
-                    {% for item, points in value.items %}
+                                {% for item, points in value.items %}
                                     <td>
                                         {{ points }}
                                     </td>
                                 {% endfor %}
                             </tr>
                         <table>
+
+                    {% for username, opps in user_opps.items %}
+                        {% if username == user %}
+                                <table>
+                                    <th>Number</th>
+                                    <th>Name</th>
+                                    <th>Stage</th>
+                                    <th>Current Stage Changed</th>
+                                    <th>Modified Time</th>
+                                    <th>Created Time</th>
+                                    {% for opp in opps %}
+                                        <tr>
+                                            <td>{{ opp.opp_no }}</td>
+                                            <td>{{ opp.opp_name }}</td>
+                                            <td>{{ opp.opp_stage }}</td>
+                                            <td>{{ opp.current_stage_entry_time }}</td>
+                                            <td>{{ opp.modifiedtime }}</td>
+                                            <td>{{ opp.createdtime }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                        {% endif %}
+                    {% endfor %}
                 {% endfor %}
             </section>
         </div>

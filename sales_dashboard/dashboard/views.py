@@ -45,6 +45,9 @@ def home_view(request):
     user_total_score = {}
     #user_opp_dict is how many times each sales stage changed in the given time frame
     user_opp_dict = {}
+    #User specific phone calls and opportunities
+    user_opps = {}
+    user_calls = {}
 
     for user in sales_users:
         user_total_score[user['assigned_username']] = 0
@@ -58,6 +61,9 @@ def home_view(request):
             'Closed Lost':0,
             'Phone Calls':0,
         }
+        user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
+        user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
+
 
 
     for opp in today_opps:
@@ -89,9 +95,13 @@ def home_view(request):
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
 
 
+
+
     context = {
         'user_total_score':user_total_score,
         'user_opp_dict': user_opp_dict,
+        'user_opps':user_opps,
+        'user_calls':user_calls,
         'today_opps':today_opps,
         'today_phone_calls':today_phone_calls,
     }
