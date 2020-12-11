@@ -8,13 +8,10 @@ APP WIDE
 
 
 CASE DASHBOARD
-- the problem with not displaying older cases has been fixed, although it uses a lot of API calls every time a user deletes a case from older than a day ago. I believe the best solution to this problem would be to remove the ability for users to delete cases in VTiger, and just allow them to change the status to "DELETED". A workflow could then trigger to assign it to the "deleted_cases" group and nobody has access to see the cases belonging to this group. Messy, but more effective.
 - rename repository and folders so its obvious that cases and sales are separate apps within the same project
 - adjust the readme.md to update with information for case dashboard
 
 SALES DASHBOARD
 
-- salesdashboard db should get full phone calls and opportunities so that it can be stored and retrieved similar to case dashboard
-- point calculation should only be done on db data after the fact so the API calls are simplified and the process takes less time
 - datepicker applied to sales dashboard
-- in general, large overhaul to sales dashboard to emulate the improvements that were done in the case dashboard
+- group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
