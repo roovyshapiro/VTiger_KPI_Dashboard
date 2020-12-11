@@ -138,10 +138,6 @@ from celery.schedules import crontab
 CELERY_BROKER_URL = 'redis://localhost:6379' 
 CELERY_TIMEZONE = 'America/New_York'   
 CELERY_BEAT_SCHEDULE = {
- 'populate_sales': {
-       'task': 'dashboard.tasks.populate_db_celery',
-       'schedule': 1500.0,
-    },
     'populate_cases':{
         'task': 'case_dashboard.tasks.populate_db_celery_cases',
         'schedule': 530.0,
