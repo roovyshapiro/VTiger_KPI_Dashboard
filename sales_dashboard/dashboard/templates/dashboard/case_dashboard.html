@@ -3,7 +3,22 @@
 {% block content %}
 
 <div id = "body_sizing">
+    {% block form %}
+    <p> this is only in case dashboard block </p>
+        <label for="group_dropdown">Group:</label>
+        <select name="group_dropdown" id = "group_dropdown">
+            <option selected>All Groups</option>
+            {% for group  in case_groups %}
+                <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
+            {% endfor %} 
+        </select>
+    {% endblock %}
+
     <div id="case_header">
+        <div>
+            <p id="group_name">{{ date_group_dict.group }} </p>
+        </div>
+
         <div class = "score_box" id="all_open_cases">
             <span class ="score_name">All Open Cases</span> </br> <span class="score_num">{{ all_open_cases.open_cases }}</span>
         </div>

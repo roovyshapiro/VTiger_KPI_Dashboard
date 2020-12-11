@@ -160,8 +160,8 @@ td, th{
 }
 
 #all_open_cases{
-    margin-right:auto;
-    margin-left:0px;
+    margin-right:0px;
+    margin-left:auto;
     margin-bottom:5px;
     flex: 0 0 25%;
 }

@@ -17,27 +17,15 @@
                 <input type="number" value='5' id="minutes_input" name="minutes" min="1" max="20" onchange="update_refresh_time()">
                 <input type="checkbox" id="checkbox_autoupdate" onclick="checkbox_click()" unchecked/>
                 <label id="auto_update_label" for="checkbox_autoupdate">Auto Refresh</label>
-                </br>
             </div>
-            <div id="selected_group_date">
-                <div id ="group_date_selector">
-                    <form method="GET" action=".">
-                        <label for="group_dropdown">Group:</label>
-                        <select name="group_dropdown" id = "group_dropdown">
-                            <option selected>All Groups</option>
-                            {% for group  in case_groups %}
-                                <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
-                            {% endfor %} 
-                        </select>
-                        <br>
-                        <label for="date_start">Date:</label>
-                        <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
-                        <button type="submit" id="submit" onclick="save_group_date()">SUBMIT</button>
-                    </form>
-                </div>
-            </div>
-            <div>
-                <p id="group_name">{{ date_group_dict.group }} </p>
+            <div id ="group_date_selector">
+                <form method="GET" action=".">
+                    <label for="date_start">Date:</label>
+                    <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
+                    {% block form %}
+                    {% endblock %}
+                    <button type="submit" id="submit" onclick="save_group_date()">SUBMIT</button>
+                </form>
             </div>
         </div>
 
