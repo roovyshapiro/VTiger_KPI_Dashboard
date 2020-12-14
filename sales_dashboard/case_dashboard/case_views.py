@@ -128,7 +128,15 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
         case_stats_dict['closed'] = 0
 
     try:
-        case_stats = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
+        #Purpose of Modified cases is to show cases that were worked in a given time frame.
+        #Since resolved cases become "closed" after a certain period of time, we don't want to show closed cases
+        #that were modified. So ultimately we want to show for a given time frame - created cases, resolved cases,
+        #And cases that were modified either because of being resolved, created or something else.
+        case_stats = full_cases
+        case_stats_modified = case_stats.filter(Q(modifiedtime__gte=date_request) & Q(modifiedtime__lte=date_request_end) & ~Q(casestatus="Closed"))
+        case_stats_resolved = case_stats.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
+        case_stats_created = case_stats.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
+        case_stats = case_stats_modified | case_stats_resolved | case_stats_created
         case_stats_dict['modified'] = len(case_stats)
     except ValueError:
         case_stats_dict['modified'] = 0
@@ -165,10 +173,12 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
     #sorted_user_closed = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
     sorted_user_closed = sorted(user_closed_dict.items(), key=lambda x: x[1], reverse=True)
 
-    modified_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
+    modified_with_closed_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
+    modified_cases = modified_with_closed_cases.filter(~Q(casestatus="Closed"))
     created_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
     resolved_cases = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
 
+    #Combine all the Query sets.
     all_cases = modified_cases | created_cases | resolved_cases
 
     return case_stats_dict, sorted_user_closed, all_cases
