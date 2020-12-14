@@ -103,18 +103,17 @@ def delete_all_items(request):
     Delete all the items in the database from today only.
     Convenient to reset the day's data without deleting previous days' data.
     '''
-    from django.utils import timezone
     today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
     today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0)
-    stat_results = Sales_stats.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
-    phone_results = Phone_calls.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
+    today_opps = Opportunities.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
+    today_calls = Phone_call.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
 
-    stat_results.delete()
-    phone_results.delete()
+    today_opps.delete()
+    today_calls.delete()
 
     #This deletes all items:
-    #Sales_stats.objects.all().delete()
-    #Phone_calls.objects.all().delete()
+    #today_opps.objects.all().delete()
+    #today_calls.objects.all().delete()
     return HttpResponseRedirect('/')
 
 def test_method(request):
