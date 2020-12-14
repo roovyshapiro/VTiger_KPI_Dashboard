@@ -111,7 +111,7 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
     Cornelius Pavlovsky - 6
     '''
     #Prepare calculated data to present as a simple summary overview of the cases
-    full_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
+    #full_cases = Cases.objects.all()
     case_stats_dict = {}
 
     try:
@@ -165,7 +165,13 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
     #sorted_user_closed = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
     sorted_user_closed = sorted(user_closed_dict.items(), key=lambda x: x[1], reverse=True)
 
-    return case_stats_dict, sorted_user_closed, full_cases
+    modified_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
+    created_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
+    resolved_cases = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
+
+    all_cases = modified_cases | created_cases | resolved_cases
+
+    return case_stats_dict, sorted_user_closed, all_cases
 
 def retrieve_dates(date_request):
     '''
