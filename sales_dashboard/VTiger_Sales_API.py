@@ -46,12 +46,43 @@ class Vtiger_api:
     ###Case Dashboard###
     ####################
 
+    def get_users(self):    	
+        '''	
+        Accepts User List and returns a dictionary of the username, first, last and id	
+        '''	
+        user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users;")	
+
+        num_of_users = len(user_list['result'])	
+        username_list = []	
+        for user in range(num_of_users):	
+            username_list.append(user_list['result'][user]['id'])	
+
+        #Creates a dictionary with every username as the key and an empty list as the value	
+        user_dict = {i : [] for i in username_list}	
+
+        #Assigns a list of the first name, last name and User ID to the username	
+        for username in range(num_of_users): 	
+            user_dict[username_list[username]] = [user_list['result'][username]['first_name'], user_list['result'][username]['last_name'], user_list['result'][username]['user_name'], user_list['result'][username]['user_primary_group']]       	
+
+        self.full_user_dict = user_dict	
+        return user_dict	
+
+    def get_groups_id_first(self):	
+        '''	
+        Returns a dict with group IDs as they keys and groupnames as the values.	
+        '''	
+        group_list = self.api_call(f"{self.host}/query?query=Select * FROM Groups;")	
+        group_dict = {}	
+        for group in group_list['result']:	
+            group_dict[group['id']] = group['groupname']	
+        return group_dict
+
     def get_users_and_groups_file(self):
         '''
         Get all users and groups with their corresponding IDs and save to a file for reference.
         '''
         group_dict = self.get_groups_id_first()
-        user_dict = self.get_users(get_all_users=True)
+        user_dict = self.get_users()
         full_dict = {}
         full_dict['groups'] = group_dict
         full_dict['users'] = user_dict
