@@ -11,7 +11,7 @@ import VTiger_Sales_API
 import json, os, datetime
 
 @shared_task
-def get_opportunities():
+def get_opportunities(day='Today'):
     '''
     {
         "adjusted_amount": "999.00000000",
@@ -104,7 +104,11 @@ def get_opportunities():
     def modifiedtime_date(self):
         return self.modifiedtime.strftime('%Y-%m-%d')
     '''
-    today_opp_list = retrieve_stats(module = 'Potentials')
+    if day == 'Today':
+        today_opp_list = retrieve_stats(module = 'Potentials')
+    elif day == 'month':
+        today_opp_list = retrieve_stats(module = 'Potentials', day='month')
+
     db_opps = Opportunities.objects.all()
 
     for opp in today_opp_list:
@@ -174,7 +178,7 @@ def get_opportunities():
         new_opp.save()
 
 @shared_task
-def get_phonecalls():
+def get_phonecalls(day='Today'):
     '''
     {
         "CreatedTime": "2020-12-10 14:48:02",
@@ -216,7 +220,11 @@ def get_phonecalls():
         "user": "19x27"
     },
     '''
-    today_phonecall_list = retrieve_stats(module = 'PhoneCalls')
+    if day == 'Today':
+        today_phonecall_list = retrieve_stats(module = 'PhoneCalls')
+    elif day == 'month':
+        today_phonecall_list = retrieve_stats(module = 'PhoneCalls', day='month')
+
     db_phonecalls = Phone_call.objects.all()
 
     for phone_call in today_phonecall_list:
@@ -252,7 +260,7 @@ def get_phonecalls():
 
         new_phone_call.save()
 
-def retrieve_stats(module = 'Potentials'):
+def retrieve_stats(module = 'Potentials', day='Today'):
     '''
     Prior to running this function,
     Create a file named 'credentials.json' with VTiger credentials
@@ -268,7 +276,14 @@ def retrieve_stats(module = 'Potentials'):
     vtigerapi = VTiger_Sales_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
 
     if module == 'Potentials':
-        response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+        if day == 'Today':
+            response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+        elif day == 'month':
+            response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     if module == 'PhoneCalls':
-        response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
+        if day == 'Today':
+            response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
+        elif day == 'month':
+            response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls', day='month')
+
     return response

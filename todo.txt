@@ -10,10 +10,10 @@ APP WIDE
 CASE DASHBOARD
 - rename repository and folders so its obvious that cases and sales are separate apps within the same project
 - adjust the readme.md to update with information for case dashboard
+- show which dates are available in the datepicker
 
 SALES DASHBOARD
 
-- datepicker applied to sales dashboard
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
-- populate phone calls/opps databases with historical data. Maybe for a month back?
 - provide week/month data perhaps?
+- show which dates are available in the datepicker

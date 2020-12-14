@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home_view, name='home'),
     path('populate/', views.populate_db, name='populate'),
+    path('populateall/', views.populate_db_month, name='populate_all_sales'),
     path('deleteall/', views.delete_all_items, name='delete_all'),
     path('test/', views.test_method, name='test'),
     path('cases/', case_views.main_dashboard, name='cases'),

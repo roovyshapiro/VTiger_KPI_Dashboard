@@ -42,10 +42,6 @@ class Vtiger_api:
         data = self.api_call(f"{self.host}/describe?elementType={module}")
         return data
 
-    ####################
-    ###Case Dashboard###
-    ####################
-
     def get_users(self):    	
         '''	
         Accepts User List and returns a dictionary of the username, first, last and id	
@@ -90,6 +86,12 @@ class Vtiger_api:
         with open('users_and_groups.json', 'w') as f:
             f.write(data)
         return full_dict
+
+
+    ####################
+    ###Case Dashboard###
+    ####################
+
 
     def retrieve_all_open_cases_count(self):
         '''
@@ -227,7 +229,7 @@ class Vtiger_api:
     ############################
 
 
-    def retrieve_todays_cases(self, module='Cases'):
+    def retrieve_todays_cases(self, module='Cases', day='Today'):
         '''
         Returns a list of all the cases that have been modified since the beginning of today.
         In most cases, this should be less than 100. Since there could be a scenario where more than 100
@@ -243,8 +245,11 @@ class Vtiger_api:
         This should take care of any situation where a new user is added, a group name is changed,
         or the file is deleted for any reason.
         '''
-
         today = datetime.datetime.now().strftime("%Y-%m-%d") + ' 00:00:00'
+
+        if day == 'month':
+            ninety_days_ago = datetime.datetime.now() + datetime.timedelta(days = -30)
+            today = ninety_days_ago.strftime("%Y-%m-%d") + ' 00:00:00'
 
         module_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE modifiedtime >= '{today}';")
         total_count = module_count['result'][0]['count']
@@ -292,20 +297,25 @@ class Vtiger_api:
             self.today_item_list = []
             data = self.get_users_and_groups_file()
             for item in all_items:
-                try:
-                    assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
-                except KeyError:
-                    assigned_username = ''
-                try:
-                    assigned_groupname = data['groups'][item['group_id']]
-                except KeyError:
-                    #Some modules like "Potentials" dont have group_id's as part of the item.
-                    #Others like Cases can have a group_id, but it might be blank.
-                    if 'group_id' in item:
-                        assigned_groupname = ''
-                    else:
-                        users_primary_group_id = data['users'][item['assigned_user_id']][3]
-                        assigned_groupname = data['groups'][users_primary_group_id]
+                #Sometimes an opportunity can be assigned directly to the group
+                if item['assigned_user_id'] in data['groups']:
+                    assigned_groupname = data['groups'][item['assigned_user_id']]
+                    assigned_username = data['groups'][item['assigned_user_id']]
+                else:
+                    try:
+                        assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
+                    except KeyError:
+                        assigned_username = ''
+                    try:
+                        assigned_groupname = data['groups'][item['group_id']]
+                    except KeyError:
+                        #Some modules like "Potentials" dont have group_id's as part of the item.
+                        #Others like Cases can have a group_id, but it might be blank.
+                        if 'group_id' in item:
+                            assigned_groupname = ''
+                        else:
+                            users_primary_group_id = data['users'][item['assigned_user_id']][3]
+                            assigned_groupname = data['groups'][users_primary_group_id]
 
                 item['assigned_username'] = assigned_username
                 item['assigned_groupname'] = assigned_groupname
