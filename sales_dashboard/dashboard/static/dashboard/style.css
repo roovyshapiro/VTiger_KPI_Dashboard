@@ -60,7 +60,8 @@ nav > a{
 
 #group_name{
     font-weight:bold;
-    font-size:45px;
+    font-size:50px;
+    margin-top:35px;
 }
 
 /* Score Key and Tables*/
