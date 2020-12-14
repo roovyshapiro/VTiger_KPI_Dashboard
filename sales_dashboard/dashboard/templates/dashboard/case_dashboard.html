@@ -129,76 +129,80 @@
         </table>
     </div>
     <hr>
-    <div class="points_header">
-        <p><span class="bold">WEEK:</span> {{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
-    </div>
-    <section class="points">
-                <div class = "score_box">
-                    <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_week.modified }}</span>
-                </div>
-                <div class = "score_box">
-                    <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ case_stats_dict_week.opened }}</span>
-                </div>
-                <div class = "score_box">
-                    <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ case_stats_dict_week.closed }}</span>
-                </div>
-                <div class = "score_box">
-                    <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ case_stats_dict_week.kill_rate }}%</span>
-                </div>
-                <div>
-                    {% if sorted_user_closed_week|length > 0 %}
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <th>USER</th>
-                                    <th>CLOSED CASES</th>
-                                </tr>
-                                {% for score  in sorted_user_closed_week %}
+
+    {% if case_stats_dict_week %}
+        <div class="points_header">
+            <p><span class="bold">WEEK:</span> {{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
+        </div>
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">MODIFIED</span> </br> <span class="score_num">{{ case_stats_dict_week.modified }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ case_stats_dict_week.opened }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ case_stats_dict_week.closed }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ case_stats_dict_week.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if sorted_user_closed_week|length > 0 %}
+                            <table>
+                                <tbody>
                                     <tr>
-                                        <th>{{ score.0 }} </th>
-                                        <th>{{ score.1 }} </th>
+                                        <th>USER</th>
+                                        <th>CLOSED CASES</th>
                                     </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
-                </div>
-    </section>
+                                    {% for score  in sorted_user_closed_week %}
+                                        <tr>
+                                            <th>{{ score.0 }} </th>
+                                            <th>{{ score.1 }} </th>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
 
-    <input type=checkbox id="show_label_week">
-    <label for="show_label_week" class="show_label">SHOW CASES</label>
+        <input type=checkbox id="show_label_week">
+        <label for="show_label_week" class="show_label">SHOW CASES</label>
 
-    <div id = "case_table_week">
-        <table class = "scrollable_table">
-            <tbody>
-                <tr>
-                    <th>Number</th>
-                    <th>Group</th>
-                    <th>Assigned To</th>
-                    <th>Title</th>
-                    <th>Status</th>
-                    <th>Created (UTC)</th>
-                    <th>Modified (UTC)</th>
-                    <th>Resolved (UTC)</th>
-                    <th>Time Spent</th>
-                </tr>
-                {% for case in full_cases_week %}
+        <div id = "case_table_week">
+            <table class = "scrollable_table">
+                <tbody>
                     <tr>
-                        <td>{{ case.case_no }}</td>
-                        <td>{{ case.assigned_groupname }}</td>
-                        <td>{{ case.assigned_username }}</td>
-                        <td>{{ case.title }}</td>
-                        <td>{{ case.casestatus }}</td>
-                        <td>{{ case.createdtime }}</td>
-                        <td>{{ case.modifiedtime }}</td>
-                        <td>{{ case.case_resolved }}</td>
-                        <td>{{ case.time_spent_hr }}</td>
+                        <th>Number</th>
+                        <th>Group</th>
+                        <th>Assigned To</th>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Created (UTC)</th>
+                        <th>Modified (UTC)</th>
+                        <th>Resolved (UTC)</th>
+                        <th>Time Spent</th>
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    <hr>
+                    {% for case in full_cases_week %}
+                        <tr>
+                            <td>{{ case.case_no }}</td>
+                            <td>{{ case.assigned_groupname }}</td>
+                            <td>{{ case.assigned_username }}</td>
+                            <td>{{ case.title }}</td>
+                            <td>{{ case.casestatus }}</td>
+                            <td>{{ case.createdtime }}</td>
+                            <td>{{ case.modifiedtime }}</td>
+                            <td>{{ case.case_resolved }}</td>
+                            <td>{{ case.time_spent_hr }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+    {% endif %}
+
     <div class="points_header">
         <p><span class="bold">MONTH:</span> {{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
     </div>

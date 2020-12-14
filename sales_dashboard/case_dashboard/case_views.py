@@ -65,7 +65,6 @@ def main_dashboard(request):
         "date_group_dict":date_group_dict,
         "all_open_cases":all_open_cases,
 
-
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
         "sorted_user_closed":sorted_user_closed,
@@ -80,6 +79,15 @@ def main_dashboard(request):
 
         'date_dict':date_dict,
     }
+
+    #If today is monday, and the user chooses to look at today's data, then the week's data will not
+    #be shown. That is because if the current day is Monday, it will always be identical to the week's
+    #data as no other data for days beyond today exist. 
+    #However, if we look at a Monday in the past, then the data for the week will be different.
+    if today.weekday() == 0 and today.strftime('%Y-%m-%d') == timezone.now().strftime('%Y-%m-%d'):
+        del context["full_cases_week"]
+        del context["case_stats_dict_week"]
+        del context["sorted_user_closed_week"]
 
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "dashboard/case_dashboard.html", context) 
