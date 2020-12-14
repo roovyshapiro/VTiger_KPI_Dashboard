@@ -1,19 +1,20 @@
 {% extends 'dashboard/base.html' %}
 
+{% block form %}
+    <label for="group_dropdown">Group:</label>
+    <select name="group_dropdown" id = "group_dropdown">
+        <option selected>All Groups</option>
+        {% for group  in case_groups %}
+            <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
+        {% endfor %} 
+    </select>
+    <button type="submit" id="submit" onclick="save_group_date()">SUBMIT</button>
+    </form>
+{% endblock %}
+
 {% block content %}
 
 <div id = "body_sizing">
-    {% block form %}
-    <p> this is only in case dashboard block </p>
-        <label for="group_dropdown">Group:</label>
-        <select name="group_dropdown" id = "group_dropdown">
-            <option selected>All Groups</option>
-            {% for group  in case_groups %}
-                <option value="{{ group.assigned_groupname }}">{{ group.assigned_groupname }}</option>
-            {% endfor %} 
-        </select>
-    {% endblock %}
-
     <div id="case_header">
         <div>
             <p id="group_name">{{ date_group_dict.group }} </p>
