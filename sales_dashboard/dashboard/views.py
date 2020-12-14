@@ -1,5 +1,6 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
+from django.utils.timezone import make_aware
 from .models import Phone_call, Opportunities
 import VTiger_Sales_API
 import datetime
@@ -9,12 +10,13 @@ def home_view(request):
     The primary view for the Sales Dashboard where all the calculations take place.
     Celery populates the opportunities and phone calls from today periodically.
     '''
-    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    date_request = request.GET.get('date_start')
+    if date_request == '' or date_request == None:
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        today = make_aware(datetime.datetime.strptime(date_request, '%Y-%m-%d'))
+
     end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
-    day = today.weekday()
-    first_of_week = today + timezone.timedelta(days = -day)
-    end_of_week = first_of_week + timezone.timedelta(days = 6)
-    end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
 
     all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
     all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
@@ -82,6 +84,7 @@ def home_view(request):
         'user_calls':user_calls,
         'today_opps':today_opps,
         'today_phone_calls':today_phone_calls,
+        'today_date': today.strftime('%A, %B %d'),
     }
 
     return render(request, "dashboard/dashboard.html", context) 

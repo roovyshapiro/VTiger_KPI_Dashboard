@@ -25,10 +25,10 @@ function retrieve_saved_data() {
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
         checkbox_click();
     }
-    //Set group dropdown and date selector but only for case dashboard
+    document.getElementById("date_start").value = localStorage.getItem("selected_date");
+    //Set group dropdown but only for case dashboard
     if (window.location.href.includes('/cases')){
     document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
-    document.getElementById("date_start").value = localStorage.getItem("selected_date");
     }
 }
 
@@ -89,11 +89,15 @@ function countdown_update(){
 
 //When the submit button is clicked on the Case Dashboard, the 
 //date and group are saved to localstorage so it can be retrieved
-//after the page is reloaded
+//after the page is reloaded. Sales dashboard utilizies date as well.
 function save_group_date(){
-    selected_group = document.getElementById("group_dropdown").value;
-    localStorage.setItem("selected_group", selected_group);
+    selected_group = document.getElementById("group_dropdown");
+    if(selected_group){
+        selected_group = document.getElementById("group_dropdown").value;
+        localStorage.setItem("selected_group", selected_group);
+    }
 
     selected_date = document.getElementById('date_start').value;
     localStorage.setItem("selected_date", selected_date);
+    console.log(localStorage);
 }
