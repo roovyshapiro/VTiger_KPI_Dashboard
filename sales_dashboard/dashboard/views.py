@@ -101,13 +101,19 @@ def populate_db(request):
 
     return HttpResponseRedirect('/')
 
-def populate_db_month(request):
+def populate_opp_month(request):
     '''
     Populates the opportunities and phone calls databases from the past 3 months.
     '''
     from dashboard.tasks import get_opportunities
     get_opportunities(day='month')
 
+    return HttpResponseRedirect('/')
+
+def populate_call_month(request):
+    '''
+    Populates the opportunities and phone calls databases from the past 3 months.
+    '''
     from dashboard.tasks import get_phonecalls
     get_phonecalls(day='month')
 
