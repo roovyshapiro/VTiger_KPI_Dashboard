@@ -1,0 +1,282 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing:border-box;
+}
+body{
+    font-family: 'Montserrat';
+}
+
+/* NAV Header */
+.header{
+    display:flex;
+    margin-bottom:15px;
+    background-color:#222B37;
+    color: #FFF;
+    width:100%;
+    height:75px;
+    padding-right:20px;
+}
+
+nav > a{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color:white;
+    text-decoration: none;
+    border: 2px solid blue;
+    border-radius: 5px;
+    margin-top:5px;
+    margin-bottom:5px;
+    margin-left: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.header_title{
+    margin-right:auto !important;
+    font-weight:bold;
+    font-size:20px;
+    border: none;
+}
+
+.header_sales:hover {
+    border-radius: 5px;
+    background-color: blue;
+    border: 1px solid orange;
+}
+.header_cases:hover {
+    border-radius: 5px;
+    background-color: blue;
+    border: 1px solid orange;
+}
+
+
+/* Auto Refresh / Group / Date Selector */
+.refresh_date_group{
+    margin-left: 30px;
+}
+
+#group_name{
+    font-weight:bold;
+    font-size:50px;
+    margin-top:35px;
+}
+
+/* Score Key and Tables*/
+.score_key_and_tables{
+    margin-top:5px;
+    display:flex;
+}
+
+/* Score Key */
+.score_key{
+    border: 1px solid blue;
+    border-radius:5px;
+    margin-left: 30px;
+    margin-top:33px;
+    height:225px;
+}
+
+.score_key p{
+    font-size:1.2em;
+    font-weight:bold;
+    text-align:left;
+    margin-left:10px;
+}
+
+.score_key_table {
+    margin:10px;
+    border-collapse: collapse;
+
+}
+.score_key_table th{
+    text-align:left;
+    padding:3px;
+    font-size:.8em;
+}
+.score_key_table td{
+    padding:3px;
+    font-size:.8em;
+}
+
+/* Point Boxes */
+.points{
+    display:flex;
+    flex-direction:row;
+    margin-bottom:5px;
+    margin-top:10px;
+}
+.score_box{
+    flex:1;
+    border: 5px solid blue;
+    border-radius:10px;
+    padding: 10px;
+    margin-right: 30px;
+    margin-left: 30px;
+    justify-content:center;
+    text-align:center;
+}
+.score_name{
+    padding-bottom:5px;
+    font-weight:bold;
+}
+.score_num{
+    font-size:75px;
+}
+
+/* Point Tables */
+.score_tables{
+    flex:2;
+}
+.score_table_title{
+    text-align:center;
+    padding-top:25px;
+    padding-bottom:10px;
+    font-size:1.2em;
+    font-weight:bold;
+}
+table{
+    border-collapse: collapse;
+    margin-right:auto;
+    margin-left:auto;
+}
+td, th{
+    border: 1px solid orange;
+    padding:10px;
+}
+
+/* Case Body */
+#body_sizing{
+    margin-left:20px;
+    margin-right:20px;
+}
+
+/* Case Header */
+#case_header{
+    display:flex;
+    flex-direction:row;
+    margin-top:10px;
+}
+
+#all_open_cases{
+    margin-right:0px;
+    margin-left:auto;
+    margin-bottom:5px;
+    flex: 0 0 25%;
+}
+
+
+/* Submit Button */
+button {
+    box-shadow: 0px 0px 0px 2px #9fb4f2;
+    background-color:#222b37;
+    border-radius:10px;
+    border:1px solid #0000ff;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:12px;
+    padding:3px 8px;
+    text-shadow:0px 1px 0px #283966; 
+    margin-top:5px;
+    font-family: 'Montserrat';
+}
+
+button:hover {
+    background-color:#0000ff;
+    border:1px solid #222b37;
+}
+button:active {
+    position:relative;
+    top:1px;
+}
+
+/* Points Header */
+.points_header{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+.bold{
+    font-weight:bold;
+    font-size: 18px;
+}
+
+/* Case Tables */
+.scrollable_table tbody{
+    display:block;
+    overflow:auto;
+    height:300px;
+    width:100%;
+  }
+  .scrollable_table thead tr{
+    display:block;
+  }
+
+/* Show Table Buttons and hide/show ability for each table*/
+label.show_label {
+    box-shadow: 0px 0px 0px 2px #9fb4f2;
+    background-color:#222b37;
+    border-radius:10px;
+    border:1px solid #0000ff;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-size:12px;
+    padding:3px 8px;
+    text-shadow:0px 1px 0px #283966;
+    margin-bottom:5px;
+}
+label.show_label:hover {
+    background-color:#0000ff;
+    border:1px solid #222b37;
+}
+label.show_label:active {
+    position:relative;
+    top:1px;
+}
+  
+
+#case_table_all,#show_label_all {
+    display:none;
+}
+#show_label_all:checked ~ #case_table_all{
+    display:block;
+}
+
+#case_table_day,#show_label_day {
+    display:none;
+}
+#show_label_day:checked ~ #case_table_day{
+    display:block;
+}
+
+#case_table_week,#show_label_week {
+    display:none;
+}
+#show_label_week:checked ~ #case_table_week{
+    display:block;
+}
+
+#case_table_month,#show_label_month {
+    display:none;
+}
+#show_label_month:checked ~ #case_table_month{
+    display:block;
+}
+
+/* Sales Dashboard */
+#today_opp_table,#show_today_opps {
+    display:none;
+}
+#show_today_opps:checked ~ #today_opp_table{
+    display:block;
+}
+
+#today_call_table,#show_today_calls {
+    display:none;
+}
+#show_today_calls:checked ~ #today_call_table{
+    display:block;
+}
