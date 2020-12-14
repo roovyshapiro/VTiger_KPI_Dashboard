@@ -77,6 +77,17 @@ def home_view(request):
             user_total_score[call.assigned_username] += 1
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
 
+    #Min Max Values for Date Picker in base.html
+    first_opp = all_sales_opps.order_by('modifiedtime').first().modifiedtime
+    last_opp = all_sales_opps.order_by('modifiedtime').last().modifiedtime
+    first_opp = first_opp.strftime('%Y-%m-%d')
+    last_opp = last_opp.strftime('%Y-%m-%d')
+    date_dict = {
+        'first_db': first_opp,
+        'last_db': last_opp,
+        'today_date':today.strftime('%A, %B %d')
+    }
+
     context = {
         'user_total_score':user_total_score,
         'user_opp_dict': user_opp_dict,
@@ -84,7 +95,7 @@ def home_view(request):
         'user_calls':user_calls,
         'today_opps':today_opps,
         'today_phone_calls':today_phone_calls,
-        'today_date': today.strftime('%A, %B %d'),
+        'date_dict':date_dict,
     }
 
     return render(request, "dashboard/dashboard.html", context) 

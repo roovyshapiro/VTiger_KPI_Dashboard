@@ -50,6 +50,15 @@ def main_dashboard(request):
     case_stats_dict_week, sorted_user_closed_week, full_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
     case_stats_dict_month, sorted_user_closed_month, full_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
 
+    #Min Max Values for Date Picker in base.html
+    first_case = Cases.objects.all().order_by('modifiedtime').first().modifiedtime
+    last_case = Cases.objects.all().order_by('modifiedtime').last().modifiedtime
+    first_case = first_case.strftime('%Y-%m-%d')
+    last_case = last_case.strftime('%Y-%m-%d')
+    date_dict = {
+        'first_db': first_case,
+        'last_db': last_case,
+    }
 
     context = {
         "case_groups":case_groups,
@@ -68,6 +77,8 @@ def main_dashboard(request):
         "full_cases_month":full_cases_month,
         "case_stats_dict_month":case_stats_dict_month,
         "sorted_user_closed_month":sorted_user_closed_month,
+
+        'date_dict':date_dict,
     }
 
     #After returning the request, return the html file to go to, and the context to send to the html

@@ -21,7 +21,7 @@
             <div id ="group_date_selector">
                 <form method="GET" action=".">
                     <label for="date_start">Date:</label>
-                    <input type="date" name="date_start" id="date_start" min="2020-01-01" max="2030-01-01">
+                    <input type="date" name="date_start" id="date_start" min={{date_dict.first_db}} max={{date_dict.last_db}}>
                     {% block form %}
                     {% endblock %}
 
