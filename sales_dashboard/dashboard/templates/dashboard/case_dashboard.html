@@ -33,6 +33,7 @@
         <table class = "scrollable_table">
             <tbody>
                 <tr>
+                    <th>#</th>
                     <th>Number</th>
                     <th>Group</th>
                     <th>Assigned To</th>
@@ -45,6 +46,7 @@
                 </tr>
                 {% for case in all_open_cases.full_cases %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ case.case_no }}</td>
                         <td>{{ case.assigned_groupname }}</td>
                         <td>{{ case.assigned_username }}</td>
@@ -102,6 +104,7 @@
         <table class = "scrollable_table">
             <tbody>
                 <tr>
+                    <th>#</th>
                     <th>Number</th>
                     <th>Group</th>
                     <th>Assigned To</th>
@@ -114,6 +117,7 @@
                 </tr>
                 {% for case in full_cases_day %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ case.case_no }}</td>
                         <td>{{ case.assigned_groupname }}</td>
                         <td>{{ case.assigned_username }}</td>
@@ -174,6 +178,7 @@
             <table class = "scrollable_table">
                 <tbody>
                     <tr>
+                        <th>#</th>
                         <th>Number</th>
                         <th>Group</th>
                         <th>Assigned To</th>
@@ -186,6 +191,7 @@
                     </tr>
                     {% for case in full_cases_week %}
                         <tr>
+                            <td>{{ forloop.counter }}</td>
                             <td>{{ case.case_no }}</td>
                             <td>{{ case.assigned_groupname }}</td>
                             <td>{{ case.assigned_username }}</td>
@@ -246,6 +252,7 @@
         <table class = "scrollable_table">
             <tbody>
                 <tr>
+                    <th>#</th>
                     <th>Number</th>
                     <th>Group</th>
                     <th>Assigned To</th>
@@ -258,6 +265,7 @@
                 </tr>
                 {% for case in full_cases_month %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ case.case_no }}</td>
                         <td>{{ case.assigned_groupname }}</td>
                         <td>{{ case.assigned_username }}</td>

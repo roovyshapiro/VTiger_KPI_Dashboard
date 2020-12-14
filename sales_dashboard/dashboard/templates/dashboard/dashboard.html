@@ -116,6 +116,7 @@
 
         <div id = "today_opp_table">
             <table class="scrollable_table">
+                <th>#</th>
                 <th>Number</th>
                 <th>User</th>
                 <th>Name</th>
@@ -125,6 +126,7 @@
                 <th>Created Time</th>
                 {% for opp in today_opps %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ opp.opp_no }}</td>
                         <td>{{ opp.assigned_username }}</td>
                         <td>{{ opp.opp_name }}</td>
@@ -139,6 +141,7 @@
 
         <div id = "today_call_table">
             <table class="scrollable_table">
+                <th>#</th>
                 <th>User</th>
                 <th>Call Time</th>
                 <th>End Time</th>
@@ -148,6 +151,7 @@
                 <th>Customer Number</th>
                 {% for call in today_phone_calls %}
                     <tr>
+                        <td>{{ forloop.counter }}</td>
                         <td>{{ call.assigned_username }}</td>
                         <td>{{ call.modifiedtime }}</td>
                         <td>{{ call.endtime }}</td>
