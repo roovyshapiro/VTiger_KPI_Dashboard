@@ -7,8 +7,7 @@ APP WIDE
 - Need to figure out the best way to host static files / reorganize where the html, css, js and images should go
 
 CASE DASHBOARD
-- adjust the readme.md to update with information for case dashboard
 
 SALES DASHBOARD
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
-- provide week/month data perhaps?
+- provide week/month data perhaps? Need to check requirements
