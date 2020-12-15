@@ -3,7 +3,6 @@
 APP WIDE
 
 - Setup authentication so user can only access from authenticated google account
-- Bump django from 3.0.3 to 3.0.7 #1 Security Fix prompted by github
 - Need to figure out the best way to host static files / reorganize where the html, css, js and images should go
 
 CASE DASHBOARD
