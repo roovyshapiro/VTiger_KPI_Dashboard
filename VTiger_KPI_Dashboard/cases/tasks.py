@@ -10,7 +10,7 @@ import VTiger_API
 import json, os, datetime
 
 @shared_task
-def populate_db_celery_cases(get_all_cases=False):
+def get_cases(get_all_cases=False):
     '''
     Example Case:
 
@@ -152,7 +152,7 @@ def populate_db_celery_cases(get_all_cases=False):
     num_all_open_cases = retrieve_case_data(get_all_count = True)
     if num_all_open_cases != num_all_open_cases_db:
         print("Open Cases don't match!")
-        populate_db_celery_cases(get_all_cases=True)
+        get_cases(get_all_cases=True)
 
 def delete_old_cases():
     '''

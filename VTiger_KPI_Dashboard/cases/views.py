@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
 from django.db.models import Q
 import datetime, calendar
-from .tasks import populate_db_celery_cases
+from .tasks import get_cases
 from .models import Cases
 
 
@@ -218,11 +218,11 @@ def retrieve_dates(date_request):
     return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
 def populate_cases(request):
-    populate_db_celery_cases()
+    get_cases()
     return HttpResponseRedirect("/cases")
 
 def populate_all_cases(request):
-    populate_db_celery_cases(get_all_cases=True)
+    get_cases(get_all_cases=True)
     return HttpResponseRedirect("/cases")
 
 
