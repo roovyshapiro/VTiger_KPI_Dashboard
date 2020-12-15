@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cases',
     'sales',
+    'home',
     'celery',
     'django_celery_beat',
 ]
