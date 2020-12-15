@@ -2,6 +2,18 @@
 
 {% block content %}
 
-<h1> This is the home page! </h1>
+<div id = "home_page_header">
+    <p id="home_page_header_main"> VTiger KPI Dashboard </p>
+    <p id ="home_page_subheader">Key Performance Indicators, Metrics and Analysis <br><span id = "subheader_sub">Powered by VTiger CRM's API and Django</span><p>
+</div>
+
+<div id = "home_page_buttons">
+    <a href = "/sales">
+        <img src="static/sales.png" alt="My image">
+    </a>
+    <a href = "/cases">
+        <img src="static/cases.png" alt="My image">
+    </a>
+</div>
 
 {% endblock %}
