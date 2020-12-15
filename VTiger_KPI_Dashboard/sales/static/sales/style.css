@@ -55,8 +55,8 @@ nav > a{
 
 /*  Home Page */
 #home_page_header{
-    margin-top: 5%;
-    margin-bottom: 5%;
+    margin-top: 6%;
+    margin-bottom: 6%;
     margin-left: 15%;
     margin-right: 15%;
 }
@@ -84,13 +84,19 @@ nav > a{
     margin-right: 25%;
 }
 
+.button p{
+    text-align: center;
+    font-size: 30px;
+    font-weight: bold;
+}
+
 #home_page_buttons a{
     display: inline-block;
     margin-left: 50px;
     margin-right: 50px;
 }
 
-#home_page_buttons a:hover{
+#home_page_buttons div:hover{
     position:relative;
     top:5px;
 }
