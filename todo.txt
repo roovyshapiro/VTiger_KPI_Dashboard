@@ -2,16 +2,13 @@
 
 APP WIDE
 
-- make a simple front end html welcome page with big buttons directing the user to the different dashboards
 - Setup authentication so user can only access from authenticated google account
 - Bump django from 3.0.3 to 3.0.7 #1 Security Fix prompted by github
-
+- Need to figure out the best way to host static files / reorganize where the html, css, js and images should go
 
 CASE DASHBOARD
-- rename repository and folders so its obvious that cases and sales are separate apps within the same project
 - adjust the readme.md to update with information for case dashboard
 
 SALES DASHBOARD
-
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
 - provide week/month data perhaps?
