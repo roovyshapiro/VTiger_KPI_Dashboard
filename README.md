@@ -1,16 +1,23 @@
-# VTiger Sales Dashboard
+# VTiger KPI Dashboard
 
-[![](https://i.imgur.com/EcnseP9.png)](https://i.imgur.com/EcnseP9.png)
+[![](https://i.imgur.com/zJFLA8J.png)](https://i.imgur.com/zJFLA8J.png)
+[![](https://i.imgur.com/Gv8Dm3E.png)](https://i.imgur.com/Gv8Dm3E.png)
+[![](https://i.imgur.com/iYZoQWq.png)](https://i.imgur.com/iYZoQWq.png)
 
 ### Overview
-VTiger Sales Dashboard is a Django application which shows live data from your VTiger sales team. We gather phone calls and the opportunity stages which have been changed in a given day and assign a point value to each. The goal is for the salesperson to reach 100 points in a day by whatever means necessary. They can reach their goal by making 100 phone calls, or by making 50 phone calls and conducting 5 demos, etc. The various sales stages will change depending on the way you've configured your Opportunities, stages and sales pipelines within VTiger.
+VTiger KPI Dashboard is a Django web application which shows live data from your VTiger CRM instance so you can track your sales and support teams. With this application running it is easy to see at a glance how your team is operating and who are the best performers. Celery is used to retrieve data from VTiger's API every ten minutes or so. Currently, we are storing all Cases, Opportunities and Phone Calls.
+
+### Cases
+We show all the cases that have been worked on, created and resolved in a given time frame. We also show how many cases each user has resolved. Data is shown for the current selected day, the day's week and the day's month. As an option, a table can be displayed showing all the cases for a given time frame.
+### Sales
+The sales dashboard operates on a point system where each phone call is one point and each opportunity stage is assigned a different point value. The goal is for the salesperson to reach 100 points in a day by whatever means necessary. They can reach their goal by making 100 phone calls, or by making 50 phone calls and conducting 5 demos, etc. The various sales stages will change depending on the way you've configured your Opportunities, stages and sales pipelines within VTiger.
 
 ### Connecting to VTiger
-The file sales_dashboard/VTiger_Sales_API.py uses VTiger's API to gather the data we need and pass it into the Django database.
+The file VTiger_KPI_Dashboard/VTiger_API.py uses VTiger's API to gather the data we need and pass it into the Django database. Ultimately, the primary purpose is to simply retrieve the cases, opportunities and phone calls that were made today and save them into Django's DB. All the calculations are performed afterwards by Django's views.
 
 See here for VTiger's API documentation: https://www.vtiger.com/docs/rest-api-for-vtiger
 
-Make sure to have a file named 'credentials.json' within the main 'sales_dashboard' directory. It should be structured like this:
+Make sure to have a file named 'credentials.json' within the main 'VTiger_KPI_Dashboard' directory. It should be structured like this:
 ```python
 {"username": "<vtiger_username>", "access_key": "<access_key>", "host": "https://< custom_hostname>vtiger.com/restapi/v1/vtiger/default"}
 ```
@@ -59,14 +66,14 @@ https://docs.celeryproject.org/en/stable/userguide/workers.html#stopping-the-wor
 
 
 ### Flower - Real-Time Celery Monitor
-[![](https://i.imgur.com/YziqxVn.png)](https://i.imgur.com/YziqxVn.png)
+[![](https://i.imgur.com/XKb5FJw.png)](https://i.imgur.com/XKb5FJw.png)
 "Flower is a web based tool for monitoring and administrating Celery clusters."
 It's very helpful for troublehsooting and showing how many times the periodic celery tasks have run.
 The server is started by running the .startapps.sh file and can be accessed at http://localhost:5555
 https://flower.readthedocs.io/en/latest/features.html
 
 
-### Starting the Server
+### Starting the Application
 It's a good idea to use a virtual environment with Python applications especially with Django. Here's a great article explaining the process:
 https://realpython.com/python-virtual-environments-a-primer/
 
@@ -110,14 +117,15 @@ Afterwards, you should be able to access the dashboard locally at http://127.0.0
 Flower can be accessed locally at http://127.0.0.1:5555
 
 ### Changing Opportunity Sales Stages
-Unfortunately, there are many places where the sales stages are hard coded in. If your sales stages are different, you'll need to edit them in
-- sales_dashboard/dashboard/models.py
-- sales_dashboard/dashboard/tasks.py
-- sales_dashboard/dashboard/templates/dashboard/dashboard.html
+Unfortunately, there are many places where the sales stages are hard coded in. If your sales stages are different, you'll need to edit them in the sales opportunity model, 
+In the task where the opportunities are saved to the django DB, in the sales view and in the sales html where they are displayed.
+- VTiger_KPI_Dashboard/sales/models.py
+- VTiger_KPI_Dashboard/sales/tasks.py
+- VTiger_KPI_Dashboard/sales/views.py
+- VTiger_KPI_Dashboard/sales/templates/sales/sales.html
 
-This will hopefully be fixed in future iterations so that it doesn't matter which sales stages are set.
 
 ### Changing the Points Calculation
 Currently, each phone call is worth 1 point, each Demo Scheduled is worth 5 points and each Demo Given is worth 10 points. 
-To edit the score calculation, edit the values in  sales_dashboard/dashboard/models.calculate_scores()
+To edit the score calculation, edit the values in  VTiger_KPI_Dashboard/sales/views.py
 The values shown in the score_key in the HTML are static and have no bearing on the calculation.
