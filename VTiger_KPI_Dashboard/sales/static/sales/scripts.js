@@ -101,3 +101,10 @@ function save_group_date(){
     localStorage.setItem("selected_date", selected_date);
     console.log(localStorage);
 }
+
+function previous_date(){
+    console.log(localStorage.getItem('selected_date'));
+}
+function next_date(){
+    console.log(localStorage.getItem('selected_date'));
+}

@@ -118,6 +118,15 @@ img {
     margin-top:35px;
 }
 
+
+.round {
+    background-color: blue;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 60%;
+    margin-top:2px;
+}
+
 /* Score Key and Tables*/
 .score_key_and_tables{
     margin-top:5px;
