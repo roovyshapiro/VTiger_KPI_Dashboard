@@ -50,19 +50,17 @@ def main(request):
     case_stats_dict_week, sorted_user_closed_week, full_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
     case_stats_dict_month, sorted_user_closed_month, full_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
 
+    date_dict = {}
     #Min Max Values for Date Picker in base.html
     try:
         first_case = Cases.objects.all().order_by('modifiedtime').first().modifiedtime
-        last_case = Cases.objects.all().order_by('modifiedtime').last().modifiedtime
         first_case = first_case.strftime('%Y-%m-%d')
-        last_case = last_case.strftime('%Y-%m-%d')
         date_dict = {
             'first_db': first_case,
-            'last_db': last_case,
+            'last_db': timezone.now().strftime('%Y-%m-%d'),
         }
     except AttributeError:
         populate_cases(request)
-        main(request)
 
     context = {
         "case_groups":case_groups,

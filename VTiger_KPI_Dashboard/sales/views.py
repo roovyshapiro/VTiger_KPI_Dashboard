@@ -77,21 +77,19 @@ def main(request):
             user_total_score[call.assigned_username] += 1
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
 
+    date_dict = {}
     #Min Max Values for Date Picker in base.html
     try:
         first_opp = all_sales_opps.order_by('modifiedtime').first().modifiedtime
-        last_opp = all_sales_opps.order_by('modifiedtime').last().modifiedtime
         first_opp = first_opp.strftime('%Y-%m-%d')
-        last_opp = last_opp.strftime('%Y-%m-%d')
         date_dict = {
             'first_db': first_opp,
-            'last_db': last_opp,
+            'last_db': timezone.now().strftime('%Y-%m-%d'),
             'today_date':today.strftime('%A, %B %d')
         }
     except AttributeError:
         #If there is nothing in the DB, because the project was run for the first time as example, we'll prompt the population of the db for today so the request doesn't fail
         populate_db(request)
-        main(request)
 
     context = {
         'user_total_score':user_total_score,
