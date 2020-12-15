@@ -21,7 +21,33 @@ def main(request):
     all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
     all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
-    sales_users = all_sales_opps.values('assigned_username').distinct()
+    #In order to get all the sales users, we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
+    #This will get us all the users but as you can see there may be duplicates.
+    #<QuerySet [{'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}, {'assigned_username': 'Horace Builderguild'}]>
+    #<QuerySet [{'assigned_username': 'Phillibus Pickens'}, {'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}]>
+    sales_users_opps = all_sales_opps.values('assigned_username').distinct()
+    sales_users_calls = all_sales_calls.values('assigned_username').distinct()
+
+    #Next we create a list with all the users
+    #[{'assigned_username': 'Phillibus Pickens'}, 
+    # {'assigned_username': 'Frank Dinkins'}, 
+    # {'assigned_username': 'Joshua Weathertree'}, 
+    # {'assigned_username': 'Frank Dinkins'}, 
+    # {'assigned_username': 'Joshua Weathertree'}, 
+    # {'assigned_username': 'Horace Builderguild'}]
+    sales_users_all = []
+    for user in sales_users_calls:
+        sales_users_all.append(user) 
+    for user in sales_users_opps:
+        sales_users_all.append(user) 
+
+    #Finally we create a list with distinct usernames.
+    #[{'assigned_username': 'Phillibus Pickens'}, 
+    # {'assigned_username': 'Frank Dinkins'}, 
+    # {'assigned_username': 'Joshua Weathertree'},
+    # {'assigned_username': 'Horace Builderguild'}]
+    sales_users = list({v['assigned_username']:v for v in sales_users_all}.values())
+
 
     today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
     today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
