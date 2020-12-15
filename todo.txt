@@ -4,8 +4,10 @@ APP WIDE
 
 - Setup authentication so user can only access from authenticated google account
 - Need to figure out the best way to host static files / reorganize where the html, css, js and images should go
+- mobile friendly CSS
 
 CASE DASHBOARD
+- Avg time spent on a case per user?
 
 SALES DASHBOARD
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
