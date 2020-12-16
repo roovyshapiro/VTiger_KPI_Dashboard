@@ -30,6 +30,7 @@ function retrieve_saved_data() {
     if (window.location.href.includes('/cases')){
     document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
     }
+    console.log(localStorage);
 }
 
 //
@@ -100,11 +101,26 @@ function save_group_date(){
     selected_date = document.getElementById('date_start').value;
     localStorage.setItem("selected_date", selected_date);
     console.log(localStorage);
+    document.getElementById("date_group_form").submit();
+
 }
 
-function previous_date(){
-    console.log(localStorage.getItem('selected_date'));
-}
-function next_date(){
-    console.log(localStorage.getItem('selected_date'));
+function date_changer(timeframe){
+    //["2020", "12", "15"]
+    var today_arr = localStorage.getItem('selected_date').split('-');
+    //Tue Dec 15 2020 00:00:00 GMT-0500 (Eastern Standard Time)
+    today = new Date(`${today_arr[0]},${today_arr[1]},${today_arr[2]}`);
+    if(timeframe=='yesterday'){
+        var timediff = today.getDate() - 1;
+    }
+    else if(timeframe=='tomorrow'){
+        var timediff = today.getDate() + 1;
+    }
+    if(timediff.toString().length == 1){
+        timediff = `0${timediff}`;
+    }
+    new_date = `${today.getFullYear()}-${today.getMonth() + 1}-${timediff}`;
+    localStorage.setItem('selected_date', new_date);
+    document.getElementById("date_start").value = new_date;
+    save_group_date();
 }
