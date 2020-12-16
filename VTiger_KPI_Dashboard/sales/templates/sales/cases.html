@@ -1,7 +1,7 @@
 {% extends 'sales/refresh_date_picker.html' %}
 
 {% block form %}
-    <label for="group_dropdown">Group:</label>
+    <label for="group_dropdown" id="group_dropdown_label">Group:</label>
     <select name="group_dropdown" id = "group_dropdown">
         <option selected>All Groups</option>
         {% for group  in case_groups %}

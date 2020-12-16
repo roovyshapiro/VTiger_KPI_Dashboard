@@ -416,6 +416,20 @@ label.show_label:active {
     #refresh_date_group{
         margin-left: 30px;
     }
+    input[type=number]{
+        width: 50px;
+        margin-bottom:5px;
+    } 
+
+    #group_dropdown{
+        margin-top:10px;
+    }
+
+    #next_day_switcher:after{
+        content:"\a";
+        white-space: pre;
+    }
+
 
     #group_name{
         font-weight:bold;
