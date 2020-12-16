@@ -60,22 +60,28 @@
             <section class="score_tables">
                 {% for user, value in user_opp_dict.items %}
                     <p class="score_table_title">{{ user }}</p>
-                        <table>
-                            <th>Demo Scheduled</th>
-                            <th>Demo Given</th>
-                            <th>Quote Sent</th>
-                            <th>Pilot</th>
-                            <th>Needs Analysis</th>
-                            <th>Closed Won</th>
-                            <th>Closed Lost</th>
-                            <th>Phone Calls</th>
-                            <tr>
-                                {% for item, points in value.items %}
-                                    <td>
-                                        {{ points }}
-                                    </td>
-                                {% endfor %}
-                            </tr>
+                        <table class="sales_score_table">
+                            <thead class="sales_score_thead">
+                                <tr>
+                                    <th>Demo Scheduled</th>
+                                    <th>Demo Given</th>
+                                    <th>Quote Sent</th>
+                                    <th>Pilot</th>
+                                    <th>Needs Analysis</th>
+                                    <th>Closed Won</th>
+                                    <th>Closed Lost</th>
+                                    <th>Phone Calls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for item, points in value.items %}
+                                        <td label='{{ item }}' class = "sales_score_td">
+                                            {{ points }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
                         </table>
 
                     <!--Displays individual opp tables per user.
