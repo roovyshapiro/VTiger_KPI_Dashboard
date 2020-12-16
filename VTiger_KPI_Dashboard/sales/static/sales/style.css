@@ -635,17 +635,16 @@ label.show_label:active {
         align-self:center;
     }
 
-    /* Case Tables */
-    .scrollable_table tbody{
-        display:block;
-        overflow:auto;
-        height:300px;
-        width:100%;
+    /* Case/Opp/Call Tables */
+    .scrollable_table{
+        font-size:10px;
     }
-    .scrollable_table thead tr{
-        display:block;
+    .scrollable_table td{
+        padding:1px;
     }
-
+    .scrollable_table th{
+        padding:0px;
+    }
 
 
 }
