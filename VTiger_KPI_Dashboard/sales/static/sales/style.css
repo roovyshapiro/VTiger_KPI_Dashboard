@@ -138,41 +138,29 @@ img {
 
 /****** SALES ******/
 
-/* Score Key and Tables*/
-.score_key_and_tables{
-    margin-top:5px;
-    display:flex;
-}
 
 /* Score Key */
-.score_key{
-    border: 1px solid blue;
-    border-radius:5px;
-    margin-left: 30px;
-    margin-top:33px;
-    height:225px;
+/* Makes Score Tables into one column with the label on the left and points on the right */
+table.score_key_table thead.score_key_thead {
+    display: none;
 }
 
+table.score_key_table td.score_key_points {
+    display: flex;
+}
+
+table.score_key_table td.score_key_points::before {
+    content: attr(label);
+    font-weight: bold;
+    width: 100px;
+}
+
+td.score_key_points {
+    padding:1px;
+    font-size:10px;
+}
 .score_key p{
-    font-size:1.2em;
     font-weight:bold;
-    text-align:left;
-    margin-left:10px;
-}
-
-.score_key_table {
-    margin:10px;
-    border-collapse: collapse;
-
-}
-.score_key_table th{
-    text-align:left;
-    padding:3px;
-    font-size:.8em;
-}
-.score_key_table td{
-    padding:3px;
-    font-size:.8em;
 }
 
 /* Point Boxes */
@@ -454,7 +442,7 @@ label.show_label:active {
       table.sales_score_table td.sales_score_td {
         display: flex;
       }
-      
+
       table.sales_score_table td.sales_score_td::before {
         content: attr(label);
         font-weight: bold;
