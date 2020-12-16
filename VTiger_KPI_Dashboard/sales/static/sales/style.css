@@ -415,6 +415,7 @@ label.show_label:active {
     /* Auto Refresh / Group / Date Selector */
     #refresh_date_group{
         margin-left: 30px;
+        margin-right:30px;
     }
     input[type=number]{
         width: 50px;
@@ -430,6 +431,10 @@ label.show_label:active {
         white-space: pre;
     }
 
+    #sales_submit{
+        margin-top:10px;
+        margin-bottom:10px;
+    }
 
     #group_name{
         font-weight:bold;
@@ -505,6 +510,11 @@ label.show_label:active {
     }  
 
     /****** SALES ******/
+    #selected_sales_date{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+    }
     /* Score Key */
     .score_key{
         display:none;

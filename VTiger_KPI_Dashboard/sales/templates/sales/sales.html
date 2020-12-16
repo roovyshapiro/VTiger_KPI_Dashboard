@@ -1,9 +1,9 @@
 {% extends 'sales/refresh_date_picker.html' %}
 
 {% block form %}
-    <button type="submit" onclick="save_group_date()">SUBMIT</button>
+    <button type="submit" id="sales_submit" onclick="save_group_date()">SUBMIT</button>
     </form>
-<p>{{ date_dict.today_date }} </p>
+<p id = "selected_sales_date">{{ date_dict.today_date }} </p>
 {% endblock %}
 
 {% block content %}
