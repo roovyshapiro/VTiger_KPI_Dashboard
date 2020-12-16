@@ -412,27 +412,9 @@ label.show_label:active {
     }  
 
     /****** SALES ******/
-
-    /* Score Key and Tables*/
-    .score_key_and_tables{
-        margin-top:5px;
-        display:flex;
-    }
-
     /* Score Key */
     .score_key{
-        border: 1px solid blue;
-        border-radius:5px;
-        margin-left: 30px;
-        margin-top:33px;
-        height:225px;
-    }
-
-    .score_key p{
-        font-size:1.2em;
-        font-weight:bold;
-        text-align:left;
-        margin-left:10px;
+        display:none;
     }
 
 	/* Makes Score Tables into one column with the label on the left and points on the right */
@@ -454,17 +436,18 @@ label.show_label:active {
     /* Point Boxes */
     .points{
         display:flex;
-        flex-direction:row;
+        flex-direction:column;
         margin-bottom:5px;
         margin-top:10px;
     }
     .score_box{
         flex:1;
-        border: 5px solid blue;
+        border: 3px solid blue;
         border-radius:10px;
-        padding: 10px;
+        padding: 2px;
         margin-right: 30px;
         margin-left: 30px;
+        margin-bottom:5px;
         justify-content:center;
         text-align:center;
     }
@@ -475,28 +458,6 @@ label.show_label:active {
     .score_num{
         font-size:75px;
     }
-
-    /* Point Tables */
-    .score_tables{
-        flex:2;
-    }
-    .score_table_title{
-        text-align:center;
-        padding-top:25px;
-        padding-bottom:10px;
-        font-size:1.2em;
-        font-weight:bold;
-    }
-    table{
-        border-collapse: collapse;
-        margin-right:auto;
-        margin-left:auto;
-    }
-    td, th{
-        border: 1px solid orange;
-        padding:10px;
-    }
-
 
 
 }
