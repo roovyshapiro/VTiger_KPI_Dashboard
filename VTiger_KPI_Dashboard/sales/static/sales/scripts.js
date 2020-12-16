@@ -121,8 +121,10 @@ function date_changer(timeframe){
 
         var today = new Date();
         //Don't allow user to choose a date in the future
+        //end the function now so it doesn't refresh the page
+        //for no reason.
         if (chosen_date.getDate() + 1 > today.getDate()){
-            var timediff = chosen_date.getDate();
+            return;
         }
         else{
             var timediff = chosen_date.getDate() + 1;
