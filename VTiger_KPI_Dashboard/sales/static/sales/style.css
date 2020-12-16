@@ -361,24 +361,24 @@ label.show_label:active {
     #home_page_header{
         margin-top: 6%;
         margin-bottom: 6%;
-        margin-left: 15%;
-        margin-right: 15%;
+        margin-left: 7%;
+        margin-right: 7%;
     }
 
     #home_page_header_main{
-        font-size: 60px;
+        font-size: 25px;
         font-weight: bold;
         text-align: center;
     }
 
     #home_page_subheader{
         text-align: center;
-        font-size: 25px;
+        font-size: 15px;
     }
 
     #subheader_sub{
         font-style: italic;
-        font-size: 15px;
+        font-size: 9px;
 
     }
     #home_page_buttons{
