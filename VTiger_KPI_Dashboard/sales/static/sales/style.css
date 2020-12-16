@@ -118,13 +118,14 @@ img {
     margin-top:35px;
 }
 
-
-.round {
-    background-color: blue;
-    color: white;
+.round_day_switcher {
+    background-color: lightgray;
+    color: black;
     padding: 2px 8px;
     border-radius: 60%;
     margin-top:2px;
+    font-weight:bold;
+    text-decoration: none;
 }
 
 /* Score Key and Tables*/
