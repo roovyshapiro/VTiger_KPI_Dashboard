@@ -237,6 +237,36 @@ td, th{
 }
 
 
+/* Points Header */
+.points_header{
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+.points_header p{
+    display:inline-block;
+}
+
+.bold{
+    font-weight:bold;
+    font-size: 18px;
+}
+
+/* Case Tables */
+.scrollable_table tbody{
+    display:block;
+    overflow:auto;
+    height:300px;
+    width:100%;
+  }
+  .scrollable_table thead tr{
+    display:block;
+  }
+
+
+/****** Submit Button / Hide Show Tables ******/
+
+
 /* Submit Button */
 button {
     box-shadow: 0px 0px 0px 2px #9fb4f2;
@@ -261,27 +291,6 @@ button:active {
     position:relative;
     top:1px;
 }
-
-/* Points Header */
-.points_header{
-    margin-top:10px;
-    margin-bottom:10px;
-}
-.bold{
-    font-weight:bold;
-    font-size: 18px;
-}
-
-/* Case Tables */
-.scrollable_table tbody{
-    display:block;
-    overflow:auto;
-    height:300px;
-    width:100%;
-  }
-  .scrollable_table thead tr{
-    display:block;
-  }
 
 /* Show Table Buttons and hide/show ability for each table*/
 label.show_label {
@@ -545,5 +554,70 @@ label.show_label:active {
     #opp_call_tables{
         margin-left:10px;
     }
+
+    /****** CASES ******/
+
+
+    /* Case Body */
+    #body_sizing{
+        margin-left:20px;
+        margin-right:20px;
+    }
+
+    /* Case Header */
+    #case_header{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items: center;
+        margin-top:10px;
+    }
+    
+        #all_open_cases{
+        margin-right:auto;
+        margin-left:auto;
+        margin-bottom:10px;
+        margin-top:10px;
+        width:80%;
+    }
+
+    label.show_label {
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        margin-left:100px;
+        margin-right:100px;
+    }
+
+    /* Points Header */
+    .points_header{
+        margin-top:15px;
+        margin-bottom:15px;
+    }
+    .points_header p{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-size:13px;
+        font-weight:bold;
+    }
+    .bold{
+        font-size: 22px;
+        display:block;
+        align-self:center;
+    }
+
+    /* Case Tables */
+    .scrollable_table tbody{
+        display:block;
+        overflow:auto;
+        height:300px;
+        width:100%;
+    }
+    .scrollable_table thead tr{
+        display:block;
+    }
+
+
 
 }
