@@ -105,21 +105,34 @@ function save_group_date(){
 
 }
 
+//This function is called when the arrows are clicked next to the timechanger
+//to change the date back and forth by one day. This automatically submits the page
+//as the submit function was moved to save_group_date()
 function date_changer(timeframe){
     //["2020", "12", "15"]
-    var today_arr = localStorage.getItem('selected_date').split('-');
+    var chosen_date_arr = localStorage.getItem('selected_date').split('-');
     //Tue Dec 15 2020 00:00:00 GMT-0500 (Eastern Standard Time)
-    today = new Date(`${today_arr[0]},${today_arr[1]},${today_arr[2]}`);
+    chosen_date = new Date(`${chosen_date_arr[0]},${chosen_date_arr[1]},${chosen_date_arr[2]}`);
+
     if(timeframe=='yesterday'){
-        var timediff = today.getDate() - 1;
+        var timediff = chosen_date.getDate() - 1;
     }
     else if(timeframe=='tomorrow'){
-        var timediff = today.getDate() + 1;
+
+        var today = new Date();
+        //Don't allow user to choose a date in the future
+        if (chosen_date.getDate() + 1 > today.getDate()){
+            var timediff = chosen_date.getDate();
+        }
+        else{
+            var timediff = chosen_date.getDate() + 1;
+        }
     }
+    //9 -> 09 , 3 -> 03, etc.
     if(timediff.toString().length == 1){
         timediff = `0${timediff}`;
     }
-    new_date = `${today.getFullYear()}-${today.getMonth() + 1}-${timediff}`;
+    new_date = `${chosen_date.getFullYear()}-${chosen_date.getMonth() + 1}-${timediff}`;
     localStorage.setItem('selected_date', new_date);
     document.getElementById("date_start").value = new_date;
     save_group_date();
