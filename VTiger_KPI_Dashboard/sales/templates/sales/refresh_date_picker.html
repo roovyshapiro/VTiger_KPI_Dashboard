@@ -14,7 +14,7 @@
                     <a href="#" class="round_day_switcher" onclick=date_changer('yesterday')><</a>
                     <label for="date_start">Date:</label>
                     <input type="date" name="date_start" id="date_start" min={{date_dict.first_db}} max={{date_dict.last_db}}>
-                    <a href="#" class="round" onclick="date_changer('tomorrow')">></a>
+                    <a href="#" class="round_day_switcher" onclick="date_changer('tomorrow')">></a>
 
                     {% block form %}
                     {% endblock %}
