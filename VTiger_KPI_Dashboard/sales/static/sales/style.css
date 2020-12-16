@@ -183,14 +183,17 @@ td.score_key_points {
 .score_name{
     padding-bottom:5px;
     font-weight:bold;
+    font-size:25px;
 }
 .score_num{
     font-size:75px;
+    font-weight:bold;
 }
 
 /* Point Tables */
 .score_tables{
-    flex:2;
+    display:flex;
+    flex-direction:column;
 }
 .score_table_title{
     text-align:center;
@@ -417,22 +420,6 @@ label.show_label:active {
         display:none;
     }
 
-	/* Makes Score Tables into one column with the label on the left and points on the right */
-     table.sales_score_table thead.sales_score_thead {
-        display: none;
-      }
-      table.sales_score_table td.sales_score_td {
-        display: flex;
-      }
-
-      table.sales_score_table td.sales_score_td::before {
-        content: attr(label);
-        font-weight: bold;
-        width: 170px;
-        min-width: 120px;
-      }
-
-
     /* Point Boxes */
     .points{
         display:flex;
@@ -453,11 +440,43 @@ label.show_label:active {
     }
     .score_name{
         padding-bottom:5px;
-        font-weight:bold;
+        font-size:20px;
     }
     .score_num{
         font-size:75px;
+        font-weight:bold;
     }
 
+/* Makes Score Tables into one column with the label on the left and points on the right */
+
+    .score_tables{
+        display:flex;
+        flex-direction:column;
+        margin-bottom:20px;
+    }
+ 
+    .score_table_title{
+        font-size:25px;
+    }
+
+     table.sales_score_table thead.sales_score_thead {
+        display: none;
+      }
+      table.sales_score_table td.sales_score_td {
+        display: flex;
+        font-size:18px;
+        font-weight:bold;
+      }
+
+      table.sales_score_table td.sales_score_td::before {
+        content: attr(label);
+        font-weight: bold;
+        font-size:18px;
+        width: 250px;
+      }
+
+    #opp_call_tables{
+        margin-left:10px;
+    }
 
 }
