@@ -149,6 +149,7 @@
                 <th>Direction</th>
                 <th>Duration</th>
                 <th>Customer Number</th>
+                <th>Recording</th>
                 {% for call in today_phone_calls %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
@@ -159,6 +160,11 @@
                         <td>{{ call.direction }}</td>
                         <td>{{ call.total_duration }}</td>
                         <td>{{ call.customer_number }}</td>
+                        {% if call.recording_url %}
+                            <td><a href='{{call.recording_url}}'>Recording</a></td>
+                        {% else %}
+                            <td></td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </table>
