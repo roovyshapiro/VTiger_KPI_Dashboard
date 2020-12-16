@@ -436,10 +436,14 @@ label.show_label:active {
         margin-bottom:10px;
     }
 
+   #cases_submit{
+        display:block;
+    }
+
     #group_name{
         font-weight:bold;
         font-size:35px;
-        margin-top:35px;
+        margin-top:5px;
     }
 
     .round_day_switcher {
@@ -597,11 +601,11 @@ label.show_label:active {
         margin-top:10px;
     }
     
-        #all_open_cases{
+    #all_open_cases{
         margin-right:auto;
         margin-left:auto;
         margin-bottom:10px;
-        margin-top:10px;
+        margin-top:5px;
         width:80%;
     }
 
