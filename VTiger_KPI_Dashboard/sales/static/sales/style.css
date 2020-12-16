@@ -344,3 +344,64 @@ label.show_label:active {
 #show_today_calls:checked ~ #today_call_table{
     display:block;
 }
+
+@media only screen and (max-width: 768px) {
+    /*  Home Page */
+    #home_page_header{
+        margin-top: 6%;
+        margin-bottom: 6%;
+        margin-left: 15%;
+        margin-right: 15%;
+    }
+
+    #home_page_header_main{
+        font-size: 60px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    #home_page_subheader{
+        text-align: center;
+        font-size: 25px;
+    }
+
+    #subheader_sub{
+        font-style: italic;
+        font-size: 15px;
+
+    }
+    #home_page_buttons{
+        display:flex;
+        flex-direction: column;
+        justify-content: space-around;
+        margin-left: 10%;
+        margin-right: 10%;
+    }
+
+    .button p{
+        text-align: center;
+        font-size: 25px;
+        font-weight: bold;
+    }
+
+    .button{
+        margin-bottom:10%;
+    }
+    #home_page_buttons a{
+        display: inline-block;
+        margin-left: 50px;
+        margin-right: 50px;
+    }
+
+    #home_page_buttons div:hover{
+        position:relative;
+        top:5px;
+    }
+
+    img {  
+        max-width: 100%;
+        height: auto;
+    }  
+
+
+}
