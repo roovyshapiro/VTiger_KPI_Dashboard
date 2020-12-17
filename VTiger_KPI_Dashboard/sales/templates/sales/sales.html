@@ -8,37 +8,49 @@
 
 {% block content %}
 
+<div id="help_btn_container" class="help_btn_container">
+    <input type=checkbox id="help_button">
+    <label for="help_button" class="show_label" id="help_label">POINTS?</label>
+    <div id="help_box">
+        <div id="help_box_explanation">
+            <p><span id="help_title">What do these numbers mean?</span>A Sales person earns a certain number of points for changing the status in an Opportunity and for making Phone Calls. The goal is to get to 100 points in a single day by any means necessary. As an example, a sales person can make 50 calls and give 5 demos, or they could schedule 10 demos, give 2 demos, and make 30 calls.</p>
+        </div>
+        <div class = "score_key">
+            <p>Score Key</p>
+            <table class="score_key_table">
+                <thead class="score_key_thead">
+                    <tr>
+                        <th>Demo Scheduled:</th>
+                        <th>Demo Given:</th>
+                        <th>Quote Sent:</th>
+                        <th>Pilot:</th>
+                        <th>Needs Analysis:</th>
+                        <th>Closed Won:</th>
+                        <th>Closed Lost:</th>
+                        <th>Phone Calls:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td label='Demo Scheduled' class = "score_key_points">5</td>
+                        <td label='Demo Given' class = "score_key_points">10</td>
+                        <td label='Quote Sent' class = "score_key_points">0</td>
+                        <td label='Pilot' class = "score_key_points">0</td>
+                        <td label='Needs Analysis' class = "score_key_points">0</td>
+                        <td label='Closed Won' class = "score_key_points">0</td>
+                        <td label='Closed Lost' class = "score_key_points">0</td>
+                        <td label='Phone Calls' class = "score_key_points">1</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
         <section class="points">
 
-            <div class = "score_key">
-                <p>Score Key</p>
-                <table class="score_key_table">
-                    <thead class="score_key_thead">
-                        <tr>
-                            <th>Demo Scheduled:</th>
-                            <th>Demo Given:</th>
-                            <th>Quote Sent:</th>
-                            <th>Pilot:</th>
-                            <th>Needs Analysis:</th>
-                            <th>Closed Won:</th>
-                            <th>Closed Lost:</th>
-                            <th>Phone Calls:</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td label='Demo Scheduled' class = "score_key_points">5</td>
-                            <td label='Demo Given' class = "score_key_points">10</td>
-                            <td label='Quote Sent' class = "score_key_points">0</td>
-                            <td label='Pilot' class = "score_key_points">0</td>
-                            <td label='Needs Analysis' class = "score_key_points">0</td>
-                            <td label='Closed Won' class = "score_key_points">0</td>
-                            <td label='Closed Lost' class = "score_key_points">0</td>
-                            <td label='Phone Calls' class = "score_key_points">1</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
 
             {% for user, score in user_total_score.items %}
                     <div class = "score_box">
