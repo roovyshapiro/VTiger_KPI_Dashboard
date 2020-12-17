@@ -140,6 +140,12 @@ img {
 
 
 /* Score Key */
+
+#selected_sales_date{
+    font-weight:bold;
+    margin-top:5px;
+}
+
 /* Makes Score Tables into one column with the label on the left and points on the right */
 table.score_key_table thead.score_key_thead {
     display: none;
@@ -555,6 +561,8 @@ label.show_label:active {
         display:flex;
         justify-content:center;
         align-items:center;
+        font-weight:bold;
+        margin-top:0px;
     }
     /* Score Key */
     #help_box,#help_button {
