@@ -4,7 +4,7 @@ from django.db.models import Q
 import datetime, calendar
 from .tasks import get_cases
 from .models import Cases
-
+import json,os
 
 def main(request):
     '''
@@ -62,6 +62,17 @@ def main(request):
     except AttributeError:
         populate_cases(request)
 
+    #The VTiger hostnames are stored in the 'credentials.json' file.
+    #The URLs themselves will look something like this:
+    #"host_url_cases": "https://my_vtiger_instance_name.vtiger.com/index.php?module=Cases&view=Detail&record=", 
+    credentials_file = 'credentials.json'
+    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+    with open(credentials_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    urls = {}
+    urls['cases_url'] = credential_dict['host_url_cases']
+    
     context = {
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
@@ -80,6 +91,7 @@ def main(request):
         "sorted_user_closed_month":sorted_user_closed_month,
 
         'date_dict':date_dict,
+        'urls':urls,
     }
 
     #If today is monday, and the user chooses to look at today's data, then the week's data will not
