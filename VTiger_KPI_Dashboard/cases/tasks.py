@@ -122,6 +122,7 @@ def get_cases(get_all_cases=False):
         new_case.createdtime = make_aware(datetime.datetime.strptime(case['createdtime'],'%Y-%m-%d %H:%M:%S'))
         new_case.group_id = case['group_id']
         new_case.case_id = case['id']
+        new_case.case_url_id = case['id'].replace('39x','')
         new_case.modifiedby = case['modifiedby']
         new_case.modifiedtime = make_aware(datetime.datetime.strptime(case['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
         new_case.title = case['title']

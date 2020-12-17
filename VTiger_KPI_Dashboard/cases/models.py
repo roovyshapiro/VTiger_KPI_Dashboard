@@ -78,6 +78,7 @@ class Cases(models.Model):
     createdtime = models.DateTimeField()
     group_id = models.CharField(max_length=50)
     case_id = models.CharField(max_length=50)
+    case_url_id = models.CharField(max_length=50, default='')
     modifiedby = models.CharField(max_length=50)
     modifiedtime = models.DateTimeField()
     title = models.CharField(max_length=250)

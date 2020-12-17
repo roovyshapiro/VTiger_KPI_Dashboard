@@ -120,6 +120,8 @@ def get_opportunities(day='Today'):
             new_opp = Opportunities()
 
         new_opp.opp_id = opp['id']
+        new_opp.opp_url_id = opp['id'].replace('5x','')
+
         new_opp.contact_id = opp['contact_id']
         new_opp.opp_no = opp['potential_no']
         new_opp.opp_name = opp['potentialname']
@@ -236,6 +238,8 @@ def get_phonecalls(day='Today'):
             new_phone_call = Phone_call()               
 
         new_phone_call.phonecall_id = phone_call['id']
+        new_phone_call.phonecall_url_id = phone_call['id'].replace('43x','')
+
         new_phone_call.customer = phone_call['customer']
 
         phone_call_start = make_aware(datetime.datetime.strptime(phone_call['CreatedTime'],'%Y-%m-%d %H:%M:%S'))

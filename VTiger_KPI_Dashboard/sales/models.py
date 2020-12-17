@@ -57,6 +57,8 @@ class Phone_call(models.Model):
     assigned_groupname = models.CharField(max_length=50)
 
     phonecall_id = models.CharField(max_length=50)
+    phonecall_url_id = models.CharField(max_length=50, default='')
+
     call_status = models.CharField(max_length=50)
     direction = models.CharField(max_length=50)
     total_duration = models.CharField(max_length=50)
@@ -133,6 +135,7 @@ class Opportunities(models.Model):
     },
     '''
     opp_id = models.CharField(max_length=50)
+    opp_url_id = models.CharField(max_length=50, default='')
     contact_id = models.CharField(max_length=50)
 
     opp_no = models.CharField(max_length=50)
