@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from .models import Phone_call, Opportunities
 import VTiger_API
-import datetime
+import datetime, json, os
 
 def main(request):
     '''
@@ -117,6 +117,20 @@ def main(request):
         #If there is nothing in the DB, because the project was run for the first time as example, we'll prompt the population of the db for today so the request doesn't fail
         populate_db(request)
 
+    #The VTiger hostnames are stored in the 'credentials.json' file.
+    #The URLs themselves will look something like this:
+    #"host_url_calls": "https://my_vtiger_instance_name.vtiger.com/index.php?module=PhoneCalls&view=Detail&record=", 
+    #"host_url_opps": "https://my_vtiger_instance_name.vtiger.com/index.php?module=Potentials&view=Detail&record="}
+    credentials_file = 'credentials.json'
+    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+    with open(credentials_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    urls = {}
+    urls['opps_url'] = credential_dict['host_url_opps']
+    urls['calls_url'] = credential_dict['host_url_calls']
+
+
     context = {
         'user_total_score':user_total_score,
         'user_opp_dict': user_opp_dict,
@@ -125,8 +139,8 @@ def main(request):
         'today_opps':today_opps,
         'today_phone_calls':today_phone_calls,
         'date_dict':date_dict,
+        'urls':urls,
     }
-
     return render(request, "sales/sales.html", context) 
 
 def populate_db(request):

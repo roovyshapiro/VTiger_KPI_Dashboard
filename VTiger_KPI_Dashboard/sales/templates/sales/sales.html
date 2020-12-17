@@ -124,7 +124,7 @@
                     {% for opp in today_opps %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ opp.opp_no }}</td>
+                            <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
                             <td>{{ opp.assigned_username }}</td>
                             <td>{{ opp.opp_name }}</td>
                             <td>{{ opp.opp_stage }}</td>
@@ -140,6 +140,7 @@
                 <table class="scrollable_table">
                     <th>#</th>
                     <th>User</th>
+                    <th>Call ID</th>
                     <th>Call Time</th>
                     <th>End Time</th>
                     <th>Status</th>
@@ -151,6 +152,7 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ call.assigned_username }}</td>
+                            <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
                             <td>{{ call.modifiedtime }}</td>
                             <td>{{ call.endtime }}</td>
                             <td>{{ call.call_status }}</td>
