@@ -390,7 +390,9 @@ label.show_label:active {
     white-space: pre;
 }
 
-
+#today_opp_table,#show_today_opps {
+    display:none;
+}
 #show_today_opps:checked ~ #today_opp_table{
     display:block;
 }
