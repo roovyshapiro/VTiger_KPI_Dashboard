@@ -504,6 +504,7 @@ label.show_label:active {
         text-transform:uppercase;
         font-size:12px;
         font-weight:bold;
+    }
 
     /* Auto Refresh / Group / Date Selector */
     #refresh_date_group{
