@@ -55,6 +55,18 @@ nav > a{
     border: 1px solid orange;
 }
 
+#logout{
+    display:flex;
+    flex-direction:column;
+    font-size:11px;
+}
+
+#username_button{
+    text-transform:uppercase;
+    font-weight:bold;
+    font-size:15px;
+}
+
 
 /****** HOME PAGE ******/
 
