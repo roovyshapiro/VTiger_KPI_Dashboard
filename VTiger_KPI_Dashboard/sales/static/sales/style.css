@@ -102,7 +102,7 @@ nav > a{
     text-decoration: none;
 }
 
-#welcome_name{
+.welcome_name{
     margin-bottom:10px;
     font-weight:bold;
 }
