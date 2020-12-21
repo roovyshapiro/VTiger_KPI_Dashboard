@@ -38,6 +38,7 @@ function retrieve_saved_data() {
     if (window.location.href.includes('/cases')){
         if (localStorage.getItem("selected_group") == null){
             document.getElementById("group_dropdown").value = "All Groups";
+            localStorage.setItem("selected_group", "All Groups");
         } else {
             document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
         }
@@ -46,6 +47,8 @@ function retrieve_saved_data() {
         //down. To resolve this, the form is Quickly resubmitted with the selected group.
         //With this method, the chosen group is maintained even when navigating away from cases.
         if (document.getElementById('group_name').innerHTML != localStorage.getItem("selected_group")){
+            console.log(document.getElementById('group_name').innerHTML);
+            console.log(localStorage.getItem("selected_group"));
             document.getElementById("date_group_form").submit();
         }
     }
