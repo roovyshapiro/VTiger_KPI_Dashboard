@@ -60,8 +60,8 @@ nav > a{
 
 
 #home_page_header{
-    margin-top: 6%;
-    margin-bottom: 6%;
+    margin-top: 4%;
+    margin-bottom: 3%;
     margin-left: 15%;
     margin-right: 15%;
 }
@@ -80,8 +80,33 @@ nav > a{
 #subheader_sub{
     font-style: italic;
     font-size: 25px;
-
 }
+
+/*Google Login*/
+#login{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction:column;
+    margin-bottom:3%;
+}
+
+.google_login_button{
+    border: 1px blue solid;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 4px 10px 10px #88888C;
+}
+
+#login a{
+    text-decoration: none;
+}
+
+#welcome_name{
+    margin-bottom:10px;
+    font-weight:bold;
+}
+
 #home_page_buttons{
     display:flex;
     justify-content: space-around;

@@ -180,4 +180,3 @@ CELERY_BEAT_SCHEDULE = {
        'schedule': 800.0,
     },
 }
-
