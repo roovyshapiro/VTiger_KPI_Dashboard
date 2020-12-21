@@ -41,6 +41,13 @@ function retrieve_saved_data() {
         } else {
             document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
         }
+        //If a group is selected, and the user then navigates away from cases, when he comes back
+        //to cases, all groups are displayed even though a different group is selected in the drop
+        //down. To resolve this, the form is Quickly resubmitted with the selected group.
+        //With this method, the chosen group is maintained even when navigating away from cases.
+        if (document.getElementById('group_name').innerHTML != localStorage.getItem("selected_group")){
+            document.getElementById("date_group_form").submit();
+        }
     }
     console.log(localStorage);
 }
