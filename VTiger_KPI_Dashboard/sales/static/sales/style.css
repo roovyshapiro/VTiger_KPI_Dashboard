@@ -548,8 +548,35 @@ label.show_label:active {
     #subheader_sub{
         font-style: italic;
         font-size: 9px;
-
     }
+
+    /*Google Login*/
+    #login{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction:column;
+        margin-bottom:6%;
+    }
+
+    .google_login_button{
+        border: 1px blue solid;
+        padding: 10px;
+        text-align: center;
+        box-shadow: 4px 10px 10px #88888C;
+    }
+
+    #login a{
+        text-decoration: none;
+        font-size:10px;
+    }
+
+    .welcome_name{
+        margin-bottom:10px;
+        font-weight:bold;
+        font-size:10px;
+    }
+
     #home_page_buttons{
         display:flex;
         flex-direction: column;

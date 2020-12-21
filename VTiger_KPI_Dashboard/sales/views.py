@@ -1,10 +1,16 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
 from django.utils.timezone import make_aware
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
+
 from .models import Phone_call, Opportunities
 import VTiger_API
 import datetime, json, os
 
+
+@login_required()
 def main(request):
     '''
     The primary view for the Sales Dashboard where all the calculations take place.
@@ -143,6 +149,8 @@ def main(request):
     }
     return render(request, "sales/sales.html", context) 
 
+@login_required()
+@staff_member_required
 def populate_db(request):
     '''
     Populates the opportunities and phone calls databases.
@@ -155,6 +163,8 @@ def populate_db(request):
 
     return HttpResponseRedirect('/sales')
 
+@login_required()
+@staff_member_required
 def populate_opp_month(request):
     '''
     Populates the opportunities and phone calls databases from the past 3 months.
@@ -164,6 +174,8 @@ def populate_opp_month(request):
 
     return HttpResponseRedirect('/sales')
 
+@login_required()
+@staff_member_required
 def populate_call_month(request):
     '''
     Populates the opportunities and phone calls databases from the past 3 months.
@@ -173,6 +185,8 @@ def populate_call_month(request):
 
     return HttpResponseRedirect('/sales')
 
+@login_required()
+@staff_member_required
 def delete_all_items(request):
     '''
     Delete all the items in the database from today only.
@@ -191,6 +205,8 @@ def delete_all_items(request):
     #today_calls.objects.all().delete()
     return HttpResponseRedirect('/sales')
 
+@login_required()
+@staff_member_required
 def test_method(request):
     '''
     localhost:8000/test

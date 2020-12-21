@@ -1,11 +1,15 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.utils import timezone
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+
 import datetime, calendar
 from .tasks import get_cases
 from .models import Cases
 import json,os
 
+@login_required()
 def main(request):
     '''
     Send all cases from the Cases db to the html template to be used in the html table.
@@ -229,15 +233,20 @@ def retrieve_dates(date_request):
 
     return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
+@login_required()
+@staff_member_required
 def populate_cases(request):
     get_cases()
     return HttpResponseRedirect("/cases")
 
+@login_required()
+@staff_member_required
 def populate_all_cases(request):
     get_cases(get_all_cases=True)
     return HttpResponseRedirect("/cases")
 
-
+@login_required()
+@staff_member_required
 def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
@@ -246,7 +255,8 @@ def testing(request):
 
     return HttpResponseRedirect("/cases")
 
-
+@login_required()
+@staff_member_required
 def delete_all_cases(request):
     '''
     Delete all the cases in the database from today only.
