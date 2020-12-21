@@ -25,10 +25,22 @@ function retrieve_saved_data() {
         document.getElementById("auto_update_label").innerHTML = 'Auto Refresh: ' + refresh_seconds;
         checkbox_click();
     }
-    document.getElementById("date_start").value = localStorage.getItem("selected_date");
+    //Put in today's date into the date selector unless a date has been chosen already
+    if (localStorage.getItem("selected_date") == null){
+        var today = new Date();
+        var today_date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+        document.getElementById("date_start").value = today_date;
+    } else {
+        document.getElementById("date_start").value = localStorage.getItem("selected_date");
+    }
     //Set group dropdown but only for case dashboard
+    //If there's no group dropdown selected, then set it to "All Groups" by default
     if (window.location.href.includes('/cases')){
-    document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
+        if (localStorage.getItem("selected_group") == null){
+            document.getElementById("group_dropdown").value = "All Groups";
+        } else {
+            document.getElementById("group_dropdown").value = localStorage.getItem("selected_group");
+        }
     }
     console.log(localStorage);
 }
