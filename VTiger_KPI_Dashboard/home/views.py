@@ -4,5 +4,4 @@ def home(request):
     '''
     My Home Page.
     '''
-    print('test!')
     return render(request, "sales/home.html") 
