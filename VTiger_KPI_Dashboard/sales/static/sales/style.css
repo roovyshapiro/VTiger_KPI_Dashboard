@@ -306,6 +306,13 @@ td, th{
     display:block;
   }
 
+#resolved_row{
+    background-color: #ffe6e6;
+}
+
+#created_row{
+    background-color: #e6ffe6;
+}
 
 /****** Submit Button / Hide Show Tables ******/
 

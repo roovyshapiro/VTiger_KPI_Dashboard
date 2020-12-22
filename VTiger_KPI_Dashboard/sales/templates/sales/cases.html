@@ -117,7 +117,13 @@
                     <th>Time Spent</th>
                 </tr>
                 {% for case in full_cases_day %}
-                    <tr>
+                    {% if case.case_no in resolved_cases_day %}
+                        <tr id = "resolved_row">
+                    {% elif case.case_no in created_cases_day %}
+                        <tr id = "created_row">
+                    {% else %}
+                        <tr>
+                    {% endif %}
                         <td>{{ forloop.counter }}</td>
                         <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                         <td>{{ case.assigned_groupname }}</td>
@@ -192,7 +198,13 @@
                         <th>Time Spent</th>
                     </tr>
                     {% for case in full_cases_week %}
-                        <tr>
+                        {% if case.case_no in resolved_cases_week %}
+                            <tr id = "resolved_row">
+                        {% elif case.case_no in created_cases_week %}
+                            <tr id = "created_row">
+                        {% else %}
+                            <tr>
+                        {% endif %}
                             <td>{{ forloop.counter }}</td>
                             <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                             <td>{{ case.assigned_groupname }}</td>
@@ -267,7 +279,13 @@
                     <th>Time Spent</th>
                 </tr>
                 {% for case in full_cases_month %}
-                    <tr>
+                    {% if case.case_no in resolved_cases_month %}
+                        <tr id = "resolved_row">
+                    {% elif case.case_no in created_cases_month %}
+                        <tr id = "created_row">
+                    {% else %}
+                        <tr>
+                    {% endif %}
                         <td>{{ forloop.counter }}</td>
                         <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                         <td>{{ case.assigned_groupname }}</td>

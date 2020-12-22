@@ -50,9 +50,40 @@ def main(request):
     date_group_dict['first_of_month'] = first_of_month.strftime('%A, %B %d')
     date_group_dict['end_of_month'] = end_of_month.strftime('%A, %B %d')
 
-    case_stats_dict, sorted_user_closed, full_cases_day = retrieve_case_data(full_cases, today, end_of_day)
-    case_stats_dict_week, sorted_user_closed_week, full_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
-    case_stats_dict_month, sorted_user_closed_month, full_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
+    case_stats_dict, sorted_user_closed, full_cases_day, created_cases_day, resolved_cases_day = retrieve_case_data(full_cases, today, end_of_day)
+    case_stats_dict_week, sorted_user_closed_week, full_cases_week, created_cases_week, resolved_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
+    case_stats_dict_month, sorted_user_closed_month, full_cases_month, created_cases_month, resolved_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
+
+
+    #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
+    #created in that time frame. We highlight created cases in green and resolved cases in red.
+    created_cases_dict_day = {}
+    for item in created_cases_day:
+        created_cases_dict_day[item.case_no] = item.case_no
+        print(item.case_no)
+
+    created_cases_dict_week = {}
+    for item in created_cases_week:
+        created_cases_dict_week[item.case_no] = item.case_no
+
+    created_cases_dict_month = {}
+    for item in created_cases_month:
+        created_cases_dict_month[item.case_no] = item.case_no
+
+    #We supply dictionaries of all the resolved cases to the html context so that we can easily pinpoint cases that were
+    #resolved in that time frame. We highlight created cases in green and resolved cases in red.
+    resolved_cases_dict_day = {}
+    for item in resolved_cases_day:
+        resolved_cases_dict_day[item.case_no] = item.case_no
+        print(item.case_no)
+
+    resolved_cases_dict_week = {}
+    for item in resolved_cases_week:
+        resolved_cases_dict_week[item.case_no] = item.case_no
+
+    resolved_cases_dict_month = {}
+    for item in resolved_cases_month:
+        resolved_cases_dict_month[item.case_no] = item.case_no
 
     date_dict = {}
     #Min Max Values for Date Picker in base.html
@@ -76,7 +107,8 @@ def main(request):
     credential_dict = json.loads(data)
     urls = {}
     urls['cases_url'] = credential_dict['host_url_cases']
-    
+
+
     context = {
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
@@ -85,14 +117,20 @@ def main(request):
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
         "sorted_user_closed":sorted_user_closed,
+        'created_cases_day':created_cases_dict_day,
+        'resolved_cases_day':resolved_cases_dict_day,
 
         "full_cases_week":full_cases_week,
         "case_stats_dict_week":case_stats_dict_week,
         "sorted_user_closed_week":sorted_user_closed_week,
+        'created_cases_week':created_cases_dict_week,
+        'resolved_cases_week':resolved_cases_dict_week,
 
         "full_cases_month":full_cases_month,
         "case_stats_dict_month":case_stats_dict_month,
         "sorted_user_closed_month":sorted_user_closed_month,
+        'created_cases_month':created_cases_dict_month,
+        'resolved_cases_month':resolved_cases_dict_month,
 
         'date_dict':date_dict,
         'urls':urls,
@@ -193,13 +231,13 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
 
     modified_with_closed_cases = full_cases.filter(modifiedtime__gte=date_request, modifiedtime__lte=date_request_end)
     modified_cases = modified_with_closed_cases.filter(~Q(casestatus="Closed"))
-    created_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
-    resolved_cases = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
+    resolved_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
+    created_cases = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
 
     #Combine all the Query sets.
     all_cases = modified_cases | created_cases | resolved_cases
 
-    return case_stats_dict, sorted_user_closed, all_cases
+    return case_stats_dict, sorted_user_closed, all_cases, created_cases, resolved_cases
 
 def retrieve_dates(date_request):
     '''
