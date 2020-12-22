@@ -1,6 +1,6 @@
 # VTiger KPI Dashboard
 
-[![](https://i.imgur.com/zJFLA8J.png)](https://i.imgur.com/zJFLA8J.png)
+[![](https://i.imgur.com/TjS1LSN.png)](https://i.imgur.com/TjS1LSN.png)
 [![](https://i.imgur.com/Gv8Dm3E.png)](https://i.imgur.com/Gv8Dm3E.png)
 [![](https://i.imgur.com/iYZoQWq.png)](https://i.imgur.com/iYZoQWq.png)
 
