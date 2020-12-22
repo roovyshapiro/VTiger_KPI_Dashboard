@@ -60,7 +60,6 @@ def main(request):
     created_cases_dict_day = {}
     for item in created_cases_day:
         created_cases_dict_day[item.case_no] = item.case_no
-        print(item.case_no)
 
     created_cases_dict_week = {}
     for item in created_cases_week:
@@ -75,7 +74,6 @@ def main(request):
     resolved_cases_dict_day = {}
     for item in resolved_cases_day:
         resolved_cases_dict_day[item.case_no] = item.case_no
-        print(item.case_no)
 
     resolved_cases_dict_week = {}
     for item in resolved_cases_week:
