@@ -5,10 +5,12 @@
 [![](https://i.imgur.com/iYZoQWq.png)](https://i.imgur.com/iYZoQWq.png)
 
 ### Overview
-VTiger KPI Dashboard is a Django web application which shows live data from your VTiger CRM instance so you can track your sales and support teams. With this application running it is easy to see at a glance how your team is operating and who are the best performers. Celery is used to retrieve data from VTiger's API every ten minutes or so. Currently, we are storing all Cases, Opportunities and Phone Calls.
+VTiger KPI Dashboard is a Django web application which shows live data from your VTiger CRM instance so you can track your teams activity and productivity. The intention is to have this application displayed on a large monitor next to your team members so it is easy to see at a glance how your team is operating and who are the best performers. This application is mobile-friendly as well so managers can monitor workers easily from wherever they are. Celery is used to retrieve data from VTiger via API every ten minutes or so. Currently, we are storing all Cases, Opportunities and Phone Calls in the Django DB. Django-AllAuth is used so that the application can only be accessed with Google logins. As this is an "internal" application, access is restricted to only the team members in your organization. Here's a simple article from Zoe Chew explaining the Google authentication process in further detail: https://whizzoe.medium.com/in-5-mins-set-up-google-login-to-sign-up-users-on-django-e71d5c38f5d5 
+Here's a link to Django-AllAuth's official documentation: https://django-allauth.readthedocs.io/en/latest/
 
 ### Cases
 We show all the cases that have been worked on, created and resolved in a given time frame. We also show how many cases each user has resolved. Data is shown for the current selected day, the day's week and the day's month. As an option, a table can be displayed showing all the cases for a given time frame.
+
 ### Sales
 The sales dashboard operates on a point system where each phone call is one point and each opportunity stage is assigned a different point value. The goal is for the salesperson to reach 100 points in a day by whatever means necessary. They can reach their goal by making 100 phone calls, or by making 50 phone calls and conducting 5 demos, etc. The various sales stages will change depending on the way you've configured your Opportunities, stages and sales pipelines within VTiger.
 
@@ -17,9 +19,16 @@ The file VTiger_KPI_Dashboard/VTiger_API.py uses VTiger's API to gather the data
 
 See here for VTiger's API documentation: https://www.vtiger.com/docs/rest-api-for-vtiger
 
-Make sure to have a file named 'credentials.json' within the main 'VTiger_KPI_Dashboard' directory. It should be structured like this:
+### Credentials
+Make sure to have a file named 'credentials.json' within the main 'VTiger_KPI_Dashboard' directory. This file is not a part of the public repository and contains
+all the necessary credentials for connecting to VTiger, linking items to VTiger and the django SECRET_KEY.
+It should be structured like this:
 ```python
-{"username": "<vtiger_username>", "access_key": "<access_key>", "host": "https://< custom_hostname>vtiger.com/restapi/v1/vtiger/default"}
+{"username": "<vtiger_username>", "access_key": "<access_key>", "host": "https://<custom_hostname>vtiger.com/restapi/v1/vtiger/default", "host_url_cases": "https://<<custom_hostname>>.vtiger.com/index.php?module=Cases&view=Detail&record=", "host_url_calls": "https://<<custom_hostname>>.vtiger.com/index.php?module=PhoneCalls&view=Detail&record=", "host_url_opps": "https://<<custom_hostname>>.vtiger.com/index.php?module=Potentials&view=Detail&record=","django_secret_key":"<Enter Your Django Secret Key HERE>"}}
+```
+To generate a secret Key, you can use the following command:
+```
+python3 manage.py shell -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
 ### Changing Opportunity Stages Multiple Times per Day
@@ -68,9 +77,9 @@ https://docs.celeryproject.org/en/stable/userguide/workers.html#stopping-the-wor
 ### Flower - Real-Time Celery Monitor
 [![](https://i.imgur.com/XKb5FJw.png)](https://i.imgur.com/XKb5FJw.png)
 "Flower is a web based tool for monitoring and administrating Celery clusters."
+Read more about it here: https://flower.readthedocs.io/en/latest/features.html
 It's very helpful for troublehsooting and showing how many times the periodic celery tasks have run.
 The server is started by running the .startapps.sh file and can be accessed at http://localhost:5555
-https://flower.readthedocs.io/en/latest/features.html
 
 
 ### Starting the Application
@@ -108,9 +117,9 @@ Finally, start the server. You can use the 'startapps.sh' file which will
 #!/bin/bash
 
 redis-server &
-celery -A sales_dashboard worker &
-celery -A sales_dashboard beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler &
-celery -A sales_dashboard flower &
+celery -A VTiger_KPI_Dashboard worker &
+celery -A VTiger_KPI_Dashboard beat -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler &
+celery -A VTiger_KPI_Dashboard flower &
 python3 manage.py runserver 0.0.0.0:8000
 ```
 Afterwards, you should be able to access the dashboard locally at http://127.0.0.1:8000
