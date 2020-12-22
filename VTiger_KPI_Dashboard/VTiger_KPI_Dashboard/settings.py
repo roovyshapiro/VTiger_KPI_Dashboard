@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-import os
+import os, json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +20,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'kca8f9v*%^4-wi_1=m&_q(_18mbpe%x%zbh2onk8pn4%-rtm@w'
+# The secret key is stored in the "credentials.json" file
+credentials_file = 'credentials.json'
+credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+with open(credentials_path) as f:
+    data = f.read()
+credential_dict = json.loads(data)
+SECRET_KEY = credential_dict['django_secret_key']
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True 
