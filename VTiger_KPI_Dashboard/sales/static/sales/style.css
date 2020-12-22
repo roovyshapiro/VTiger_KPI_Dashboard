@@ -55,7 +55,7 @@ nav > a{
     border: 1px solid orange;
 }
 
-#logout{
+#logout_menu{
     display:flex;
     flex-direction:column;
     font-size:11px;
@@ -501,7 +501,7 @@ label.show_label:active {
         border: 1px solid orange;
     }
 
-    #logout{
+    #logout_menu{
         display:flex;
         flex-direction:column;
         font-size:8px;
