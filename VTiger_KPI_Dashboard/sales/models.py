@@ -55,6 +55,7 @@ class Phone_call(models.Model):
     modified_by = models.CharField(max_length=50)
     assigned_username = models.CharField(max_length=50)
     assigned_groupname = models.CharField(max_length=50)
+    modified_username = models.CharField(max_length=75, default='')
 
     phonecall_id = models.CharField(max_length=50)
     phonecall_url_id = models.CharField(max_length=50, default='')

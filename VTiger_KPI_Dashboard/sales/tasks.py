@@ -255,6 +255,7 @@ def get_phonecalls(day='Today'):
 
         new_phone_call.assigned_username = phone_call['assigned_username']
         new_phone_call.assigned_groupname = phone_call['assigned_groupname']
+        new_phone_call.modified_username = phone_call['modified_username']
 
         new_phone_call.call_status = phone_call['callstatus']
         new_phone_call.direction = phone_call['direction']

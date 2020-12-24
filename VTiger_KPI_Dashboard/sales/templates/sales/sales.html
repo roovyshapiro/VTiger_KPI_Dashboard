@@ -127,7 +127,8 @@
                 <table class="scrollable_table">
                     <th>#</th>
                     <th>Number</th>
-                    <th>User</th>
+                    <th>Assigned To</th>
+                    <th>Modified By</th>
                     <th>Name</th>
                     <th>Stage</th>
                     <th>Current Stage Changed</th>
@@ -138,6 +139,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
                             <td>{{ opp.assigned_username }}</td>
+                            <td>{{ opp.modified_username }}</td>
                             <td>{{ opp.opp_name }}</td>
                             <td>{{ opp.opp_stage }}</td>
                             <td>{{ opp.current_stage_entry_time }}</td>
