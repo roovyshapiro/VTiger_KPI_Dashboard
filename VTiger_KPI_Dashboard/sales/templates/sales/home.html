@@ -15,6 +15,21 @@
         <p class="welcome_name">You're a Super User!</p>
         <a id="logout" href="/accounts/logout">Logout</a>
     </div>
+    <div id = "superuser_buttons_meta_container">
+        <div class = "superuser_buttons">
+            <a class = "super_user_button_a" href="/populatesales">SALES: Opps/Calls Today</a>
+            <a class = "super_user_button_a" href="/populateoppssales">SALES: Opps Month</a>
+            <a class = "super_user_button_a" href="/populatecallssales">SALES: Calls Month</a>
+            <a class = "super_user_button_a" href="/deleteallsales">SALES: Delete all Today</a>
+            <a class = "super_user_button_a" href="/testsales">SALES: Test</a>
+        </div>
+        <div class = "superuser_buttons">
+            <a class = "super_user_button_a" href="/populatecases">CASES: Cases Today</a>
+            <a class = "super_user_button_a" href="/populateallcases">CASES: All Cases</a>
+            <a class = "super_user_button_a" href="/deletecases">CASES: Delete Today</a>
+            <a class = "super_user_button_a" href="/testcases">CASES: Test</a>
+        </div>
+    </div>
   {% elif user.is_authenticated %}
       <div class="google_login_button">
         <p class="welcome_name">Welcome, {{ user.first_name }} {{user.last_name}}!</p>
