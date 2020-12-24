@@ -152,6 +152,7 @@ class Opportunities(models.Model):
 
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
+    modified_username = models.CharField(max_length=75, default='')
 
     current_stage_entry_time = models.DateTimeField(null=True)
     demo_scheduled_changed_at = models.DateTimeField(null=True)

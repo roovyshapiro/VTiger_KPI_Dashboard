@@ -135,6 +135,7 @@ def get_opportunities(day='Today'):
         new_opp.assigned_user_id = opp['assigned_user_id']
 
         new_opp.assigned_username = opp['assigned_username']
+        new_opp.modified_username = opp['modified_username']
         new_opp.assigned_groupname = opp['assigned_groupname']
 
         if opp['current_stage_entry_time'] != '':
