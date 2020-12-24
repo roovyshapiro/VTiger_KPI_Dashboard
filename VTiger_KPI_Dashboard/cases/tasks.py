@@ -115,6 +115,7 @@ def get_cases(get_all_cases=False):
             new_case = Cases()
 
         new_case.assigned_user_id = case['assigned_user_id']
+        new_case.modifiedby = case['modifiedby']
         new_case.case_no = case['case_no']
         new_case.casestatus = case['casestatus']
         new_case.contact_id = case['contact_id']
@@ -135,6 +136,7 @@ def get_cases(get_all_cases=False):
         except ValueError:
             new_case.time_spent_hr = case['time_spent']
         new_case.assigned_username = case['assigned_username']
+        new_case.modified_username = case['modified_username']
         new_case.assigned_groupname = case['assigned_groupname']
         if case['sla_actual_closureon'] == '':
             new_case.case_resolved = None

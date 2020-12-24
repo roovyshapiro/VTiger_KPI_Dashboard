@@ -71,6 +71,7 @@ class Cases(models.Model):
     },
     '''
     assigned_user_id = models.CharField(max_length=50)
+    modifiedby = models.CharField(max_length=50, default='')
     case_no = models.CharField(max_length=50)
     casestatus = models.CharField(max_length=50)
     contact_id = models.CharField(max_length=50)
@@ -85,6 +86,7 @@ class Cases(models.Model):
     time_spent = models.CharField(max_length=50)
     time_spent_hr = models.CharField(max_length=75)
     assigned_username = models.CharField(max_length=75)
+    modified_username = models.CharField(max_length=75, default='')
     assigned_groupname = models.CharField(max_length=75)
     case_resolved = models.DateTimeField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
