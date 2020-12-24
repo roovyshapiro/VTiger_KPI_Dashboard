@@ -201,7 +201,7 @@ class Vtiger_api:
                 for case in full_item_list:
                     assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
                     assigned_groupname = data['groups'][case['group_id']]
-                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    modified_username = f"{data['users'][case['modifiedby']][0]} {data['users'][case['modifiedby']][1]}"
                     case['assigned_username'] = assigned_username
                     case['assigned_groupname'] = assigned_groupname
                     self.case_list.append(case)
@@ -218,7 +218,7 @@ class Vtiger_api:
                 except KeyError:
                     assigned_groupname = ''
                 try:
-                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    modified_username = f"{data['users'][case['modifiedby']][0]} {data['users'][case['modifiedby']][1]}"
                 except KeyError:
                     modified_username = ''
 
