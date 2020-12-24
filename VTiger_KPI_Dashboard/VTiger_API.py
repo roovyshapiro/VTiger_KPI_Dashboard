@@ -283,6 +283,7 @@ class Vtiger_api:
                 data = json.load(f)
                 for item in all_items:
                     assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
+                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
                     if 'group_id' in item and item['group_id'] == '':
                         assigned_groupname = ''
                     if 'group_id' not in item:
@@ -292,11 +293,13 @@ class Vtiger_api:
                         assigned_groupname = data['groups'][item['group_id']]
                     item['assigned_username'] = assigned_username
                     item['assigned_groupname'] = assigned_groupname
+                    item['modified_username'] = modified_username
                     self.today_item_list.append(item)
         except:
             self.today_item_list = []
             data = self.get_users_and_groups_file()
             for item in all_items:
+                modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
                 #Sometimes an opportunity can be assigned directly to the group
                 if item['assigned_user_id'] in data['groups']:
                     assigned_groupname = data['groups'][item['assigned_user_id']]
@@ -319,6 +322,7 @@ class Vtiger_api:
 
                 item['assigned_username'] = assigned_username
                 item['assigned_groupname'] = assigned_groupname
+                item['modified_username'] = modified_username
                 self.today_item_list.append(item)
 
         return self.today_item_list
