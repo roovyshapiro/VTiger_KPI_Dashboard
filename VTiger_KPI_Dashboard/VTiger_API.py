@@ -201,6 +201,7 @@ class Vtiger_api:
                 for case in full_item_list:
                     assigned_username = f"{data['users'][case['assigned_user_id']][0]} {data['users'][case['assigned_user_id']][1]}"
                     assigned_groupname = data['groups'][case['group_id']]
+                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
                     case['assigned_username'] = assigned_username
                     case['assigned_groupname'] = assigned_groupname
                     self.case_list.append(case)
@@ -216,9 +217,14 @@ class Vtiger_api:
                     assigned_groupname = data['groups'][case['group_id']]
                 except KeyError:
                     assigned_groupname = ''
+                try:
+                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                except KeyError:
+                    modified_username = ''
 
                 case['assigned_username'] = assigned_username
                 case['assigned_groupname'] = assigned_groupname
+                case['modified_username'] = modified_username
                 self.case_list.append(case)
 
         return self.case_list
@@ -299,7 +305,6 @@ class Vtiger_api:
             self.today_item_list = []
             data = self.get_users_and_groups_file()
             for item in all_items:
-                modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
                 #Sometimes an opportunity can be assigned directly to the group
                 if item['assigned_user_id'] in data['groups']:
                     assigned_groupname = data['groups'][item['assigned_user_id']]
@@ -319,6 +324,11 @@ class Vtiger_api:
                         else:
                             users_primary_group_id = data['users'][item['assigned_user_id']][3]
                             assigned_groupname = data['groups'][users_primary_group_id]
+                    try:
+                        modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    except:
+                        modified_username = ''
+
 
                 item['assigned_username'] = assigned_username
                 item['assigned_groupname'] = assigned_groupname
