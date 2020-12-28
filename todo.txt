@@ -1,12 +1,18 @@
 ---ToDo---
 
 APP WIDE
-
-- Need to figure out the best way to host static files / reorganize where the html, css, js and images should go
+- Celery tasks should be setup on a schedule so that API calls are not run at night
+- custom 404/400/500 error pages
+- getting contact/organization information so we can see which companies are getting the most cases
+- custom dashboard widgets to be added to the dashboard, resizable widgets, front end framework?
+- separate phone call only dashboard with real time information. retrieve from pbx?
 
 CASE DASHBOARD
 - Avg time spent on a case per user?
+- tech history - assigned vs resolved over time
+- tech phone calls
 
 SALES DASHBOARD
 - group selector applied to sales dashboard so we can also see all opportunity data not just from the sales team.
 - provide week/month data perhaps? Need to check requirements
+- only show users/tables if there's data associated
