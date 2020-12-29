@@ -178,7 +178,12 @@ img {
 /****** REFRESH_DATE_PICKER.HTML ******/
 
 
-/* Auto Refresh / Group / Date Selector */
+/* Auto Refresh / Group / Date Selector / ToolTip */
+
+.auto_refresh_box{
+    margin-bottom:1px;
+}
+
 #refresh_date_group{
     margin-left: 20px;
 }
@@ -197,6 +202,30 @@ img {
     margin-top:2px;
     font-weight:bold;
     text-decoration: none;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 300px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
 }
 
 /****** SALES ******/
