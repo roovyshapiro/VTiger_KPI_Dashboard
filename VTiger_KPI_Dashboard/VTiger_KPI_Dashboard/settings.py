@@ -174,7 +174,9 @@ CELERY_BROKER_URL = 'redis://localhost:6379'
 
 from celery.schedules import crontab   
 # https://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
-# Each Celery task will have a Business Hours (BH) schedule and an After Hours (AH) Schedule
+# https://docs.celeryproject.org/en/latest/reference/celery.schedules.html#celery.schedules.crontab
+# Each Celery task will have a Business Hours (BH) schedule, an After Hours (AH) schedule and a Weekend Hours (WKND) schedule.
+# This eliminates utilizing API calls when we don't need real-time data.
 # BH - Business Hours
 #     13:00 - 23:59 UTC
 #     8:00am - 7:59pm EST
@@ -182,6 +184,9 @@ from celery.schedules import crontab
 # AH - After Hours
 #     0:00 - 13:00 UTC
 #     7:00pm EST - 8:00am EST
+#
+# WKND - Weekend Hours
+#    0:00 - 23:00 UTC/EST Saturday & Sunday ONLY
 #
 # The crontab hour is inclusive.
 # crontab(minute='*/11', hour='13-23') Will occur every 11 minutes between the hours of 13:00 UTC and 23:59 UTC. 
@@ -205,30 +210,46 @@ from celery.schedules import crontab
 # 2020-12-30 10:00:00
 # 2020-12-30 11:00:00
 # 2020-12-30 12:00:00
-
+#
+# day_of_week
+# A (list of) integers from 0-6, where Sunday = 0 and Saturday = 6, that represent the days of a week that execution should occur.
+# hour = '*/' is equivalent to 
+# Execute every three hours: midnight, 3am, 6am, 9am, noon, 3pm, 6pm, 9pm.
 CELERY_BEAT_SCHEDULE = {
     'get_cases_BH':{
         'task': 'cases.tasks.get_cases',
-       'schedule': crontab(minute='*/13', hour='13-23'),
+        'schedule': crontab(minute='0,10,20,30,40,50', hour='13-23', day_of_week='1,2,3,4,5'),
     },
     'get_cases_AH':{
         'task': 'cases.tasks.get_cases',
-       'schedule': crontab(minute='0', hour='0-12'),
+        'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+    },
+    'get_cases_WKND':{
+        'task': 'cases.tasks.get_cases',
+        'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
     },
     'get_opportunities_BH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='*/12', hour='13-23'),
+       'schedule': crontab(minute='3,13,23,33,43,53', hour='13-23', day_of_week='1,2,3,4,5'),
     },
     'get_opportunities_AH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='0', hour='0-12'),
+       'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+    },
+    'get_opportunities_WKND': {
+       'task': 'sales.tasks.get_opportunities',
+       'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
     },
      'get_phonecalls_BH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='*/11', hour='13-23'),
+       'schedule': crontab(minute='7,17,27,37,47,57', hour='13-23', day_of_week='1,2,3,4,5'),
     },
      'get_phonecalls_AH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='0', hour='0-12'),
+       'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+    },
+     'get_phonecalls_WKND': {
+       'task': 'sales.tasks.get_phonecalls',
+       'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
     },
 }
