@@ -170,20 +170,65 @@ CELERY_ACCEPT_CONTENT = ['application/json']
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 #CELERY_IMPORTS = ['comm.tasks']
+CELERY_BROKER_URL = 'redis://localhost:6379'
+
 from celery.schedules import crontab   
-CELERY_BROKER_URL = 'redis://localhost:6379' 
-CELERY_TIMEZONE = 'America/New_York'   
+# https://docs.celeryproject.org/en/latest/userguide/periodic-tasks.html#crontab-schedules
+# Each Celery task will have a Business Hours (BH) schedule and an After Hours (AH) Schedule
+# BH - Business Hours
+#     13:00 - 23:59 UTC
+#     8:00am - 7:59pm EST
+#
+# AH - After Hours
+#     0:00 - 13:00 UTC
+#     7:00pm EST - 8:00am EST
+#
+# The crontab hour is inclusive.
+# crontab(minute='*/11', hour='13-23') Will occur every 11 minutes between the hours of 13:00 UTC and 23:59 UTC. 
+# On 12-30-2020, it will run at these times:
+# 2020-12-30 13:00:00
+# 2020-12-30 13:11:00
+# 2020-12-30 13:22:00
+# ...
+# ...
+# 2020-12-30 23:33:00
+# 2020-12-30 23:44:00
+# 2020-12-30 23:55:00
+#
+# crontab(minute='0', hour='0-12') Will run at the beginning of every hour between 0:00 UTC and 12:00 UTC.
+# On 12-30-2020, it will run at these times:
+# 2020-12-30 00:00:00
+# 2020-12-30 01:00:00
+# 2020-12-30 02:00:00
+# ...
+# ...
+# 2020-12-30 10:00:00
+# 2020-12-30 11:00:00
+# 2020-12-30 12:00:00
+
 CELERY_BEAT_SCHEDULE = {
-    'get_cases':{
+    'get_cases_BH':{
         'task': 'cases.tasks.get_cases',
-        'schedule': 530.0,
+       'schedule': crontab(minute='*/13', hour='13-23'),
     },
-     'get_opportunities': {
+    'get_cases_AH':{
+        'task': 'cases.tasks.get_cases',
+       'schedule': crontab(minute='0', hour='0-12'),
+    },
+    'get_opportunities_BH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': 750.0,
+       'schedule': crontab(minute='*/12', hour='13-23'),
     },
-     'get_phonecalls': {
+    'get_opportunities_AH': {
+       'task': 'sales.tasks.get_opportunities',
+       'schedule': crontab(minute='0', hour='0-12'),
+    },
+     'get_phonecalls_BH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': 800.0,
+       'schedule': crontab(minute='*/11', hour='13-23'),
+    },
+     'get_phonecalls_AH': {
+       'task': 'sales.tasks.get_phonecalls',
+       'schedule': crontab(minute='0', hour='0-12'),
     },
 }
