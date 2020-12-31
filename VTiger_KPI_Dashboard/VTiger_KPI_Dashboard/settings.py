@@ -234,11 +234,11 @@ CELERY_BEAT_SCHEDULE = {
     },
     'get_opportunities_AH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='5', hour='0-12', day_of_week='1,2,3,4,5'),
     },
     'get_opportunities_WKND': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
+       'schedule': crontab(minute='5', hour='*/3', day_of_week='0,6'),
     },
      'get_phonecalls_BH': {
        'task': 'sales.tasks.get_phonecalls',
@@ -246,10 +246,10 @@ CELERY_BEAT_SCHEDULE = {
     },
      'get_phonecalls_AH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='10', hour='0-12', day_of_week='1,2,3,4,5'),
     },
      'get_phonecalls_WKND': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
+       'schedule': crontab(minute='10', hour='*/3', day_of_week='0,6'),
     },
 }
