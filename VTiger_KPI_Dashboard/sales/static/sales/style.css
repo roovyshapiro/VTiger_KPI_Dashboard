@@ -918,5 +918,9 @@ label.show_label:active {
         padding:0px;
     }
 
+    .user_points_table{
+        margin-top:10px;
+        margin-bottom:10px;
+    }
 
 }
