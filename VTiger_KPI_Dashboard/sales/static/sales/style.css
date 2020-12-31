@@ -350,6 +350,27 @@ td, th{
     font-size: 18px;
 }
 
+/* User Tables */
+.user_points_table th{
+    font-weight:bold;
+    font-size:15px;
+    padding-top:8px;
+    padding-bottom:8px;
+}
+
+.user_points_table td{
+    font-weight:normal;
+    font-size:15px;
+}
+
+.user_points_table td, th{
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 20px;
+    padding-right: 20px;
+    text-align: center;
+}
+
 /* Case Tables */
 .scrollable_table tbody{
     display:block;

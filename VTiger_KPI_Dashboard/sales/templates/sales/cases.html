@@ -83,16 +83,16 @@
                 </div>
                 <div>
                     {% if sorted_user_closed|length > 0 %}
-                        <table>
+                        <table class = "user_points_table">
                             <tbody>
                                 <tr>
                                     <th>USER</th>
-                                    <th>CLOSED CASES</th>
+                                    <th>CLOSED</th>
                                 </tr>
                                 {% for score  in sorted_user_closed %}
                                     <tr>
-                                        <th>{{ score.0 }} </th>
-                                        <th>{{ score.1 }} </th>
+                                        <td>{{ score.0 }}</td>
+                                        <td>{{ score.1 }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -165,16 +165,16 @@
                     </div>
                     <div>
                         {% if sorted_user_closed_week|length > 0 %}
-                            <table>
+                            <table class = "user_points_table">
                                 <tbody>
                                     <tr>
                                         <th>USER</th>
-                                        <th>CLOSED CASES</th>
+                                        <th>CLOSED</th>
                                     </tr>
                                     {% for score  in sorted_user_closed_week %}
                                         <tr>
-                                            <th>{{ score.0 }} </th>
-                                            <th>{{ score.1 }} </th>
+                                            <td>{{ score.0 }}</td>
+                                            <td>{{ score.1 }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -248,16 +248,16 @@
                 </div>
                 <div>
                     {% if sorted_user_closed_month|length > 0 %}
-                        <table>
+                        <table class = "user_points_table">
                             <tbody>
                                 <tr>
                                     <th>USER</th>
-                                    <th>CLOSED CASES</th>
+                                    <th>CLOSED</th>
                                 </tr>
                                 {% for score  in sorted_user_closed_month %}
                                     <tr>
-                                        <th>{{ score.0 }} </th>
-                                        <th>{{ score.1 }} </th>
+                                        <td>{{ score.0 }}</td>
+                                        <td>{{ score.1 }}</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
