@@ -841,12 +841,10 @@ label.show_label:active {
       table.sales_score_table td.sales_score_td {
         display: flex;
         font-size:18px;
-        font-weight:bold;
       }
 
       table.sales_score_table td.sales_score_td::before {
         content: attr(label);
-        font-weight: bold;
         font-size:18px;
         width: 250px;
       }
