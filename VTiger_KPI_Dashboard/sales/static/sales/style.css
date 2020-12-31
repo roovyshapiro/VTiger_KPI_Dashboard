@@ -268,13 +268,17 @@ td.score_key_points {
     margin-bottom:5px;
     margin-top:10px;
 }
+
+#sales_points{
+    margin-left:30px;
+}
+
 .score_box{
     flex:1;
     border: 5px solid blue;
     border-radius:10px;
     padding: 10px;
     margin-right: 30px;
-    margin-left: 30px;
     justify-content:center;
     text-align:center;
 }
