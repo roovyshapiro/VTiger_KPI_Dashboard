@@ -137,26 +137,35 @@ function date_changer(timeframe){
     chosen_date = new Date(`${chosen_date_arr[0]},${chosen_date_arr[1]},${chosen_date_arr[2]}`);
 
     if(timeframe=='yesterday'){
-        var timediff = chosen_date.getDate() - 1;
-    }
-    else if(timeframe=='tomorrow'){
+        //If its 01-01, set date to Dec 31
+        chosen_date.setDate(chosen_date.getDate() - 1);
+        }
 
+    else if(timeframe=='tomorrow'){
         var today = new Date();
+        //var tomorrow = new Date();
         //Don't allow user to choose a date in the future
         //end the function now so it doesn't refresh the page
         //for no reason.
-        if (chosen_date.getDate() + 1 > today.getDate()){
+        if(chosen_date > today  || chosen_date == today){
             return;
-        }
-        else{
-            var timediff = chosen_date.getDate() + 1;
+        } else{
+            chosen_date.setDate(chosen_date.getDate() + 1);
         }
     }
-    //9 -> 09 , 3 -> 03, etc.
-    if(timediff.toString().length == 1){
-        timediff = `0${timediff}`;
+
+    //1 -> 01, 3 -> 03, etc.
+    var day = chosen_date.getDate();
+    if(day.toString().length == 1){
+        day = `0${day}`;
     }
-    new_date = `${chosen_date.getFullYear()}-${chosen_date.getMonth() + 1}-${timediff}`;
+    //1 -> 01, 3 -> 03 etc.
+   var month = chosen_date.getMonth() + 1;
+   if(month.toString().length == 1){
+        month = `0${month}`;
+    }
+
+    new_date = `${chosen_date.getFullYear()}-${month}-${day}`;
     localStorage.setItem('selected_date', new_date);
     document.getElementById("date_start").value = new_date;
     save_group_date();
