@@ -338,6 +338,25 @@ td, th{
     flex: 0 0 25%;
 }
 
+#score_and_all_groups_open_cases{
+    display:flex;
+    justify-content: center;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+
+#all_groups_open_cases_div{
+    margin-left:20px;
+}
+
+#all_groups_open_cases_table td, th{
+    padding:1px;
+    padding-right:10px;
+    border:none;
+    font-style:italic;
+    font-size:14px;
+    font-weight:bold;
+}
 
 /* Points Header */
 .points_header{

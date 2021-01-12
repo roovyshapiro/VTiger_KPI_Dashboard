@@ -30,11 +30,20 @@ def main(request):
     #query set to only return and display the cases which match that group. If no group is 
     #selected, data is displayed from all groups and "All Groups" is sent to be displayed.
     group_request = request.GET.get('group_dropdown')
+
+    #If "All Groups" is selected, a summary of open cases is provided
+    all_groups_open = {}
+
     if group_request != '' and group_request is not None and group_request != 'All Groups':
         full_cases = full_cases.filter(assigned_groupname=group_request)
         date_group_dict['group'] = group_request
     else:
         date_group_dict['group'] = 'All Groups'
+        for group in case_groups:
+            group_cases = Cases.objects.all().filter(assigned_groupname=group['assigned_groupname'])
+            group_open_cases = len(group_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus='Closed')))
+            if group_open_cases != 0:
+                all_groups_open[group['assigned_groupname']] = group_open_cases
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
@@ -132,6 +141,7 @@ def main(request):
 
         'date_dict':date_dict,
         'urls':urls,
+        'all_groups_open': all_groups_open,
     }
 
     #If today is monday, and the user chooses to look at today's data, then the week's data will not

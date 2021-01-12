@@ -21,7 +21,22 @@
         </div>
 
         <div class = "score_box" id="all_open_cases">
-            <span class ="score_name">All Open Cases</span> </br> <span class="score_num">{{ all_open_cases.open_cases }}</span>
+            <span class ="score_name">All Open Cases</span> 
+            <div id ="score_and_all_groups_open_cases">
+                <span class="score_num">{{ all_open_cases.open_cases }}</span>
+                {% if all_groups_open %}
+                    <div id = "all_groups_open_cases_div">
+                        <table id="all_groups_open_cases_table">
+                            {% for group, open_cases in all_groups_open.items %}
+                                <tr>
+                                    <td>{{ group }}</td>
+                                    <td>{{ open_cases }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 
