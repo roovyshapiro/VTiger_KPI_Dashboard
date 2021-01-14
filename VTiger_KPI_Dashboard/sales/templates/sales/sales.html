@@ -50,6 +50,22 @@
         {% for user, score in user_total_score.items %}
                 <div class = "score_box">
                     <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                    {% if score == 0 %}
+                        {% for user_cont, value in user_last_cont.items %}
+                            {% if user_cont == user %}
+                                <table id = "all_groups_open_cases_table">
+                                    <tr>
+                                        <td>Last Phone Call:</td>
+                                        <td>{{value.call}}
+                                    </tr>
+                                    <tr>
+                                        <td>Last Opportunity:</td>
+                                        <td>{{value.opp}}</td>
+                                    </tr>
+                                </table>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
                 </div>
         {% endfor %}
     </section>

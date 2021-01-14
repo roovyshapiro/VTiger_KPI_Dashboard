@@ -72,9 +72,12 @@ def main(request):
     #User specific phone calls and opportunities
     user_opps = {}
     user_calls = {}
+    #Dictionary with the users' last phone call/opportunity
+    user_last_cont = {}
 
     for user in sales_users:
         user_total_score[user['assigned_username']] = 0
+        user_last_cont[user['assigned_username']] = {'opp':'','call':''}
         user_opp_dict[user['assigned_username']] = {
             'Demo Scheduled':0,
             'Demo Given':0,
@@ -111,10 +114,34 @@ def main(request):
         if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > today and opp.closed_lost_changed_at < end_of_day:
             user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
 
+
     for call in today_phone_calls:
         if call.assigned_username in user_total_score:
             user_total_score[call.assigned_username] += 1
             user_opp_dict[call.assigned_username]['Phone Calls'] += 1
+
+    #We find the most recent phone call and opportunity modified for each user
+    #If their score is zero for the day, then the time of their most recent contribution is displayed
+    #(After fourteen days of no contributions, we no longer display that user)
+    before_today_opps = Opportunities.objects.all().filter(modifiedtime__lte=end_of_day)
+    before_today_calls = Phone_call.objects.all().filter(modifiedtime__lte=end_of_day)
+        
+    for k in user_total_score:
+        last_opp = before_today_opps.filter(assigned_username=k).order_by('modifiedtime').last()
+        last_call = before_today_calls.filter(assigned_username=k).order_by('modifiedtime').last()
+        try:
+            user_last_cont[k]['opp'] = last_opp.modifiedtime
+        except AttributeError:
+            #This user doesn't have any modified opportunities
+            user_last_cont[k]['opp'] = 'never'
+        try:
+            user_last_cont[k]['call'] = last_call.modifiedtime
+        except AttributeError:
+            #This user didn't make any phone calls
+            user_last_cont[k]['call'] = 'never'
+    for k,v in user_total_score.items():
+        if v != 0:
+            del(user_last_cont[k])
 
     date_dict = {}
     #Min Max Values for Date Picker in base.html
@@ -153,6 +180,7 @@ def main(request):
         'today_phone_calls':today_phone_calls,
         'date_dict':date_dict,
         'urls':urls,
+        'user_last_cont':user_last_cont,
     }
     return render(request, "sales/sales.html", context) 
 
