@@ -27,12 +27,20 @@ def main(request):
     all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
     all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
-    #In order to get all the sales users, we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
+    #Only display users who have either modified an opportunity or made a phone call within the past 14 days.
+    #There could be a sales person whose last phone call was one year ago. We wouldn't want that user's data to be continually
+    #displayed with 0 points
+    fourteen_days_ago = today + timezone.timedelta(days = -14)
+    fourteen_days_ago_opps = all_sales_opps.filter(modifiedtime__gte=fourteen_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    fourteen_days_ago_calls = all_sales_calls.filter(modifiedtime__gte=fourteen_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+
+    #In order to get all the sales users who've made contributions within the past 14 days, 
+    #we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
     #This will get us all the users but as you can see there may be duplicates.
     #<QuerySet [{'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}, {'assigned_username': 'Horace Builderguild'}]>
     #<QuerySet [{'assigned_username': 'Phillibus Pickens'}, {'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}]>
-    sales_users_opps = all_sales_opps.values('assigned_username').distinct()
-    sales_users_calls = all_sales_calls.values('assigned_username').distinct()
+    sales_users_opps = fourteen_days_ago_opps.values('assigned_username').distinct()
+    sales_users_calls = fourteen_days_ago_calls.values('assigned_username').distinct()
 
     #Next we create a list with all the users
     #[{'assigned_username': 'Phillibus Pickens'}, 
@@ -53,7 +61,6 @@ def main(request):
     # {'assigned_username': 'Joshua Weathertree'},
     # {'assigned_username': 'Horace Builderguild'}]
     sales_users = list({v['assigned_username']:v for v in sales_users_all}.values())
-
 
     today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
     today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
