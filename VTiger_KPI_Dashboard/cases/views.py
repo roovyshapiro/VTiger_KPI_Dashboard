@@ -296,8 +296,37 @@ def populate_all_cases(request):
 def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
+
+    User based statistics. Currently showing all the cases assigned to the user with the average time spent.
     '''
-    print('test!')
+    today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(None)
+    date_request = first_of_month
+    date_request_end = end_of_month
+    full_cases = Cases.objects.all().order_by('-modifiedtime')
+    #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end) & ~Q(casestatus="Closed"))
+    #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end))
+    case_stats_modified = full_cases
+
+    all_users = Cases.objects.values('assigned_username').distinct()
+    print(len(case_stats_modified))
+    user_cases = {}
+
+    for user in all_users:
+        user_cases[user['assigned_username']] = []
+        #print('all_users', user)
+        #print(len(case_stats_modified.filter(assigned_username=user)))
+        for case in case_stats_modified:
+            if case.assigned_username == user['assigned_username']:
+                time_spent = case.time_spent
+                if time_spent == '' or time_spent == ' ' or time_spent == None:
+                    time_spent = '0'
+                user_cases[user['assigned_username']].append(time_spent)
+
+    for user, case_list in user_cases.items():
+        if len(case_list) != 0:
+            time_spent_list = [float(i) for i in case_list]
+            avg_time_spent = sum(time_spent_list) / len(time_spent_list)
+            print(user, len(time_spent_list), round(avg_time_spent, 2))
 
     return HttpResponseRedirect("/cases")
 
