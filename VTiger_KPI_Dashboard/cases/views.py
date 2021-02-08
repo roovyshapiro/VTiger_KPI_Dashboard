@@ -313,6 +313,10 @@ def testing(request):
     for user in all_users:
         user_cases[user['assigned_username']] = {}
         user_cases[user['assigned_username']]['time_spent'] = []
+        user_cases[user['assigned_username']]['feedback'] = {}
+        user_cases[user['assigned_username']]['feedback']['satisfied'] = []
+        user_cases[user['assigned_username']]['feedback']['neutral'] = []
+        user_cases[user['assigned_username']]['feedback']['not_satisfied'] = []
 
         for case in full_cases:
             if case.assigned_username == user['assigned_username']:
@@ -320,16 +324,31 @@ def testing(request):
                 if time_spent == '' or time_spent == ' ' or time_spent == None:
                     time_spent = '0'
                 user_cases[user['assigned_username']]['time_spent'].append(time_spent)
+                if case.satisfaction_index == 'Satisfied':
+                    user_cases[user['assigned_username']]['feedback']['satisfied'].append(case.satisfaction_index)
+                elif case.satisfaction_index == 'Neutral':
+                    user_cases[user['assigned_username']]['feedback']['neutral'].append(case.satisfaction_index)
+                elif case.satisfaction_index == 'Not Satisfied':
+                    user_cases[user['assigned_username']]['feedback']['not_satisfied'].append(case.satisfaction_index)
+                else:
+                    continue
+
+
         user_cases[user['assigned_username']]['assigned'] = 0
         for case in open_cases:
             if case.assigned_username == user['assigned_username']:
                 user_cases[user['assigned_username']]['assigned'] += 1
+        
+
         print('USER:', user['assigned_username'])
         print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
         time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
         avg_time_spent = sum(time_spent_list) / len(time_spent_list)  
         print('AVG Time Spent:', round(avg_time_spent, 2))
         print('Total Assigned:',len(time_spent_list))
+        print('Feedback - Satisfied', len(user_cases[user['assigned_username']]['feedback']['satisfied']))
+        print('Feedback - Neutral', len(user_cases[user['assigned_username']]['feedback']['neutral']))
+        print('Feedback - Not Satisfied', len(user_cases[user['assigned_username']]['feedback']['not_satisfied']))
         print()
 
     return HttpResponseRedirect("/cases")
