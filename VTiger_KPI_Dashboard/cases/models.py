@@ -88,6 +88,8 @@ class Cases(models.Model):
     assigned_username = models.CharField(max_length=75)
     modified_username = models.CharField(max_length=75, default='')
     assigned_groupname = models.CharField(max_length=75)
+    satisfaction_feedback = models.CharField(max_length=250, default='')
+    satisfaction_index = models.CharField(max_length=50, default='')
     case_resolved = models.DateTimeField(null=True)
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
