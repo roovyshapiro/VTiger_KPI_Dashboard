@@ -127,6 +127,8 @@ def get_cases(get_all_cases=False):
         new_case.modifiedby = case['modifiedby']
         new_case.modifiedtime = make_aware(datetime.datetime.strptime(case['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
         new_case.title = case['title']
+        new_case.satisfaction_feedback = case['satisfaction_feedback']
+        new_case.satisfaction_index = case['satisfaction_index']
         new_case.time_spent = case['time_spent']
         #Converts the time spent from a number of hours into something more human-readable
         #838.928 -> 34 Days, 22 Hours, 55 Minutes
