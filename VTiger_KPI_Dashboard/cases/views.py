@@ -305,28 +305,32 @@ def testing(request):
     full_cases = Cases.objects.all().order_by('-modifiedtime')
     #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end) & ~Q(casestatus="Closed"))
     #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end))
-    case_stats_modified = full_cases
+    open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
 
     all_users = Cases.objects.values('assigned_username').distinct()
-    print(len(case_stats_modified))
     user_cases = {}
 
     for user in all_users:
-        user_cases[user['assigned_username']] = []
-        #print('all_users', user)
-        #print(len(case_stats_modified.filter(assigned_username=user)))
-        for case in case_stats_modified:
+        user_cases[user['assigned_username']] = {}
+        user_cases[user['assigned_username']]['time_spent'] = []
+
+        for case in full_cases:
             if case.assigned_username == user['assigned_username']:
                 time_spent = case.time_spent
                 if time_spent == '' or time_spent == ' ' or time_spent == None:
                     time_spent = '0'
-                user_cases[user['assigned_username']].append(time_spent)
-
-    for user, case_list in user_cases.items():
-        if len(case_list) != 0:
-            time_spent_list = [float(i) for i in case_list]
-            avg_time_spent = sum(time_spent_list) / len(time_spent_list)
-            print(user, len(time_spent_list), round(avg_time_spent, 2))
+                user_cases[user['assigned_username']]['time_spent'].append(time_spent)
+        user_cases[user['assigned_username']]['assigned'] = 0
+        for case in open_cases:
+            if case.assigned_username == user['assigned_username']:
+                user_cases[user['assigned_username']]['assigned'] += 1
+        print('USER:', user['assigned_username'])
+        print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
+        time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
+        avg_time_spent = sum(time_spent_list) / len(time_spent_list)  
+        print('AVG Time Spent:', round(avg_time_spent, 2))
+        print('Total Assigned:',len(time_spent_list))
+        print()
 
     return HttpResponseRedirect("/cases")
 
