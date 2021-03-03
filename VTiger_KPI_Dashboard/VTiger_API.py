@@ -42,6 +42,15 @@ class Vtiger_api:
         data = self.api_call(f"{self.host}/describe?elementType={module}")
         return data
 
+    def retrieve_data_id(self, id):
+        '''
+        Return all the fields associated to an item's id.
+        This is used primarily for testing/troubleshooting
+        and is not used as part of any of the workflows.
+        '''
+        data = self.api_call(f"{self.host}/retrieve?id={id};")
+        return data
+
     def get_users(self):    	
         '''	
         Accepts User List and returns a dictionary of the username, first, last and id	
@@ -399,7 +408,8 @@ if __name__ == '__main__':
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     #response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
     #response = vtigerapi.get_module_data("Products")
-    response = vtigerapi.retrieve_all_products()
+    #response = vtigerapi.retrieve_all_products()
+    response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
-    with open('all_products.json', 'w') as f:
+    with open('6x424063.json', 'w') as f:
         f.write(data)
