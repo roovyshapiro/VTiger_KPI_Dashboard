@@ -111,19 +111,36 @@ def get_products():
 
         new_product.assigned_user_id = product['assigned_user_id']
         new_product.created_user_id = product['created_user_id']
-        new_product.modifiedby = product['modifiedby']
+        new_product.modified_by = product['modifiedby']
         new_product.assigned_username = product['assigned_username']
         new_product.modified_username = product['modified_username']
 
         new_product.product_id = product['id']
-        new_product.product_url_id = product['id'].replace('6x','')
-        new_product.image_id = product['imageattachmentids']
-        new_product.image_url_id = product['imageattachmentids'].replace('6x','')
+        new_product.url_id = product['id'].replace('6x','')
+        #Some products don't have images
+        try:
+            new_product.image_id = product['imageattachmentids']
+            new_product.image_url_id = product['imageattachmentids'].replace('6x','')
+        except KeyError:
+            new_product.image_id = ''
+            new_product.image_url_id = ''
 
-        new_product.width = int(product['cf_products_widthin'])
-        new_product.length = int(product['cf_products_lengthin'])
-        new_product.height = int(product['cf_products_heightin'])
-        new_product.weight = int(product['cf_products_weightlbs'])
+        try:
+            new_product.width = int(product['cf_products_widthin'])
+        except ValueError:
+            new_product.width = 0
+        try:
+            new_product.length = int(product['cf_products_lengthin'])
+        except ValueError:
+            new_product.length = 0
+        try:
+            new_product.height = int(product['cf_products_heightin'])
+        except ValueError:
+            new_product.height = 0
+        try:
+            new_product.weight = int(product['cf_products_weightlbs'])
+        except ValueError:
+            new_product.weight = 0
 
         new_product.description = product['description']
         new_product.packing_list = product['cf_products_packinglist']
