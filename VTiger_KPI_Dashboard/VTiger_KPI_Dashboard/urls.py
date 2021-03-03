@@ -18,6 +18,7 @@ from django.urls import path, include
 from sales import views as sales_views
 from cases import views as case_views
 from home import views as home_views
+from ship import views as ship_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -37,4 +38,6 @@ urlpatterns = [
     path('populateallcases/', case_views.populate_all_cases, name='populate_all_cases'),
     path('deletecases/', case_views.delete_all_cases, name='delete_all_cases'),
     path('testcases/', case_views.testing, name='cases_test'),
+
+    path('ship/', ship_views.main, name='ship_dashboard'),
 ]
