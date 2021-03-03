@@ -344,7 +344,7 @@ class Vtiger_api:
 
     def products_count(self):
         '''
-        Get the amount of cases from after "created_time" and return the number as an int.
+        Get the amount of active Products.
         '''
         products_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Products WHERE discontinued = '1';")
         #print(products_count)
@@ -359,12 +359,12 @@ class Vtiger_api:
         A module can only return a maximum of 100 results. 
         To circumvent that, an offset can be supplied which starts returning data from after the offset.
         The amount must be looped through in order to retrieve all the results.
-        For instance if there are 250 cases, first 100 is retrieved, then another 100, and then 50.
+        For instance if there are 150 products, first 100 is retrieved, then another 100, and then 50.
         A list is returned of each dictionary that was retrieved this way.
-        For 5000 cases, 50 API calls will be used.
+        For 5000 products, 50 API calls will be used.
         '''
-
         num_items = self.products_count()
+
         num_items = int(num_items)
         vtiger_item_list = []
         offset = 0
@@ -383,12 +383,12 @@ class Vtiger_api:
             vtiger_item_list.append(item_batch['result'])
         
         #Combine the multiple lists of dictionaries into one list
-        #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
-        #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+        #Before: [[{product1}, {product2}], [{product101}, {product102}]]
+        #After: [{product1}, {product2}, {product101}, {product102}]
         full_item_list = []
         for item_list in vtiger_item_list:
             full_item_list += item_list
-        
+
         return full_item_list
 
 
