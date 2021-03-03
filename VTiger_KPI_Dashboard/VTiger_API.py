@@ -394,11 +394,43 @@ class Vtiger_api:
         #Combine the multiple lists of dictionaries into one list
         #Before: [[{product1}, {product2}], [{product101}, {product102}]]
         #After: [{product1}, {product2}, {product101}, {product102}]
-        full_item_list = []
+        all_items = []
         for item_list in vtiger_item_list:
-            full_item_list += item_list
+            all_items += item_list
 
-        return full_item_list
+        try:
+            self.product_list = []
+            with open('users_and_groups.json') as f:
+                data = json.load(f)
+                for item in all_items:
+                    assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
+                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+    
+                    item['assigned_username'] = assigned_username
+                    item['modified_username'] = modified_username
+                    self.product_list.append(item)
+        except:
+            self.product_list = []
+            data = self.get_users_and_groups_file()
+            for item in all_items:
+                #Sometimes an product can be assigned directly to the group
+                if item['assigned_user_id'] in data['groups']:
+                    assigned_username = data['groups'][item['assigned_user_id']]
+                else:
+                    try:
+                        assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
+                    except KeyError:
+                        assigned_username = ''
+                    try:
+                        modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    except:
+                        modified_username = ''
+
+                item['assigned_username'] = assigned_username
+                item['modified_username'] = modified_username
+                self.product_list.append(item)
+        
+        return self.product_list
 
 
 if __name__ == '__main__':
@@ -408,8 +440,8 @@ if __name__ == '__main__':
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     #response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
     #response = vtigerapi.get_module_data("Products")
-    #response = vtigerapi.retrieve_all_products()
-    response = vtigerapi.retrieve_data_id('6x424063')
+    response = vtigerapi.retrieve_all_products()
+    #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
-    with open('6x424063.json', 'w') as f:
+    with open('all_products.json', 'w') as f:
         f.write(data)
