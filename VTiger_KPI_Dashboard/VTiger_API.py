@@ -231,7 +231,7 @@ class Vtiger_api:
 
 
     ############################
-    ###SALES & CAse Dashboard###
+    ###SALES & CASE Dashboard###
     ############################
 
 
@@ -337,13 +337,69 @@ class Vtiger_api:
 
         return self.today_item_list
 
+    ############################
+    ###    SHIP Dashboard    ###
+    ############################
+
+
+    def products_count(self):
+        '''
+        Get the amount of cases from after "created_time" and return the number as an int.
+        '''
+        products_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM Products WHERE discontinued = '1';")
+        #print(products_count)
+        total_count = products_count['result'][0]['count']
+        print('Total Active Products', total_count)
+        return total_count
+
+    def retrieve_all_products(self):
+        '''
+        This is called from ship.tasks
+    
+        A module can only return a maximum of 100 results. 
+        To circumvent that, an offset can be supplied which starts returning data from after the offset.
+        The amount must be looped through in order to retrieve all the results.
+        For instance if there are 250 cases, first 100 is retrieved, then another 100, and then 50.
+        A list is returned of each dictionary that was retrieved this way.
+        For 5000 cases, 50 API calls will be used.
+        '''
+
+        num_items = self.products_count()
+        num_items = int(num_items)
+        vtiger_item_list = []
+        offset = 0
+        if num_items > 100:
+            while num_items > 100:
+                item_batch = self.api_call(f"{self.host}/query?query=Select * FROM Products WHERE discontinued = '1' limit {offset}, 100;")
+                print('api_call_complete', num_items)
+                vtiger_item_list.append(item_batch['result'])
+                offset += 100
+                num_items = num_items - 100
+                if num_items <= 100:
+                    break
+        if num_items <= 100:
+            item_batch = self.api_call(f"{self.host}/query?query=Select * FROM Products WHERE discontinued = '1' limit {offset}, 100;")
+            print('api_call_complete', num_items)
+            vtiger_item_list.append(item_batch['result'])
+        
+        #Combine the multiple lists of dictionaries into one list
+        #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
+        #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+        full_item_list = []
+        for item_list in vtiger_item_list:
+            full_item_list += item_list
+        
+        return full_item_list
+
 
 if __name__ == '__main__':
-        with open('credentials.json') as f:
-            data = f.read()
-        credential_dict = json.loads(data)
-        vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-        response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
-        data = json.dumps(response,  indent=4, sort_keys=True)
-        with open('PhoneCalls.json', 'w') as f:
-            f.write(data)
+    with open('credentials.json') as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    #response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
+    #response = vtigerapi.get_module_data("Products")
+    response = vtigerapi.retrieve_all_products()
+    data = json.dumps(response,  indent=4, sort_keys=True)
+    with open('all_products.json', 'w') as f:
+        f.write(data)
