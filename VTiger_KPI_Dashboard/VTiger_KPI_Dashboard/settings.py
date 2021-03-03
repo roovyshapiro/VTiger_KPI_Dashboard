@@ -253,4 +253,8 @@ CELERY_BEAT_SCHEDULE = {
        'task': 'sales.tasks.get_phonecalls',
        'schedule': crontab(minute='10', hour='*/3', day_of_week='0,6'),
     },
+     'get_products': {
+       'task': 'ship.tasks.get_products',
+       'schedule': crontab(minute='39', hour='*/5', day_of_week='1,2,3,4,5'),
+    },
 }
