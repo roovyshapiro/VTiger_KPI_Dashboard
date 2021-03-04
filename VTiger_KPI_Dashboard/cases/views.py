@@ -148,10 +148,22 @@ def main(request):
     #be shown. That is because if the current day is Monday, it will always be identical to the week's
     #data as no other data for days beyond today exist. 
     #However, if we look at a Monday in the past, then the data for the week will be different.
-    if today.weekday() == 0 and today.strftime('%Y-%m-%d') == timezone.now().strftime('%Y-%m-%d'):
+    #In addition, the week data also won't be shown if the week and month data is the same.
+    #This occurs if the beginning of the week and the beginning of the month coincide
+    if (today.weekday() == 0 and today.strftime('%Y-%m-%d') == timezone.now().strftime('%Y-%m-%d')) or \
+        (len(full_cases_month) == len(full_cases_week) and len(created_cases_dict_week) == len(created_cases_dict_month)):
         del context["full_cases_week"]
         del context["case_stats_dict_week"]
         del context["sorted_user_closed_week"]
+    
+    print(len(full_cases_month))
+    print(len(full_cases_week))
+
+    print(len(created_cases_dict_week))
+    print(len(created_cases_dict_month))
+
+    print(len(resolved_cases_dict_week))
+    print(len(resolved_cases_dict_month))
 
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "sales/cases.html", context) 
@@ -348,7 +360,7 @@ def testing(request):
         print('Total Assigned:',len(time_spent_list))
         print('Feedback - Satisfied', len(user_cases[user['assigned_username']]['feedback']['satisfied']))
         print('Feedback - Neutral', len(user_cases[user['assigned_username']]['feedback']['neutral']))
-        print('Feedback - Not Satisfied', len(user_cases[user['assigned_username']]['feedback']['not_satisfied']))
+        print('Feedback - Not Satisfied', len(user_cases[user['assigned_username']]['feedback']['not_satisfied'])) 
         print()
 
     return HttpResponseRedirect("/cases")
