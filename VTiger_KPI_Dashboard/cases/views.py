@@ -155,15 +155,6 @@ def main(request):
         del context["full_cases_week"]
         del context["case_stats_dict_week"]
         del context["sorted_user_closed_week"]
-    
-    print(len(full_cases_month))
-    print(len(full_cases_week))
-
-    print(len(created_cases_dict_week))
-    print(len(created_cases_dict_month))
-
-    print(len(resolved_cases_dict_week))
-    print(len(resolved_cases_dict_month))
 
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "sales/cases.html", context) 
