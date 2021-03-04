@@ -40,4 +40,6 @@ urlpatterns = [
     path('testcases/', case_views.testing, name='cases_test'),
 
     path('ship/', ship_views.main, name='ship_dashboard'),
+    path('populateproducts/', ship_views.populate_products, name='populate_products'),
+
 ]

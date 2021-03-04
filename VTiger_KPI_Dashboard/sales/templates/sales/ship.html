@@ -2,4 +2,50 @@
 
     {% block content %}
         <h1>Welcome to Shipping!</h1>
+
+        <form>
+            <label for="product_dropdown" id="product_dropdown_label">Product:</label>
+            <select name="product_dropdown" id = "product_dropdown">
+                <option selected></option>
+                {% for product  in products %}
+                    <option value="{{ product.name }}">{{ product.name }}</option>
+                {% endfor %} 
+            </select>
+            <button type="submit" id="products_submit" onclick="">Add</button>
+        </form>
+
+
+        <div id = "product_table_all">
+            <table>
+                <tbody>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Link</th>
+                        <th>Price</th>
+                        <th>Weight</th>
+                        <th>Width</th>
+                        <th>Length</th>
+                        <th>Height</th>
+                        <!--<th>Image</th> -->
+                    </tr>
+                    {% for product in products %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ product.name }}</td>
+                            <td><a href='{{urls.products_url}}{{ product.url_id }}'>{{ product.number }}</a></td>
+                            <td>${{ product.price }}</td>
+                            <td>{{ product.weight }} lbs</td>
+                            <td>{{ product.width }} in</td>
+                            <td>{{ product.length }} in</td>
+                            <td>{{ product.height }} in</td>
+                            <!--<td><img src='{{urls.image_url}}{{ product.url_id }}&fileId={{ product.image_url_id}}&type=image' width="150" alt="Product Image" onerror="this.style.display='none'"></td>
+                            -->
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
     {% endblock %}
