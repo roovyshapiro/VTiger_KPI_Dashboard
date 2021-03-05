@@ -295,6 +295,7 @@ def retrieve_user_data(date_request, date_request_end):
     full_cases = Cases.objects.all().order_by('-modifiedtime')
     full_cases_date = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
     open_cases = full_cases_date.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
+    all_open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
     closed_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
 
 
@@ -336,7 +337,8 @@ def retrieve_user_data(date_request, date_request_end):
 
         print('USER:', user['assigned_username'])
         time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
-        user_cases[user['assigned_username']]['assigned_all'] = len(time_spent_list)
+        open_cases_len = len(all_open_cases.filter(assigned_username=user['assigned_username']))
+        user_cases[user['assigned_username']]['assigned_all'] = open_cases_len
         try:
             avg_time_spent = sum(time_spent_list) / len(time_spent_list)
         except ZeroDivisionError:
