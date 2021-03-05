@@ -341,9 +341,14 @@ def retrieve_user_data(date_request, date_request_end):
         user_cases[user['assigned_username']]['assigned_all'] = open_cases_len
         try:
             avg_time_spent = sum(time_spent_list) / len(time_spent_list)
+            #Converts the time spent from a number of hours into something more human-readable
+            #838.928 -> 34 Days, 22 Hours, 55 Minutes
+            time_spent = float(avg_time_spent)
+            avg_time_spent = f"{int(time_spent / 24)} Days, {int(time_spent % 24)} Hours, {int(((time_spent % 24) - int(time_spent % 24)) * 60)} Minutes"
         except ZeroDivisionError:
             avg_time_spent = 0
-        user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
+        #user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
+        user_cases[user['assigned_username']]['avg_time_spent'] = avg_time_spent
         #print('AVG Time Spent:', user_cases[user['assigned_username']]['avg_time_spent'])
 
         #print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
