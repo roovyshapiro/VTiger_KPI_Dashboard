@@ -309,6 +309,7 @@ def testing(request):
     #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end) & ~Q(casestatus="Closed"))
     #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end))
     open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
+    closed_cases = full_cases.filter(Q(casestatus="Closed") | Q(casestatus="Resolved"))
 
     all_users = Cases.objects.values('assigned_username').distinct()
     user_cases = {}
@@ -338,10 +339,13 @@ def testing(request):
 
 
         user_cases[user['assigned_username']]['assigned'] = 0
+        user_cases[user['assigned_username']]['resolved'] = 0
         for case in open_cases:
             if case.assigned_username == user['assigned_username']:
                 user_cases[user['assigned_username']]['assigned'] += 1
-        
+        for case in closed_cases:
+            if case.assigned_username == user['assigned_username']:
+                user_cases[user['assigned_username']]['resolved'] += 1
 
         print('USER:', user['assigned_username'])
         print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
@@ -349,6 +353,7 @@ def testing(request):
         avg_time_spent = sum(time_spent_list) / len(time_spent_list)  
         print('AVG Time Spent:', round(avg_time_spent, 2))
         print('Total Assigned:',len(time_spent_list))
+        print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
         print('Feedback - Satisfied', len(user_cases[user['assigned_username']]['feedback']['satisfied']))
         print('Feedback - Neutral', len(user_cases[user['assigned_username']]['feedback']['neutral']))
         print('Feedback - Not Satisfied', len(user_cases[user['assigned_username']]['feedback']['not_satisfied'])) 
