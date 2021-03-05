@@ -27,20 +27,20 @@ def main(request):
     all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
     all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
-    #Only display users who have either modified an opportunity or made a phone call within the past 14 days.
+    #Only display users who have either modified an opportunity or made a phone call within the past 7 days.
     #There could be a sales person whose last phone call was one year ago. We wouldn't want that user's data to be continually
     #displayed with 0 points
-    fourteen_days_ago = today + timezone.timedelta(days = -14)
-    fourteen_days_ago_opps = all_sales_opps.filter(modifiedtime__gte=fourteen_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
-    fourteen_days_ago_calls = all_sales_calls.filter(modifiedtime__gte=fourteen_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    seven_days_ago = today + timezone.timedelta(days = -7)
+    seven_days_ago_opps = all_sales_opps.filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    seven_days_ago_calls = all_sales_calls.filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
 
-    #In order to get all the sales users who've made contributions within the past 14 days, 
+    #In order to get all the sales users who've made contributions within the past 7 days, 
     #we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
     #This will get us all the users but as you can see there may be duplicates.
     #<QuerySet [{'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}, {'assigned_username': 'Horace Builderguild'}]>
     #<QuerySet [{'assigned_username': 'Phillibus Pickens'}, {'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}]>
-    sales_users_opps = fourteen_days_ago_opps.values('assigned_username').distinct()
-    sales_users_calls = fourteen_days_ago_calls.values('assigned_username').distinct()
+    sales_users_opps = seven_days_ago_opps.values('assigned_username').distinct()
+    sales_users_calls = seven_days_ago_calls.values('assigned_username').distinct()
 
     #Next we create a list with all the users
     #[{'assigned_username': 'Phillibus Pickens'}, 
@@ -122,7 +122,7 @@ def main(request):
 
     #We find the most recent phone call and opportunity modified for each user
     #If their score is zero for the day, then the time of their most recent contribution is displayed
-    #(After fourteen days of no contributions, we no longer display that user)
+    #(After seven days of no contributions, we no longer display that user)
     before_today_opps = Opportunities.objects.all().filter(modifiedtime__lte=end_of_day)
     before_today_calls = Phone_call.objects.all().filter(modifiedtime__lte=end_of_day)
         
