@@ -335,7 +335,7 @@ def retrieve_user_data(date_request, date_request_end):
             if case.assigned_username == user['assigned_username']:
                 user_cases[user['assigned_username']]['resolved'] += 1
 
-        print('USER:', user['assigned_username'])
+        #print('USER:', user['assigned_username'])
         time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
         open_cases_len = len(all_open_cases.filter(assigned_username=user['assigned_username']))
         user_cases[user['assigned_username']]['assigned_all'] = open_cases_len
@@ -344,16 +344,16 @@ def retrieve_user_data(date_request, date_request_end):
         except ZeroDivisionError:
             avg_time_spent = 0
         user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
-        print('AVG Time Spent:', user_cases[user['assigned_username']]['avg_time_spent'])
+        #print('AVG Time Spent:', user_cases[user['assigned_username']]['avg_time_spent'])
 
-        print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
-        print('Total Assigned:',user_cases[user['assigned_username']]['assigned_all'])
-        print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
+        #print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
+        #print('Total Assigned:',user_cases[user['assigned_username']]['assigned_all'])
+        #print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
 
-        print('Feedback - Satisfied', user_cases[user['assigned_username']]['feedback']['satisfied'])
-        print('Feedback - Neutral', user_cases[user['assigned_username']]['feedback']['neutral'])
-        print('Feedback - Not Satisfied', user_cases[user['assigned_username']]['feedback']['not_satisfied']) 
-        print()
+        #print('Feedback - Satisfied', user_cases[user['assigned_username']]['feedback']['satisfied'])
+        #print('Feedback - Neutral', user_cases[user['assigned_username']]['feedback']['neutral'])
+        #print('Feedback - Not Satisfied', user_cases[user['assigned_username']]['feedback']['not_satisfied']) 
+        #print()
 
     return user_cases
 
