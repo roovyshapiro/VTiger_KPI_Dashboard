@@ -294,9 +294,9 @@ def retrieve_user_data(date_request, date_request_end):
     '''
     full_cases = Cases.objects.all().order_by('-modifiedtime')
     full_cases_date = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
-
     open_cases = full_cases_date.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
-    closed_cases = full_cases_date.filter(Q(casestatus="Closed") | Q(casestatus="Resolved"))
+    closed_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
+
 
     all_users = full_cases_date.values('assigned_username').distinct()
     user_cases = {}
@@ -405,7 +405,7 @@ def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
     '''
-    print('test!)
+    print('test!')
 
     return HttpResponseRedirect("/cases")
 
