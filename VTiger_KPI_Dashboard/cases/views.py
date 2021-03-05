@@ -63,6 +63,8 @@ def main(request):
     case_stats_dict_week, sorted_user_closed_week, full_cases_week, created_cases_week, resolved_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
     case_stats_dict_month, sorted_user_closed_month, full_cases_month, created_cases_month, resolved_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
 
+    #Retrieve user specific data for the entire month
+    user_case_data = retrieve_user_data(first_of_month, end_of_month)
 
     #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
     #created in that time frame. We highlight created cases in green and resolved cases in red.
@@ -120,6 +122,8 @@ def main(request):
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
         "all_open_cases":all_open_cases,
+
+        'user_case_data': user_case_data,
 
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
@@ -250,6 +254,107 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
 
     return case_stats_dict, sorted_user_closed, all_cases, created_cases, resolved_cases
 
+def retrieve_user_data(date_request, date_request_end):
+    '''
+    User based statistics:
+
+    USER: Krinp Jristen
+    AVG Time Spent: 34.37
+    Open Assigned: 7
+    Total Assigned: 14
+    Total Resolved: 7
+    Feedback - Satisfied 1
+    Feedback - Neutral 0
+    Feedback - Not Satisfied 0
+
+    USER: Erin Horacefield
+    AVG Time Spent: 27.21
+    Open Assigned: 7
+    Total Assigned: 13
+    Total Resolved: 6
+    Feedback - Satisfied 1
+    Feedback - Neutral 0
+    Feedback - Not Satisfied 0
+
+    The returned user_cases is a dict of dicts which looks like this for each user:
+    "Shawn Checkzberg":{
+      "time_spent":[
+         "99.956"
+      ],
+      "feedback":{
+         "satisfied":0,
+         "neutral":0,
+         "not_satisfied":0
+      },
+      "assigned":1,
+      "resolved":0,
+      "assigned_all":1,
+      "avg_time_spent":99.96
+    }
+    '''
+    full_cases = Cases.objects.all().order_by('-modifiedtime')
+    full_cases_date = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
+
+    open_cases = full_cases_date.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
+    closed_cases = full_cases_date.filter(Q(casestatus="Closed") | Q(casestatus="Resolved"))
+
+    all_users = full_cases_date.values('assigned_username').distinct()
+    user_cases = {}
+
+    for user in all_users:
+        user_cases[user['assigned_username']] = {}
+        user_cases[user['assigned_username']]['time_spent'] = []
+        user_cases[user['assigned_username']]['feedback'] = {}
+        user_cases[user['assigned_username']]['feedback']['satisfied'] = 0
+        user_cases[user['assigned_username']]['feedback']['neutral'] = 0
+        user_cases[user['assigned_username']]['feedback']['not_satisfied'] = 0
+
+        for case in full_cases_date:
+            if case.assigned_username == user['assigned_username']:
+                time_spent = case.time_spent
+                if time_spent == '' or time_spent == ' ' or time_spent == None:
+                    time_spent = '0'
+                user_cases[user['assigned_username']]['time_spent'].append(time_spent)
+                if case.satisfaction_index == 'Satisfied':
+                    user_cases[user['assigned_username']]['feedback']['satisfied'] += 1
+                elif case.satisfaction_index == 'Neutral':
+                    user_cases[user['assigned_username']]['feedback']['neutral'] += 1
+                elif case.satisfaction_index == 'Not Satisfied':
+                    user_cases[user['assigned_username']]['feedback']['not_satisfied'] += 1
+                else:
+                    continue
+
+
+        user_cases[user['assigned_username']]['assigned'] = 0
+        user_cases[user['assigned_username']]['resolved'] = 0
+        for case in open_cases:
+            if case.assigned_username == user['assigned_username']:
+                user_cases[user['assigned_username']]['assigned'] += 1
+        for case in closed_cases:
+            if case.assigned_username == user['assigned_username']:
+                user_cases[user['assigned_username']]['resolved'] += 1
+
+        print('USER:', user['assigned_username'])
+        time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
+        user_cases[user['assigned_username']]['assigned_all'] = len(time_spent_list)
+        try:
+            avg_time_spent = sum(time_spent_list) / len(time_spent_list)
+        except ZeroDivisionError:
+            avg_time_spent = 0
+        user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
+        print('AVG Time Spent:', user_cases[user['assigned_username']]['avg_time_spent'])
+
+        print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
+        print('Total Assigned:',user_cases[user['assigned_username']]['assigned_all'])
+        print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
+
+        print('Feedback - Satisfied', user_cases[user['assigned_username']]['feedback']['satisfied'])
+        print('Feedback - Neutral', user_cases[user['assigned_username']]['feedback']['neutral'])
+        print('Feedback - Not Satisfied', user_cases[user['assigned_username']]['feedback']['not_satisfied']) 
+        print()
+
+    return user_cases
+
 def retrieve_dates(date_request):
     '''
     today = (datetime.datetime(2020, 12, 4, 0, 0) 
@@ -299,65 +404,8 @@ def populate_all_cases(request):
 def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
-
-    User based statistics. Currently showing all the cases assigned to the user with the average time spent.
     '''
-    today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(None)
-    date_request = first_of_month
-    date_request_end = end_of_month
-    full_cases = Cases.objects.all().order_by('-modifiedtime')
-    #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end) & ~Q(casestatus="Closed"))
-    #case_stats_modified = full_cases.filter(Q(createdtime__gte=date_request) & Q(createdtime__lte=date_request_end))
-    open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
-    closed_cases = full_cases.filter(Q(casestatus="Closed") | Q(casestatus="Resolved"))
-
-    all_users = Cases.objects.values('assigned_username').distinct()
-    user_cases = {}
-
-    for user in all_users:
-        user_cases[user['assigned_username']] = {}
-        user_cases[user['assigned_username']]['time_spent'] = []
-        user_cases[user['assigned_username']]['feedback'] = {}
-        user_cases[user['assigned_username']]['feedback']['satisfied'] = []
-        user_cases[user['assigned_username']]['feedback']['neutral'] = []
-        user_cases[user['assigned_username']]['feedback']['not_satisfied'] = []
-
-        for case in full_cases:
-            if case.assigned_username == user['assigned_username']:
-                time_spent = case.time_spent
-                if time_spent == '' or time_spent == ' ' or time_spent == None:
-                    time_spent = '0'
-                user_cases[user['assigned_username']]['time_spent'].append(time_spent)
-                if case.satisfaction_index == 'Satisfied':
-                    user_cases[user['assigned_username']]['feedback']['satisfied'].append(case.satisfaction_index)
-                elif case.satisfaction_index == 'Neutral':
-                    user_cases[user['assigned_username']]['feedback']['neutral'].append(case.satisfaction_index)
-                elif case.satisfaction_index == 'Not Satisfied':
-                    user_cases[user['assigned_username']]['feedback']['not_satisfied'].append(case.satisfaction_index)
-                else:
-                    continue
-
-
-        user_cases[user['assigned_username']]['assigned'] = 0
-        user_cases[user['assigned_username']]['resolved'] = 0
-        for case in open_cases:
-            if case.assigned_username == user['assigned_username']:
-                user_cases[user['assigned_username']]['assigned'] += 1
-        for case in closed_cases:
-            if case.assigned_username == user['assigned_username']:
-                user_cases[user['assigned_username']]['resolved'] += 1
-
-        print('USER:', user['assigned_username'])
-        print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
-        time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
-        avg_time_spent = sum(time_spent_list) / len(time_spent_list)  
-        print('AVG Time Spent:', round(avg_time_spent, 2))
-        print('Total Assigned:',len(time_spent_list))
-        print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
-        print('Feedback - Satisfied', len(user_cases[user['assigned_username']]['feedback']['satisfied']))
-        print('Feedback - Neutral', len(user_cases[user['assigned_username']]['feedback']['neutral']))
-        print('Feedback - Not Satisfied', len(user_cases[user['assigned_username']]['feedback']['not_satisfied'])) 
-        print()
+    print('test!)
 
     return HttpResponseRedirect("/cases")
 
