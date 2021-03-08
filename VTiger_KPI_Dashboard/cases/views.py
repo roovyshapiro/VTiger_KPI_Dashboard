@@ -411,10 +411,33 @@ def populate_all_cases(request):
 def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
-    '''
-    print('test!')
 
-    return HttpResponseRedirect("/cases")
+    This presents a dict of dicts which has numbers representing months and their
+    respective first and last days. The ultimate purpose is to use this data to compare
+    case data against the previous months in the year.
+    {
+        1: {'first_of_month': datetime.datetime(2021, 1, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 1, 31, 23, 59, 59, tzinfo=<UTC>)},
+        2: {'first_of_month': datetime.datetime(2021, 2, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 2, 28, 23, 59, 59, tzinfo=<UTC>)},
+    }
+    '''
+    full_cases = Cases.objects.all()
+    months = {i:{'first_of_month':'','end_of_month':''} for i in range(1,13)}
+    for i in months:
+        first_of_month = timezone.now().replace(month=i, day=1, hour=0, minute=0, second=0, microsecond=0)
+        months[i]['first_of_month'] = first_of_month
+        year = first_of_month.year
+        month = first_of_month.month
+        last_day = calendar.monthrange(year,month)[1]
+        end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+        months[i]['end_of_month'] = end_of_month
+    print(months)
+    print(months[5]['end_of_month'])
+    print(months[5]['end_of_month'].day)
+    print(type(months[5]['end_of_month']))
+
+    return HttpResponseRedirect("/")
 
 @login_required()
 @staff_member_required
