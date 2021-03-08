@@ -27,7 +27,7 @@
                         <th>Width</th>
                         <th>Length</th>
                         <th>Height</th>
-                        <!--<th>Image</th> -->
+                        <th>Image</th>
                     </tr>
                     {% for product in products %}
                         <tr>
@@ -39,8 +39,7 @@
                             <td>{{ product.width }} in</td>
                             <td>{{ product.length }} in</td>
                             <td>{{ product.height }} in</td>
-                            <!--<td><img src='{{urls.image_url}}{{ product.url_id }}&fileId={{ product.image_url_id}}&type=image' width="150" alt="Product Image" onerror="this.style.display='none'"></td>
-                            -->
+                            <td><img src='{{urls.image_url}}{{ product.url_id }}&fileId={{ product.image_url_id}}&type=image' width="150" alt="Product Image" onerror="this.style.display='none'"></td>
                         </tr>
                     {% endfor %}
                 </tbody>
