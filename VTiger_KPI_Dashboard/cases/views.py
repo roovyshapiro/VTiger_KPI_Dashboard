@@ -412,9 +412,32 @@ def testing(request):
     '''
     The '/casestest' url calls this function which makes it great for testing.
 
-    This presents a dict of dicts which has numbers representing months and their
-    respective first and last days. The ultimate purpose is to use this data to compare
-    case data against the previous months in the year.
+    First, we go through all cases and find all the unique years based on created time.
+    A dicitionary is generated for each year and each month.
+    Ultimately, it looks like this:
+    {
+    2020:{
+        1:{},
+        2:{},
+        3:{},
+        ..
+        12:{},
+        }
+    2021:{
+        1:{}
+        2:{}
+        3:{}
+        ..
+        12:{},
+        }
+    }
+
+    Each month dict has data associated for that month including 
+    first and last day,
+    year,
+    month name,
+    all groups created, resolved, kill rates,
+    And a sub-dictionary of created, resolved, kill rate per group for that month.
     {
         1: {
             'first_of_month': datetime.datetime(2021, 1, 1, 0, 0, tzinfo=<UTC>), 
@@ -448,77 +471,108 @@ def testing(request):
             },
     }
 
-    Showing Total Created and Resolved Cases for each month
-    January-2021 = C:282 R:252
-    February-2021 = C:253 R:212
-    March-2021 = C:193 R:69
-    April-2021 = C:0 R:0
-    May-2021 = C:0 R:0
-    June-2021 = C:0 R:0
-    July-2021 = C:0 R:0
-    August-2021 = C:0 R:0
-    September-2021 = C:0 R:0
-    October-2021 = C:0 R:0
-    November-2021 = C:0 R:0
-    December-2021 = C:0 R:0
+    Showing Total Created and Resolved Cases for each month in the years.
+    Months will be at 0 if there are no cases in the DB for that month.
+    (Unfortunately, there is no way to detect if a case has been deleted.
+    Therefore, anytime a case has been deleted, all cases are deleted and
+    re-retrieved starting from the earliest case.)
+
+    January-2020 = C:0 R:0 K:0%
+    February-2020 = C:30 R:14 K:46%
+    March-2020 = C:546 R:448 K:82%
+    April-2020 = C:340 R:273 K:80%
+    May-2020 = C:284 R:281 K:98%
+    June-2020 = C:371 R:313 K:84%
+    July-2020 = C:340 R:341 K:100%
+    August-2020 = C:299 R:262 K:87%
+    September-2020 = C:354 R:367 K:103%
+    October-2020 = C:363 R:368 K:101%
+    November-2020 = C:254 R:268 K:105%
+    December-2020 = C:261 R:294 K:112%
+    January-2021 = C:282 R:252 K:89%
+    February-2021 = C:253 R:212 K:83%
+    March-2021 = C:198 R:74 K:37%
+    April-2021 = C:0 R:0 K:0%
+    May-2021 = C:0 R:0 K:0%
+    June-2021 = C:0 R:0 K:0%
+    July-2021 = C:0 R:0 K:0%
+    August-2021 = C:0 R:0 K:0%
+    September-2021 = C:0 R:0 K:0%
+    October-2021 = C:0 R:0 K:0%
+    November-2021 = C:0 R:0 K:0%
+    December-2021 = C:0 R:0 K:0%
     '''
     full_cases = Cases.objects.all()
     #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
     case_groups = Cases.objects.values('assigned_groupname').distinct()
-    months = {i:{} for i in range(1,13)}
 
-    for i in months:
-        first_of_month = timezone.now().replace(month=i, day=1, hour=0, minute=0, second=0, microsecond=0)
-        months[i]['first_of_month'] = first_of_month
-        year = first_of_month.year
-        month = first_of_month.month
-        last_day = calendar.monthrange(year,month)[1]
-        end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
-        months[i]['end_of_month'] = end_of_month
+    #get a list of all unique years which are used in cases
+    case_years = []
+    for case in full_cases:
+        year = case.createdtime.year
+        if year not in case_years:
+            case_years.append(year)
 
-        months[i]['month'] = first_of_month.strftime('%B')
-        months[i]['year'] = first_of_month.year
-        created_cases = full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month)
-        months[i]['created_all'] = len(created_cases)
-        resolved_cases = full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month)
-        months[i]['resolved_all'] = len(resolved_cases)
-    
-        try:
-            months[i]['kill_rate_all'] = int((months[i]['resolved_all'] / months[i]['created_all']) * 100)
-        except ValueError:
-            months[i]['kill_rate_all'] = int(0)
-        except ZeroDivisionError:
-            #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
-            months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
-    
-        print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
+    all_data = {}
+    for year in case_years:
+        #Each year gets associated to a dict for each month
+        months = {i:{} for i in range(1,13)}
+        all_data[year] = months
 
-        #For each month, we show created, resolved and kill rate per group
-        #Each month has a dict called "group_data_month" which looks like this:
-        #{'Accounting': {'created': 53, 'resolved': 34, 'kill_rate': 64}, 
-        # 'Administrators': {'created': 41, 'resolved': 13, 'kill_rate': 31}, 
-        # 'Tech Support': {'created': 119, 'resolved': 123, 'kill_rate': 103},
-        #  etc.
-        #} 
-        group_data_month = {}
-        for group in case_groups:
-            created_group_cases = created_cases.filter(assigned_groupname=group['assigned_groupname'])
-            resolved_group_cases = resolved_cases.filter(assigned_groupname=group['assigned_groupname'])
-            if len(created_group_cases) != 0:
-                group_data_month[group['assigned_groupname']] = {}
-                group_data_month[group['assigned_groupname']]['created'] = len(created_group_cases)
-                group_data_month[group['assigned_groupname']]['resolved'] = len(resolved_group_cases)
-                try:
-                    group_data_month[group['assigned_groupname']]['kill_rate'] = int((len(resolved_group_cases) / len(created_group_cases)) * 100)
-                except ValueError:
-                    group_data_month[group['assigned_groupname']]['kill_rate'] = int(0)
-                except ZeroDivisionError:
-                    group_data_month[group['assigned_groupname']]['kill_rate'] = int(len(resolved_group_cases) * 100)
+        #Generating the data per month
+        for i in months:
+            first_of_month = timezone.now().replace(month=i, year=year, day=1, hour=0, minute=0, second=0, microsecond=0)
+            months[i]['first_of_month'] = first_of_month
+            year = first_of_month.year
+            month = first_of_month.month
+            last_day = calendar.monthrange(year,month)[1]
+            end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+            months[i]['end_of_month'] = end_of_month
 
-        months[i]['created_groups'] = group_data_month
-        print(months[i]['month'], months[i]['created_groups'])
-    #print(months)
+            months[i]['month'] = first_of_month.strftime('%B')
+            months[i]['year'] = first_of_month.year
+            created_cases = full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month)
+            months[i]['created_all'] = len(created_cases)
+            resolved_cases = full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month)
+            months[i]['resolved_all'] = len(resolved_cases)
+        
+            try:
+                months[i]['kill_rate_all'] = int((months[i]['resolved_all'] / months[i]['created_all']) * 100)
+            except ValueError:
+                months[i]['kill_rate_all'] = int(0)
+            except ZeroDivisionError:
+                #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
+                months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
+        
+            print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
 
+            #For each month, we show created, resolved and kill rate per group
+            #Each month has a dict called "group_data_month" which looks like this:
+            #{'Accounting': {'created': 53, 'resolved': 34, 'kill_rate': 64}, 
+            # 'Administrators': {'created': 41, 'resolved': 13, 'kill_rate': 31}, 
+            # 'Tech Support': {'created': 119, 'resolved': 123, 'kill_rate': 103},
+            #  etc.
+            #} 
+            group_data_month = {}
+            for group in case_groups:
+                created_group_cases = created_cases.filter(assigned_groupname=group['assigned_groupname'])
+                resolved_group_cases = resolved_cases.filter(assigned_groupname=group['assigned_groupname'])
+                if len(created_group_cases) != 0:
+                    group_data_month[group['assigned_groupname']] = {}
+                    group_data_month[group['assigned_groupname']]['created'] = len(created_group_cases)
+                    group_data_month[group['assigned_groupname']]['resolved'] = len(resolved_group_cases)
+                    try:
+                        group_data_month[group['assigned_groupname']]['kill_rate'] = int((len(resolved_group_cases) / len(created_group_cases)) * 100)
+                    except ValueError:
+                        group_data_month[group['assigned_groupname']]['kill_rate'] = int(0)
+                    except ZeroDivisionError:
+                        group_data_month[group['assigned_groupname']]['kill_rate'] = int(len(resolved_group_cases) * 100)
+
+            months[i]['created_groups'] = group_data_month
+            print(months[i]['month'], months[i]['created_groups'])
+        #print(months)
+
+    print(all_data)
     return HttpResponseRedirect("/")
 
 @login_required()
