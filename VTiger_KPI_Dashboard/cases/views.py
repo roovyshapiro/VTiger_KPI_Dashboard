@@ -463,9 +463,17 @@ def testing(request):
         months[i]['year'] = first_of_month.year
         months[i]['created_all'] = len(full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month))
         months[i]['resolved_all'] = len(full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month))
-        
-        print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']}")
-    print(months)
+    
+        try:
+            months[i]['kill_rate_all'] = int((months[i]['resolved_all'] / months[i]['created_all']) * 100)
+        except ValueError:
+            months[i]['kill_rate_all'] = int(0)
+        except ZeroDivisionError:
+            #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
+            months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
+    
+        print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
+    #print(months)
 
     return HttpResponseRedirect("/")
 
