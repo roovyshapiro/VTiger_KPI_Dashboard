@@ -416,11 +416,37 @@ def testing(request):
     respective first and last days. The ultimate purpose is to use this data to compare
     case data against the previous months in the year.
     {
-        1: {'first_of_month': datetime.datetime(2021, 1, 1, 0, 0, tzinfo=<UTC>), 
-            'end_of_month': datetime.datetime(2021, 1, 31, 23, 59, 59, tzinfo=<UTC>)},
-        2: {'first_of_month': datetime.datetime(2021, 2, 1, 0, 0, tzinfo=<UTC>), 
-            'end_of_month': datetime.datetime(2021, 2, 28, 23, 59, 59, tzinfo=<UTC>)},
+        1: {
+            'first_of_month': datetime.datetime(2021, 1, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 1, 31, 23, 59, 59, tzinfo=<UTC>), 
+            'month': 'January', 
+            'year': 2021, 
+            'created_all': 282, 
+            'resolved_all': 252
+            }, 
+        2: {
+            'first_of_month': datetime.datetime(2021, 2, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 2, 28, 23, 59, 59, tzinfo=<UTC>), 
+            'month': 'February', 
+            'year': 2021, 
+            'created_all': 253, 
+            'resolved_all': 212
+        },
     }
+
+    Showing Total Created and Resolved Cases for each month
+    January-2021 = C:282 R:252
+    February-2021 = C:253 R:212
+    March-2021 = C:193 R:69
+    April-2021 = C:0 R:0
+    May-2021 = C:0 R:0
+    June-2021 = C:0 R:0
+    July-2021 = C:0 R:0
+    August-2021 = C:0 R:0
+    September-2021 = C:0 R:0
+    October-2021 = C:0 R:0
+    November-2021 = C:0 R:0
+    December-2021 = C:0 R:0
     '''
     full_cases = Cases.objects.all()
     months = {i:{'first_of_month':'','end_of_month':''} for i in range(1,13)}
@@ -432,10 +458,14 @@ def testing(request):
         last_day = calendar.monthrange(year,month)[1]
         end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
         months[i]['end_of_month'] = end_of_month
+
+        months[i]['month'] = first_of_month.strftime('%B')
+        months[i]['year'] = first_of_month.year
+        months[i]['created_all'] = len(full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month))
+        months[i]['resolved_all'] = len(full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month))
+        
+        print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']}")
     print(months)
-    print(months[5]['end_of_month'])
-    print(months[5]['end_of_month'].day)
-    print(type(months[5]['end_of_month']))
 
     return HttpResponseRedirect("/")
 
