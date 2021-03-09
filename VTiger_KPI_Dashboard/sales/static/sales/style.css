@@ -228,6 +228,17 @@ img {
     visibility: visible;
 }
 
+#group_date_selector {
+    display:flex;
+}
+
+#case_nav_buttons{
+    display: flex;
+    align-items: center;
+    margin-left: auto !important;
+    margin-right: 20px;
+}
+
 /****** SALES ******/
 
 
@@ -236,6 +247,7 @@ img {
 #selected_sales_date{
     font-weight:bold;
     margin-top:5px;
+    margin-left:10px;
 }
 
 /* Makes Score Tables into one column with the label on the left and points on the right */
