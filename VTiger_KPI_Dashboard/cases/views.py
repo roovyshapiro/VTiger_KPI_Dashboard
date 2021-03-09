@@ -423,6 +423,13 @@ def testing(request):
             'year': 2021, 
             'created_all': 282, 
             'resolved_all': 252
+            'groups_data_month =  {
+                    'Accounting': {'created': 53, 'resolved': 42, 'kill_rate': 79}, 
+                    'Administrators': {'created': 19, 'resolved': 15, 'kill_rate': 78}, 
+                    'Tech Support': {'created': 152, 'resolved': 136, 'kill_rate': 89}, 
+                    'Shipping': {'created': 51, 'resolved': 50, 'kill_rate': 98}, 
+                    ...
+                    }
             }, 
         2: {
             'first_of_month': datetime.datetime(2021, 2, 1, 0, 0, tzinfo=<UTC>), 
@@ -431,7 +438,14 @@ def testing(request):
             'year': 2021, 
             'created_all': 253, 
             'resolved_all': 212
-        },
+            'groups_data_month = {
+                    'Accounting': {'created': 53, 'resolved': 34, 'kill_rate': 64}, 
+                    'Administrators': {'created': 41, 'resolved': 13, 'kill_rate': 31}, 
+                    'Tech Support': {'created': 119, 'resolved': 123, 'kill_rate': 103}, 
+                    'Shipping': {'created': 27, 'resolved': 38, 'kill_rate': 140},
+                    ...
+                    }
+            },
     }
 
     Showing Total Created and Resolved Cases for each month
@@ -449,7 +463,10 @@ def testing(request):
     December-2021 = C:0 R:0
     '''
     full_cases = Cases.objects.all()
-    months = {i:{'first_of_month':'','end_of_month':''} for i in range(1,13)}
+    #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
+    case_groups = Cases.objects.values('assigned_groupname').distinct()
+    months = {i:{} for i in range(1,13)}
+
     for i in months:
         first_of_month = timezone.now().replace(month=i, day=1, hour=0, minute=0, second=0, microsecond=0)
         months[i]['first_of_month'] = first_of_month
@@ -461,8 +478,10 @@ def testing(request):
 
         months[i]['month'] = first_of_month.strftime('%B')
         months[i]['year'] = first_of_month.year
-        months[i]['created_all'] = len(full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month))
-        months[i]['resolved_all'] = len(full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month))
+        created_cases = full_cases.filter(createdtime__gte=first_of_month, createdtime__lte=end_of_month)
+        months[i]['created_all'] = len(created_cases)
+        resolved_cases = full_cases.filter(case_resolved__gte=first_of_month, case_resolved__lte=end_of_month)
+        months[i]['resolved_all'] = len(resolved_cases)
     
         try:
             months[i]['kill_rate_all'] = int((months[i]['resolved_all'] / months[i]['created_all']) * 100)
@@ -473,6 +492,31 @@ def testing(request):
             months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
     
         print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
+
+        #For each month, we show created, resolved and kill rate per group
+        #Each month has a dict called "group_data_month" which looks like this:
+        #{'Accounting': {'created': 53, 'resolved': 34, 'kill_rate': 64}, 
+        # 'Administrators': {'created': 41, 'resolved': 13, 'kill_rate': 31}, 
+        # 'Tech Support': {'created': 119, 'resolved': 123, 'kill_rate': 103},
+        #  etc.
+        #} 
+        group_data_month = {}
+        for group in case_groups:
+            created_group_cases = created_cases.filter(assigned_groupname=group['assigned_groupname'])
+            resolved_group_cases = resolved_cases.filter(assigned_groupname=group['assigned_groupname'])
+            if len(created_group_cases) != 0:
+                group_data_month[group['assigned_groupname']] = {}
+                group_data_month[group['assigned_groupname']]['created'] = len(created_group_cases)
+                group_data_month[group['assigned_groupname']]['resolved'] = len(resolved_group_cases)
+                try:
+                    group_data_month[group['assigned_groupname']]['kill_rate'] = int((len(resolved_group_cases) / len(created_group_cases)) * 100)
+                except ValueError:
+                    group_data_month[group['assigned_groupname']]['kill_rate'] = int(0)
+                except ZeroDivisionError:
+                    group_data_month[group['assigned_groupname']]['kill_rate'] = int(len(resolved_group_cases) * 100)
+
+        months[i]['created_groups'] = group_data_month
+        print(months[i]['month'], months[i]['created_groups'])
     #print(months)
 
     return HttpResponseRedirect("/")
