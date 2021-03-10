@@ -558,11 +558,14 @@ def retrieve_historical_data(supplied_group):
             months[i]['created_groups'] = group_data_month
             #print(months[i]['month'], months[i]['created_groups'])
         #print(months)
+
+    #Ultimately, we only want to display data that exists and not empty data for all future and past months
+    #A new dict is created which only contains non-empty month data inside
     all_dict_non_empty = {i:{} for i in all_data}
     for year, months in all_data.items():
         for month, month_dict in months.items():
             if month_dict['created_all'] != 0 and month_dict['resolved_all'] != 0:
-                print(year, month, month_dict['created_groups'][case_groups[0]['assigned_groupname']])
+                #print(year, month, month_dict['created_groups'][case_groups[0]['assigned_groupname']])
                 all_dict_non_empty[year][month] = month_dict
     #print(all_dict_non_empty)
     #print(all_data)
