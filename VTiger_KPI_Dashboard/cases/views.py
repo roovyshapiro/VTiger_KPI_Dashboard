@@ -45,6 +45,9 @@ def main(request):
             if group_open_cases != 0:
                 all_groups_open[group['assigned_groupname']] = group_open_cases
 
+    historical_data = retrieve_historical_data(date_group_dict['group'])
+    print('historical data', len(historical_data))
+
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
     all_open_cases['full_cases'] = full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed"))
@@ -394,24 +397,8 @@ def retrieve_dates(date_request):
 
     return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
-@login_required()
-@staff_member_required
-def populate_cases(request):
-    get_cases()
-    return HttpResponseRedirect("/cases")
-
-@login_required()
-@staff_member_required
-def populate_all_cases(request):
-    get_cases(get_all_cases=True)
-    return HttpResponseRedirect("/cases")
-
-@login_required()
-@staff_member_required
-def testing(request):
+def retrieve_historical_data(supplied_group):
     '''
-    The '/casestest' url calls this function which makes it great for testing.
-
     First, we go through all cases and find all the unique years based on created time.
     A dicitionary is generated for each year and each month.
     Ultimately, it looks like this:
@@ -504,8 +491,8 @@ def testing(request):
     '''
     full_cases = Cases.objects.all()
     #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
-    case_groups = Cases.objects.values('assigned_groupname').distinct()
-
+    #case_groups = Cases.objects.values('assigned_groupname').distinct()
+    case_groups = [{'assigned_groupname':supplied_group}]
     #get a list of all unique years which are used in cases
     case_years = []
     for case in full_cases:
@@ -544,7 +531,7 @@ def testing(request):
                 #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
                 months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
         
-            print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
+            #print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
 
             #For each month, we show created, resolved and kill rate per group
             #Each month has a dict called "group_data_month" which looks like this:
@@ -569,10 +556,38 @@ def testing(request):
                         group_data_month[group['assigned_groupname']]['kill_rate'] = int(len(resolved_group_cases) * 100)
 
             months[i]['created_groups'] = group_data_month
-            print(months[i]['month'], months[i]['created_groups'])
+            #print(months[i]['month'], months[i]['created_groups'])
         #print(months)
+    all_dict_non_empty = {i:{} for i in all_data}
+    for year, months in all_data.items():
+        for month, month_dict in months.items():
+            if month_dict['created_all'] != 0 and month_dict['resolved_all'] != 0:
+                print(year, month, month_dict['created_groups'][case_groups[0]['assigned_groupname']])
+                all_dict_non_empty[year][month] = month_dict
+    #print(all_dict_non_empty)
+    #print(all_data)
+    return(all_dict_non_empty)
 
-    print(all_data)
+
+@login_required()
+@staff_member_required
+def populate_cases(request):
+    get_cases()
+    return HttpResponseRedirect("/cases")
+
+@login_required()
+@staff_member_required
+def populate_all_cases(request):
+    get_cases(get_all_cases=True)
+    return HttpResponseRedirect("/cases")
+
+@login_required()
+@staff_member_required
+def testing(request):
+    '''
+    The '/casestest' url calls this function which makes it great for testing.
+    '''
+    print('test')
     return HttpResponseRedirect("/")
 
 @login_required()
