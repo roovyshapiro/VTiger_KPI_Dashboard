@@ -243,7 +243,7 @@ def get_phonecalls(day='Today'):
 
         new_phone_call.customer = phone_call['customer']
 
-        phone_call_start = make_aware(datetime.datetime.strptime(phone_call['CreatedTime'],'%Y-%m-%d %H:%M:%S'))
+        phone_call_start = make_aware(datetime.datetime.strptime(phone_call['createdtime'],'%Y-%m-%d %H:%M:%S'))
         new_phone_call.createdtime = phone_call_start
         new_phone_call.modifiedtime = make_aware(datetime.datetime.strptime(phone_call['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
 
