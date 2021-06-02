@@ -8,6 +8,7 @@ from .tasks import get_products
 from .models import Products
 import json, os
 
+@login_required()
 def main(request):
     '''
     My Home Page.
