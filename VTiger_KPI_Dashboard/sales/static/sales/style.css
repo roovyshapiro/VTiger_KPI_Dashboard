@@ -406,7 +406,12 @@ td, th{
     text-align: center;
 }
 
-/* Case Tables */
+/* Case Tables
+https://datatables.net/
+Scrollable Tables have been replaced with Data Tables
+which provide far more functionality including
+sorting, filtering & choosing how many rows to load
+
 .scrollable_table tbody{
     display:block;
     overflow:auto;
@@ -416,6 +421,8 @@ td, th{
   .scrollable_table thead tr{
     display:block;
   }
+
+*/
 
 #resolved_row{
     background-color: #ffe6e6;

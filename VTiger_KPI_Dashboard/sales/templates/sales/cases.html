@@ -60,7 +60,7 @@
 
     <div id = "case_table_all">
         <table class = "scrollable_table">
-            <tbody>
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Number</th>
@@ -74,6 +74,8 @@
                     <th>Resolved (UTC)</th>
                     <th>Time Spent</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for case in all_open_cases.full_cases %}
                     <tr>
                         <td>{{ forloop.counter }}</td>
@@ -134,7 +136,7 @@
     <label for="show_label_day" class="show_label">SHOW CASES</label>
     <div id = "case_table_day">
         <table class = "scrollable_table">
-            <tbody>
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Number</th>
@@ -148,6 +150,8 @@
                     <th>Resolved (UTC)</th>
                     <th>Time Spent</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for case in full_cases_day %}
                     {% if case.case_no in resolved_cases_day %}
                         <tr id = "resolved_row">
@@ -217,7 +221,7 @@
 
         <div id = "case_table_week">
             <table class = "scrollable_table">
-                <tbody>
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Number</th>
@@ -231,6 +235,8 @@
                         <th>Resolved (UTC)</th>
                         <th>Time Spent</th>
                     </tr>
+                </thead>
+                <tbody>
                     {% for case in full_cases_week %}
                         {% if case.case_no in resolved_cases_week %}
                             <tr id = "resolved_row">
@@ -300,7 +306,7 @@
 
     <div id = "case_table_month">
         <table class = "scrollable_table">
-            <tbody>
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>Number</th>
@@ -314,6 +320,8 @@
                     <th>Resolved (UTC)</th>
                     <th>Time Spent</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for case in full_cases_month %}
                     {% if case.case_no in resolved_cases_month %}
                         <tr id = "resolved_row">
@@ -343,7 +351,7 @@
 {% if all_groups_open %}
     <div id = "user_case_data_div">
         <table class = "scrollable_table">
-            <tbody>
+            <thead>
                 <tr>
                     <th>#</th>
                     <th>User</th>
@@ -355,6 +363,8 @@
                     <th>Neutral</th>
                     <th>Not Satisfied</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for name, user in user_case_data.items %}
                     <tr>
                         <td>{{ forloop.counter }}</td>

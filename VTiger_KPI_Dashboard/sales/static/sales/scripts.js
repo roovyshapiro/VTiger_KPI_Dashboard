@@ -170,3 +170,11 @@ function date_changer(timeframe){
     document.getElementById("date_start").value = new_date;
     save_group_date();
 }
+
+//https://datatables.net/
+//Scrollable Tables have been replaced with Data Tables
+//which provide far more functionality including
+//sorting, filtering & choosing how many rows to load
+$(document).ready( function () {
+    $('table.scrollable_table').DataTable();
+} );

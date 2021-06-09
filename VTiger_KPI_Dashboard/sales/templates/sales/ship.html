@@ -16,8 +16,8 @@
 
 
         <div id = "product_table_all">
-            <table>
-                <tbody>
+            <table  class="scrollable_table">
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Name</th>
@@ -29,6 +29,8 @@
                         <th>Height</th>
                         <th>Image</th>
                     </tr>
+                </thead>
+                <tbody>
                     {% for product in products %}
                         <tr>
                             <td>{{ forloop.counter }}</td>

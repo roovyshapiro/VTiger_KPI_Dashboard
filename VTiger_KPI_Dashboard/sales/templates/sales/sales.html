@@ -135,61 +135,69 @@
 
         <div id = "today_opp_table">
             <table class="scrollable_table">
-                <th>#</th>
-                <th>Number</th>
-                <th>Assigned To</th>
-                <th>Modified By</th>
-                <th>Name</th>
-                <th>Stage</th>
-                <th>Current Stage Changed</th>
-                <th>Modified Time</th>
-                <th>Created Time</th>
-                {% for opp in today_opps %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
-                        <td>{{ opp.assigned_username }}</td>
-                        <td>{{ opp.modified_username }}</td>
-                        <td>{{ opp.opp_name }}</td>
-                        <td>{{ opp.opp_stage }}</td>
-                        <td>{{ opp.current_stage_entry_time }}</td>
-                        <td>{{ opp.modifiedtime }}</td>
-                        <td>{{ opp.createdtime }}</td>
-                    </tr>
-                {% endfor %}
+                <thead>
+                    <th>#</th>
+                    <th>Number</th>
+                    <th>Assigned To</th>
+                    <th>Modified By</th>
+                    <th>Name</th>
+                    <th>Stage</th>
+                    <th>Current Stage Changed</th>
+                    <th>Modified Time</th>
+                    <th>Created Time</th>
+                </thead>
+                <tbody>
+                    {% for opp in today_opps %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
+                            <td>{{ opp.assigned_username }}</td>
+                            <td>{{ opp.modified_username }}</td>
+                            <td>{{ opp.opp_name }}</td>
+                            <td>{{ opp.opp_stage }}</td>
+                            <td>{{ opp.current_stage_entry_time }}</td>
+                            <td>{{ opp.modifiedtime }}</td>
+                            <td>{{ opp.createdtime }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
 
         <div id = "today_call_table">
             <table class="scrollable_table">
-                <th>#</th>
-                <th>User</th>
-                <th>Call ID</th>
-                <th>Call Time</th>
-                <th>End Time</th>
-                <th>Status</th>
-                <th>Direction</th>
-                <th>Duration</th>
-                <th>Customer Number</th>
-                <th>Recording</th>
-                {% for call in today_phone_calls %}
-                    <tr>
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ call.assigned_username }}</td>
-                        <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
-                        <td>{{ call.modifiedtime }}</td>
-                        <td>{{ call.endtime }}</td>
-                        <td>{{ call.call_status }}</td>
-                        <td>{{ call.direction }}</td>
-                        <td>{{ call.total_duration }}</td>
-                        <td>{{ call.customer_number }}</td>
-                        {% if call.recording_url %}
-                            <td><a href='{{call.recording_url}}'>Recording</a></td>
-                        {% else %}
-                            <td></td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
+                <thead>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Call ID</th>
+                    <th>Call Time</th>
+                    <th>End Time</th>
+                    <th>Status</th>
+                    <th>Direction</th>
+                    <th>Duration</th>
+                    <th>Customer Number</th>
+                    <th>Recording</th>
+                </thead>
+                <tbody>
+                    {% for call in today_phone_calls %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ call.assigned_username }}</td>
+                            <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
+                            <td>{{ call.modifiedtime }}</td>
+                            <td>{{ call.endtime }}</td>
+                            <td>{{ call.call_status }}</td>
+                            <td>{{ call.direction }}</td>
+                            <td>{{ call.total_duration }}</td>
+                            <td>{{ call.customer_number }}</td>
+                            {% if call.recording_url %}
+                                <td><a href='{{call.recording_url}}'>Recording</a></td>
+                            {% else %}
+                                <td></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </section>
