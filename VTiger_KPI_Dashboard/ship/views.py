@@ -13,7 +13,7 @@ def main(request):
     '''
     My Home Page.
     '''
-    all_products = Products.objects.all()
+    all_products = Products.objects.all().order_by('name')
 
     product_selection = request.GET.get('product_dropdown')
     selected_product = all_products.filter(name=product_selection)
@@ -32,9 +32,28 @@ def main(request):
     urls['products_url'] = credential_dict['host_url_products']
     urls['image_url'] = credential_dict['host_url_products_image']
 
+ 
+    #With the use of JSON Script we can get data from the Django model and then
+    #access it with JS
+    #https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
+    products_json = {}
+    for product in all_products:
+        products_json[product.name] = {}
+        products_json[product.name]['name'] = product.name
+        products_json[product.name]['description'] = product.description
+        products_json[product.name]['packing_list'] = product.packing_list
+        products_json[product.name]['number'] = product.number
+        products_json[product.name]['stock'] = product.stock
+        products_json[product.name]['price'] = product.price
+        products_json[product.name]['width'] = product.width
+        products_json[product.name]['length'] = product.length
+        products_json[product.name]['height'] = product.height
+        products_json[product.name]['weight'] = product.weight
+
     context = {
         "products":all_products,
         "urls":urls,
+        "products_json":products_json,
     }
 
     return render(request, "sales/ship.html", context)

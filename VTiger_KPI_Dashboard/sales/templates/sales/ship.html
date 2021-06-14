@@ -11,9 +11,14 @@
                     <option value="{{ product.name }}">{{ product.name }}</option>
                 {% endfor %} 
             </select>
-            <button type="submit" id="products_submit" onclick="">Add</button>
+            <div id="products_submit" onclick="print_product()">Add</div>
         </form>
 
+        <!--With the use of JSON Script we can get 
+        data from the Django model and then access it with JS
+        https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
+        -->
+        {{ products_json|json_script:"products_json" }}
 
         <div id = "product_table_all">
             <table  class="scrollable_table">

@@ -53,6 +53,7 @@ function retrieve_saved_data() {
         }
     }
     console.log(localStorage);
+    console.log(all_products);
 }
 
 //
@@ -178,3 +179,20 @@ function date_changer(timeframe){
 $(document).ready( function () {
     $('table.scrollable_table').DataTable();
 } );
+
+
+/* 
+With the use of JSON Script we can get data from the Django model and then
+access it with JS
+https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
+*/
+function print_product(){
+    var all_products = JSON.parse(document.getElementById('products_json').textContent);
+    var item = document.getElementById('product_dropdown');
+    var product_name= item.options[item.selectedIndex].text;
+    console.log(all_products[product_name]);
+    console.log('name', all_products[product_name].name);
+    console.log('width', all_products[product_name].width);
+    console.log('length', all_products[product_name].length);
+    console.log('height', all_products[product_name].height);
+}
