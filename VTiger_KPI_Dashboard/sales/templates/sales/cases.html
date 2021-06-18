@@ -383,4 +383,12 @@
     </div>
 {% endif %}
 
+<!-- Sending Historical Data to display in a chart per group -->
+{{ historical_data|json_script:"historical_data" }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div>
+  <canvas id="group_chart"></canvas>
+</div>
+
 {% endblock %}

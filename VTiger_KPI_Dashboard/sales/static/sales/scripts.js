@@ -187,12 +187,46 @@ access it with JS
 https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
 */
 function print_product(){
+    //Get a json object of all the products which was passed from the view
     var all_products = JSON.parse(document.getElementById('products_json').textContent);
+    //https://i.imgur.com/BOQ1hq1.png
+    //that screenshow shows what the structure of the "all_products" json object is
+    console.log(all_products);
+
+    //find the dropdown and get the selection as the product_name
     var item = document.getElementById('product_dropdown');
     var product_name= item.options[item.selectedIndex].text;
-    console.log(all_products[product_name]);
+
+    //the all_products json object is structured like {product_name:{name:' ', weight: ' ', etc.}}
+    //so we use the name of the product as the index of the all_products json object
+    console.log('product_name from selection dropdown', product_name);
+    console.log('when you use the name as the index of the all_products json object', all_products[product_name]);
+
+    //now we can access the product's attributes from the json object
     console.log('name', all_products[product_name].name);
     console.log('width', all_products[product_name].width);
     console.log('length', all_products[product_name].length);
     console.log('height', all_products[product_name].height);
+}
+
+/* Historical Data as a chart 
+https://www.chartjs.org/docs/latest/getting-started/
+https://codepen.io/bencarmichael/pen/XeYJXJ
+*/
+var data_history = JSON.parse(document.getElementById('historical_data').textContent);
+console.log(data_history);
+var selected_history_group = localStorage.getItem("selected_group");
+
+var years = Object.keys(data_history);
+for (year in years){
+    var months = Object.keys(data_history[years[year]]);
+	for (month in months){
+		console.log(data_history[years[year]][months[month]]['month']);
+		console.log('created_all', data_history[years[year]][months[month]]['created_all']);
+		console.log('resolved_all', data_history[years[year]][months[month]]['resolved_all']);
+		console.log('kill_rate_all', data_history[years[year]][months[month]]['kill_rate_all']);
+        console.log(selected_history_group, 'created', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
+        console.log(selected_history_group, 'resolved', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
+        console.log(selected_history_group, 'kill_rate', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
+	}
 }

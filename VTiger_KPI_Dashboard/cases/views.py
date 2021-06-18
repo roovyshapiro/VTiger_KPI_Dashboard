@@ -46,7 +46,6 @@ def main(request):
                 all_groups_open[group['assigned_groupname']] = group_open_cases
 
     historical_data = retrieve_historical_data(date_group_dict['group'])
-    print('historical data', len(historical_data))
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
@@ -127,6 +126,7 @@ def main(request):
         "all_open_cases":all_open_cases,
 
         'user_case_data': user_case_data,
+        'historical_data': historical_data,
 
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
@@ -567,7 +567,6 @@ def retrieve_historical_data(supplied_group):
             if month_dict['created_all'] != 0 and month_dict['resolved_all'] != 0:
                 #print(year, month, month_dict['created_groups'][case_groups[0]['assigned_groupname']])
                 all_dict_non_empty[year][month] = month_dict
-    #print(all_dict_non_empty)
     #print(all_data)
     return(all_dict_non_empty)
 
