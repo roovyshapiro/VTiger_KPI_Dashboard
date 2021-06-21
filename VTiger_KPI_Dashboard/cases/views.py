@@ -55,6 +55,8 @@ def main(request):
 
     today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
 
+    month_comparison = month_comparison_data(date_group_dict['group'], full_cases, first_of_month, end_of_month)
+
     date_group_dict['today'] = today.strftime('%A, %B %d')
     date_group_dict['first_of_week'] = first_of_week.strftime('%A, %B %d')
     date_group_dict['end_of_week'] = end_of_week.strftime('%A, %B %d')
@@ -127,6 +129,7 @@ def main(request):
 
         'user_case_data': user_case_data,
         'historical_data': historical_data,
+        'month_comparison': month_comparison,
 
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
@@ -570,6 +573,79 @@ def retrieve_historical_data(supplied_group, full_cases_list):
     #print(all_data)
     return(all_dict_non_empty)
 
+
+def month_comparison_data(supplied_group, full_cases, first_of_month, end_of_month):
+    '''
+    {
+    June':{
+        'first_day': datetime.datetime(2021, 6, 1, 0, 0, tzinfo=<UTC>),
+        'last_day': datetime.datetime(2021, 6, 30, 23, 59, 59, tzinfo=<UTC>), 
+        'resolved': [6, 6, 6, 10, 0, 0, 6, 6, 7, 7, 6, 0, 0, 6, 4, 7, 3, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }, 
+    'May':{
+        'first_day': datetime.datetime(2021, 5, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 5, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [0, 0, 5, 7, 8, 7, 7, 0, 0, 7, 6, 9, 6, 5, 0, 0, 7, 3, 4, 11, 2, 0, 0, 19, 7, 2, 7, 2, 3, 0, 0]
+    }, 
+    'April': {
+        'first_day': datetime.datetime(2021, 4, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 4, 30, 0, 0, tzinfo=<UTC>), 
+        'resolved': [9, 3, 0, 0, 11, 6, 3, 7, 4, 1, 0, 4, 1, 12, 3, 6, 0, 0, 20, 5, 9, 6, 12, 0, 1, 9, 5, 6, 5, 0]
+        }, 
+    'March': {
+        'first_day': datetime.datetime(2021, 3, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 3, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [10, 16, 3, 8, 0, 2, 1, 11, 9, 9, 6, 16, 0, 0, 11, 7, 9, 8, 1, 0, 0, 6, 5, 5, 4, 24, 0,0, 9, 4, 0]
+        }
+    }
+    '''
+    full_cases = full_cases.filter(assigned_groupname=supplied_group)
+
+    comparison_data = {}
+
+    last_day_of_previous_month1 = first_of_month - datetime.timedelta(days=1)
+    first_day_of_previous_month1 = last_day_of_previous_month1.replace(day=1)
+    
+    last_day_of_previous_month2 = first_day_of_previous_month1 - datetime.timedelta(days=1)
+    first_day_of_previous_month2 = last_day_of_previous_month2.replace(day=1)
+
+    last_day_of_previous_month3 = first_day_of_previous_month2 - datetime.timedelta(days=1)
+    first_day_of_previous_month3 = last_day_of_previous_month3.replace(day=1)
+
+    comparison_data[first_of_month.strftime('%B')] = {}
+    comparison_data[first_of_month.strftime('%B')]['first_day'] = first_of_month
+    comparison_data[first_of_month.strftime('%B')]['last_day'] = end_of_month
+    comparison_data[first_of_month.strftime('%B')]['resolved'] = []
+
+    comparison_data[first_day_of_previous_month1.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['first_day'] = first_day_of_previous_month1
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['last_day'] = last_day_of_previous_month1
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['resolved'] = []
+
+    comparison_data[first_day_of_previous_month2.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['first_day'] = first_day_of_previous_month2
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['last_day'] = last_day_of_previous_month2
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['resolved'] = []
+
+    comparison_data[first_day_of_previous_month3.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['first_day'] = first_day_of_previous_month3
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['last_day'] = last_day_of_previous_month3
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['resolved'] = []
+
+    #Makes a list of all days in the range of the beginning and end of the available days in db
+    for month in comparison_data:
+        date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (comparison_data[month]['last_day'] - comparison_data[month]['first_day']).days + 1)]
+        #print(date_range)
+        for date in date_range:
+            date_count = 0
+            for case in full_cases.filter(case_resolved__gte=comparison_data[month]['first_day'], case_resolved__lte=comparison_data[month]['last_day']):
+                if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
+                    date_count += 1
+            comparison_data[month]['resolved'].append(date_count)
+                    
+    print(comparison_data)
+
+    return comparison_data
 
 @login_required()
 @staff_member_required

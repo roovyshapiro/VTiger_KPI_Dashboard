@@ -294,3 +294,43 @@ var barChartData = {
       options: chartOptions
     });
   };
+
+/*
+Showing how the current groups case data compares to the past 3 months
+
+https://www.chartjs.org/docs/latest/charts/line.html
+
+const labels = Utils.months({count: 7});
+const data = {
+  labels: labels,
+  datasets: [{
+    label: 'March',
+    data: [2, 4, 80,],
+    fill: false,
+    borderColor: '#DCDCDC',
+    tension: 0.2
+  },
+  {
+    label: 'April',
+    data: [7, 46, 45, 23, 2, 23, 11],
+    fill: false,
+    borderColor: '#D0D0D0',
+    tension: 0.2
+  },
+  {
+    label: 'May',
+    data: [25, 4, 7, 45, 43, 22, 11],
+    fill: false,
+    borderColor: '#A9A9A9',
+    tension: 0.2
+  },
+  {
+    label: 'June',
+    data: [65, 59, 80, 81, 56, 55, 40],
+    fill: false,
+    borderColor: '#000000',
+    tension: 0.2
+  },]
+};
+  
+*/
