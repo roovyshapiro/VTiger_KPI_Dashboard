@@ -209,24 +209,88 @@ function print_product(){
     console.log('height', all_products[product_name].height);
 }
 
-/* Historical Data as a chart 
+/* 
+
+Using the historical case data of groups and displaying them as 
+a bar chart using chartjs. 
+Note: Kill Rate is commented out as it is a percentage value.
+If a group has a large amount of cases, the kill rate bar will appear
+small, and vice versae. It negatively impacts the look of the chart
+but may be useful in the future.
 https://www.chartjs.org/docs/latest/getting-started/
 https://codepen.io/bencarmichael/pen/XeYJXJ
+
+
 */
 var data_history = JSON.parse(document.getElementById('historical_data').textContent);
 console.log(data_history);
 var selected_history_group = localStorage.getItem("selected_group");
 
 var years = Object.keys(data_history);
+var date_label = [];
+var group_created = [];
+var group_resolved = [];
+//var group_kill_rate = [];
 for (year in years){
     var months = Object.keys(data_history[years[year]]);
 	for (month in months){
-		console.log(data_history[years[year]][months[month]]['month']);
-		console.log('created_all', data_history[years[year]][months[month]]['created_all']);
-		console.log('resolved_all', data_history[years[year]][months[month]]['resolved_all']);
-		console.log('kill_rate_all', data_history[years[year]][months[month]]['kill_rate_all']);
-        console.log(selected_history_group, 'created', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
-        console.log(selected_history_group, 'resolved', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
-        console.log(selected_history_group, 'kill_rate', data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
+        date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
+        group_created.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
+        group_resolved.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
+        //group_kill_rate.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
 	}
 }
+
+var barChartData = {
+    labels: date_label,
+    datasets: [
+      {
+        label: "Created",
+        backgroundColor: "lightblue",
+        borderColor: "blue",
+        borderWidth: 1,
+        data: group_created
+      },
+      {
+        label: "Resolved",
+        backgroundColor: "pink",
+        borderColor: "red",
+        borderWidth: 1,
+        data: group_resolved,
+      },
+      /*{
+        label: "Kill Rate %",
+        backgroundColor: "#FFDEAD",
+        borderColor: "#FF7518",
+        borderWidth: 1,
+        data: group_kill_rate,
+      },*/
+    ]
+  };
+  
+  var chartOptions = {
+    responsive: true,
+    legend: {
+      position: "top"
+    },
+    title: {
+      display: true,
+      text: "Chart.js Bar Chart"
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+  
+  window.onload = function() {
+    var ctx = document.getElementById("group_chart").getContext("2d");
+    window.myBar = new Chart(ctx, {
+      type: "bar",
+      data: barChartData,
+      options: chartOptions
+    });
+  };

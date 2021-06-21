@@ -45,7 +45,7 @@ def main(request):
             if group_open_cases != 0:
                 all_groups_open[group['assigned_groupname']] = group_open_cases
 
-    historical_data = retrieve_historical_data(date_group_dict['group'])
+    historical_data = retrieve_historical_data(date_group_dict['group'], full_cases)
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
@@ -397,7 +397,7 @@ def retrieve_dates(date_request):
 
     return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
-def retrieve_historical_data(supplied_group):
+def retrieve_historical_data(supplied_group, full_cases_list):
     '''
     First, we go through all cases and find all the unique years based on created time.
     A dicitionary is generated for each year and each month.
@@ -489,7 +489,7 @@ def retrieve_historical_data(supplied_group):
     November-2021 = C:0 R:0 K:0%
     December-2021 = C:0 R:0 K:0%
     '''
-    full_cases = Cases.objects.all()
+    full_cases = full_cases_list
     #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
     #case_groups = Cases.objects.values('assigned_groupname').distinct()
     case_groups = [{'assigned_groupname':supplied_group}]
