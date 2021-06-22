@@ -271,10 +271,12 @@ var barChartData = {
     responsive: true,
     legend: {
       position: "top"
-    },
-    title: {
-      display: true,
-      text: "Case Created/Resolved by Month"
+    },  
+    plugins:{
+      title: {
+        display: true,
+        text: "Created/Resolved for all Months"
+      },
     },
     scales: {
       yAxes: [{
@@ -327,7 +329,7 @@ Example of Data:
 var month_comparison = JSON.parse(document.getElementById('month_comparison').textContent);
 
 var months = Object.keys(month_comparison);
-var colors = ['#000000', '#A8A8A8', '#C0C0C0', '#E0E0E0' ];
+var colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
 
 var line_chart_data = {};
 line_chart_data['datasets'] = [];
@@ -354,9 +356,11 @@ var lineChartOptions = {
   legend: {
     position: "top"
   },
-  title: {
-    display: true,
-    text: "Case Resolutions compared to previous Months"
+  plugins:{
+    title: {
+      display: true,
+      text: "Resolved per day VS Previous 4 Months"
+    },
   },
 };
 

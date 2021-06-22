@@ -567,6 +567,12 @@ label.show_label:active {
 }
 
 
+#charts{
+    display:flex;
+}
+#charts div{
+    width:50%;
+}
 
 /****** Mobile Friendly ******/
 
