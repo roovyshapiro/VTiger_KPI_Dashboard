@@ -30,11 +30,16 @@
 
 <div id = "body_sizing">
     <div id="case_header">
-        <div>
+        <div id = "group_name_div">
             <p id="group_name">{{ date_group_dict.group }}</p>
         </div>
 
-        <div class = "score_box" id="all_open_cases">
+        {{ user_assigned_total_open|json_script:"user_assigned_total_open" }}
+        <div>
+            <canvas id="user_assigned_total_open_chart"></canvas>
+        </div>
+
+        <div id="all_open_cases_box">
             <span class ="score_name">All Open Cases</span> 
             <div id ="score_and_all_groups_open_cases">
                 <span class="score_num">{{ all_open_cases.open_cases }}</span>
@@ -53,6 +58,7 @@
             </div>
         </div>
     </div>
+
 
 
     <input type=checkbox id="show_label_all">

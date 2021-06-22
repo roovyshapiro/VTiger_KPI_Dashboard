@@ -430,3 +430,64 @@ var lineChartCreated = new Chart(
   document.getElementById('month_comparison_created_chart'),
   lineChartConfigCreated
 );
+
+/* User Assigned Total Open Doughnut Chart
+
+*/
+//There's a variable amount of users, so depending on how many users there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColors = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
+};
+var backgroundColorArray = [];
+
+user_assigned_total_open = JSON.parse(document.getElementById('user_assigned_total_open').textContent);
+var users_assigned = Object.keys(user_assigned_total_open);
+
+//var user_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
+var users_assigned_amount = []
+for (user in users_assigned){
+  users_assigned_amount.push(user_assigned_total_open[users_assigned[user]]);
+  backgroundColorArray.push(dynamicColors());
+}
+
+console.log(backgroundColorArray);
+
+var user_assigned_data = {
+  labels: users_assigned,
+  datasets: [{
+    label: 'Doughnut Chart',
+    data: users_assigned_amount,
+    backgroundColor: backgroundColorArray,
+    hoverOffset: 4
+  }]
+};
+
+var user_assigned_options = {
+  responsive: true,
+  maintainAspectRatio: false,  
+  plugins:{
+    title: {
+      display: true,
+      text: "Open Assigned Per User"
+    },
+  },
+  legend: {
+    position: "top"
+  },
+};
+
+var user_assigned_config = {
+  type: 'doughnut',
+  data: user_assigned_data,
+  options: user_assigned_options,
+};
+
+
+var doughnutChartAssigned = new Chart(
+    document.getElementById('user_assigned_total_open_chart'),
+  user_assigned_config
+);

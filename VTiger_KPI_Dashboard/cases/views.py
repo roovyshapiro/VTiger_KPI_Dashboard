@@ -69,6 +69,8 @@ def main(request):
     case_stats_dict_week, sorted_user_closed_week, full_cases_week, created_cases_week, resolved_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
     case_stats_dict_month, sorted_user_closed_month, full_cases_month, created_cases_month, resolved_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
 
+    user_assigned_total_open = retrieve_user_assigned_total(date_group_dict['group'], full_cases)
+
     #Retrieve user specific data for the entire month
     user_case_data = retrieve_user_data(first_of_month, end_of_month)
 
@@ -128,6 +130,7 @@ def main(request):
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
         "all_open_cases":all_open_cases,
+        'user_assigned_total_open':user_assigned_total_open,
 
         'user_case_data': user_case_data,
         'historical_data': historical_data,
@@ -171,6 +174,31 @@ def main(request):
 
     #After returning the request, return the html file to go to, and the context to send to the html
     return render(request, "sales/cases.html", context) 
+
+
+def retrieve_user_assigned_total(supplied_group, full_cases):
+    '''
+    How many opened cases are assigned to each user
+    '''
+    full_cases = full_cases.filter(assigned_groupname=supplied_group)
+
+    #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
+    all_users = full_cases.values('assigned_username').distinct()
+
+    #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0}
+    user_dict = {}
+    for user in all_users:
+        user_dict[user['assigned_username']] = 0
+    for case in full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")):
+        if case.assigned_username in user_dict:
+            user_dict[case.assigned_username] += 1
+
+    #If a value is equal to 0, then we remove that key. 
+    #No need to see which users don't have any currently assigned cases.
+    #user_assigned_dict ={'James Fulcrumstein':3, 'Mary Littlelamb':5,}
+    user_assigned_dict = {key:value for key, value in user_dict.items() if value != 0}
+    return user_assigned_dict
+
 
 def retrieve_case_data(full_cases, date_request, date_request_end):
     '''
