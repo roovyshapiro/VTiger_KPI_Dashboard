@@ -642,7 +642,6 @@ def month_comparison_data(supplied_group, full_cases, first_of_month, end_of_mon
                 if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                     date_count += 1
             comparison_data[month]['resolved'].append(date_count)
-                    
     print(comparison_data)
 
     return comparison_data

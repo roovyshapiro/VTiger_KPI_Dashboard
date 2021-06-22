@@ -223,7 +223,6 @@ https://codepen.io/bencarmichael/pen/XeYJXJ
 
 */
 var data_history = JSON.parse(document.getElementById('historical_data').textContent);
-console.log(data_history);
 var selected_history_group = localStorage.getItem("selected_group");
 
 var years = Object.keys(data_history);
@@ -275,7 +274,7 @@ var barChartData = {
     },
     title: {
       display: true,
-      text: "Chart.js Bar Chart"
+      text: "Case Created/Resolved by Month"
     },
     scales: {
       yAxes: [{
@@ -297,40 +296,77 @@ var barChartData = {
 
 /*
 Showing how the current groups case data compares to the past 3 months
-
 https://www.chartjs.org/docs/latest/charts/line.html
 
-const labels = Utils.months({count: 7});
-const data = {
-  labels: labels,
-  datasets: [{
-    label: 'March',
-    data: [2, 4, 80,],
-    fill: false,
-    borderColor: '#DCDCDC',
-    tension: 0.2
-  },
-  {
-    label: 'April',
-    data: [7, 46, 45, 23, 2, 23, 11],
-    fill: false,
-    borderColor: '#D0D0D0',
-    tension: 0.2
-  },
-  {
-    label: 'May',
-    data: [25, 4, 7, 45, 43, 22, 11],
-    fill: false,
-    borderColor: '#A9A9A9',
-    tension: 0.2
-  },
-  {
-    label: 'June',
-    data: [65, 59, 80, 81, 56, 55, 40],
-    fill: false,
-    borderColor: '#000000',
-    tension: 0.2
-  },]
-};
-  
+Example of Data:
+    {
+    June':{
+        'first_day': datetime.datetime(2021, 6, 1, 0, 0, tzinfo=<UTC>),
+        'last_day': datetime.datetime(2021, 6, 30, 23, 59, 59, tzinfo=<UTC>), 
+        'resolved': [6, 6, 6, 10, 0, 0, 6, 6, 7, 7, 6, 0, 0, 6, 4, 7, 3, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }, 
+    'May':{
+        'first_day': datetime.datetime(2021, 5, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 5, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [0, 0, 5, 7, 8, 7, 7, 0, 0, 7, 6, 9, 6, 5, 0, 0, 7, 3, 4, 11, 2, 0, 0, 19, 7, 2, 7, 2, 3, 0, 0]
+    }, 
+    'April': {
+        'first_day': datetime.datetime(2021, 4, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 4, 30, 0, 0, tzinfo=<UTC>), 
+        'resolved': [9, 3, 0, 0, 11, 6, 3, 7, 4, 1, 0, 4, 1, 12, 3, 6, 0, 0, 20, 5, 9, 6, 12, 0, 1, 9, 5, 6, 5, 0]
+        }, 
+    'March': {
+        'first_day': datetime.datetime(2021, 3, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 3, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [10, 16, 3, 8, 0, 2, 1, 11, 9, 9, 6, 16, 0, 0, 11, 7, 9, 8, 1, 0, 0, 6, 5, 5, 4, 24, 0,0, 9, 4, 0]
+        }
+    }
+
 */
+
+var month_comparison = JSON.parse(document.getElementById('month_comparison').textContent);
+
+var months = Object.keys(month_comparison);
+var colors = ['#000000', '#A8A8A8', '#C0C0C0', '#E0E0E0' ];
+
+var line_chart_data = {};
+line_chart_data['datasets'] = [];
+for (month in months) {
+  line_chart_data['datasets'].push(
+    {
+      label: months[month],
+      data: month_comparison[months[month]]['resolved'],
+      fill:false,
+      tension: 0.2,
+      borderColor: colors[month],
+    }
+  );
+}
+
+var date_labels = [];
+for (var i = 1; i <= 31; i++) {
+  date_labels.push(i);
+}
+line_chart_data['labels']  = date_labels;
+
+var lineChartOptions = {
+  responsive: true,
+  legend: {
+    position: "top"
+  },
+  title: {
+    display: true,
+    text: "Case Resolutions compared to previous Months"
+  },
+};
+
+var lineChartConfig = {
+  type: "line",
+  data: line_chart_data,
+  options: lineChartOptions
+};
+
+var lineChart = new Chart(
+  document.getElementById('month_comparison_chart'),
+  lineChartConfig
+);
