@@ -45,7 +45,9 @@ def main(request):
             if group_open_cases != 0:
                 all_groups_open[group['assigned_groupname']] = group_open_cases
 
+    #Group Specific Charts
     historical_data = retrieve_historical_data(date_group_dict['group'], full_cases)
+    month_comparison = month_comparison_data(date_group_dict['group'], full_cases)
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
@@ -55,13 +57,12 @@ def main(request):
 
     today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
 
-    month_comparison = month_comparison_data(date_group_dict['group'], full_cases, first_of_month, end_of_month)
-
     date_group_dict['today'] = today.strftime('%A, %B %d')
     date_group_dict['first_of_week'] = first_of_week.strftime('%A, %B %d')
     date_group_dict['end_of_week'] = end_of_week.strftime('%A, %B %d')
     date_group_dict['first_of_month'] = first_of_month.strftime('%A, %B %d')
     date_group_dict['end_of_month'] = end_of_month.strftime('%A, %B %d')
+
 
     case_stats_dict, sorted_user_closed, full_cases_day, created_cases_day, resolved_cases_day = retrieve_case_data(full_cases, today, end_of_day)
     case_stats_dict_week, sorted_user_closed_week, full_cases_week, created_cases_week, resolved_cases_week = retrieve_case_data(full_cases, first_of_week, end_of_week)
@@ -574,7 +575,7 @@ def retrieve_historical_data(supplied_group, full_cases_list):
     return(all_dict_non_empty)
 
 
-def month_comparison_data(supplied_group, full_cases, first_of_month, end_of_month):
+def month_comparison_data(supplied_group, full_cases):
     '''
     {
     June':{
@@ -599,6 +600,13 @@ def month_comparison_data(supplied_group, full_cases, first_of_month, end_of_mon
         }
     }
     '''
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    year = first_of_month.year
+    month = first_of_month.month
+    last_day = calendar.monthrange(year,month)[1]
+    end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+
     full_cases = full_cases.filter(assigned_groupname=supplied_group)
 
     comparison_data = {}
@@ -642,7 +650,6 @@ def month_comparison_data(supplied_group, full_cases, first_of_month, end_of_mon
                 if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                     date_count += 1
             comparison_data[month]['resolved'].append(date_count)
-    print(comparison_data)
 
     return comparison_data
 
