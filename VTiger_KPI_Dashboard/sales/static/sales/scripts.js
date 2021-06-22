@@ -356,6 +356,8 @@ line_chart_data['labels']  = date_labels;
 var lineChartOptions = {
   responsive: true,
   maintainAspectRatio: false,
+  pointHitRadius:15,
+  pointRadius:4,
   legend: {
     position: "top"
   },
@@ -405,6 +407,8 @@ line_chart_data_created['labels']  = date_labels;
 var lineChartOptionsCreated = {
   responsive: true,
   maintainAspectRatio: false,
+  pointHitRadius:15,
+  pointRadius:4,
   legend: {
     position: "top"
   },
