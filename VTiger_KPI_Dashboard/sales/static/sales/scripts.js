@@ -269,6 +269,7 @@ var barChartData = {
   
   var chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     legend: {
       position: "top"
     },  
@@ -354,6 +355,7 @@ line_chart_data['labels']  = date_labels;
 
 var lineChartOptions = {
   responsive: true,
+  maintainAspectRatio: false,
   legend: {
     position: "top"
   },
@@ -402,6 +404,7 @@ line_chart_data_created['labels']  = date_labels;
 
 var lineChartOptionsCreated = {
   responsive: true,
+  maintainAspectRatio: false,
   legend: {
     position: "top"
   },

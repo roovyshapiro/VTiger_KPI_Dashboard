@@ -572,6 +572,11 @@ label.show_label:active {
 }
 #charts div{
     width:50%;
+    height:400px;
+}
+#barchart{
+    width:100%;
+    height:600px;
 }
 
 /****** Mobile Friendly ******/
@@ -970,6 +975,11 @@ label.show_label:active {
     }
     #charts div{
         width:100%;
+        height:400px;
+    }
+    #barchart{
+        width:100%;
+        height:400px;
     }
 
 }
