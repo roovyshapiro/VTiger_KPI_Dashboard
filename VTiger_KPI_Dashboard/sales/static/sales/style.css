@@ -964,5 +964,12 @@ label.show_label:active {
         margin-top:10px;
         margin-bottom:10px;
     }
+    #charts{
+        display:flex;
+        flex-direction: column;
+    }
+    #charts div{
+        width:100%;
+    }
 
 }
