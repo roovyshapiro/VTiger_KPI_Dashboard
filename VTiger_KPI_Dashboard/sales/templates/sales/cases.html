@@ -349,15 +349,18 @@
 
     <div id = "charts">
         <!-- Sending Historical Data to display in a chart per group -->
-        {{ historical_data|json_script:"historical_data" }}
+        {{ month_comparison_created|json_script:"month_comparison_created" }}
         <div>
-            <canvas id="group_chart"></canvas>
+            <canvas id="month_comparison_created_chart"></canvas>
         </div>
-
         {{ month_comparison|json_script:"month_comparison" }}
         <div>
             <canvas id="month_comparison_chart"></canvas>
         </div>
+    </div>
+    {{ historical_data|json_script:"historical_data" }}
+    <div>
+        <canvas id="group_chart"></canvas>
     </div>
 
     {% if all_groups_open %}

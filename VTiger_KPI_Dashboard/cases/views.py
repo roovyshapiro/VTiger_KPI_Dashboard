@@ -48,6 +48,7 @@ def main(request):
     #Group Specific Charts
     historical_data = retrieve_historical_data(date_group_dict['group'], full_cases)
     month_comparison = month_comparison_data(date_group_dict['group'], full_cases)
+    month_comparison_created = month_comparison_data(date_group_dict['group'], full_cases, case_status="Created")
 
     all_open_cases = {}
     all_open_cases['open_cases'] = len(full_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus="Closed")))
@@ -131,6 +132,7 @@ def main(request):
         'user_case_data': user_case_data,
         'historical_data': historical_data,
         'month_comparison': month_comparison,
+        'month_comparison_created' : month_comparison_created,
 
         "full_cases_day":full_cases_day,
         "case_stats_dict":case_stats_dict,
@@ -575,7 +577,7 @@ def retrieve_historical_data(supplied_group, full_cases_list):
     return(all_dict_non_empty)
 
 
-def month_comparison_data(supplied_group, full_cases):
+def month_comparison_data(supplied_group, full_cases, case_status="Resolved"):
     '''
     {
     June':{
@@ -624,21 +626,25 @@ def month_comparison_data(supplied_group, full_cases):
     comparison_data[first_of_month.strftime('%B')]['first_day'] = first_of_month
     comparison_data[first_of_month.strftime('%B')]['last_day'] = end_of_month
     comparison_data[first_of_month.strftime('%B')]['resolved'] = []
+    comparison_data[first_of_month.strftime('%B')]['created'] = []
 
     comparison_data[first_day_of_previous_month1.strftime('%B')] = {}
     comparison_data[first_day_of_previous_month1.strftime('%B')]['first_day'] = first_day_of_previous_month1
     comparison_data[first_day_of_previous_month1.strftime('%B')]['last_day'] = last_day_of_previous_month1
     comparison_data[first_day_of_previous_month1.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['created'] = []
 
     comparison_data[first_day_of_previous_month2.strftime('%B')] = {}
     comparison_data[first_day_of_previous_month2.strftime('%B')]['first_day'] = first_day_of_previous_month2
     comparison_data[first_day_of_previous_month2.strftime('%B')]['last_day'] = last_day_of_previous_month2
     comparison_data[first_day_of_previous_month2.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['created'] = []
 
     comparison_data[first_day_of_previous_month3.strftime('%B')] = {}
     comparison_data[first_day_of_previous_month3.strftime('%B')]['first_day'] = first_day_of_previous_month3
     comparison_data[first_day_of_previous_month3.strftime('%B')]['last_day'] = last_day_of_previous_month3
     comparison_data[first_day_of_previous_month3.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['created'] = []
 
     #Makes a list of all days in the range of the beginning and end of the available days in db
     for month in comparison_data:
@@ -646,10 +652,16 @@ def month_comparison_data(supplied_group, full_cases):
         #print(date_range)
         for date in date_range:
             date_count = 0
-            for case in full_cases.filter(case_resolved__gte=comparison_data[month]['first_day'], case_resolved__lte=comparison_data[month]['last_day']):
-                if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
-                    date_count += 1
-            comparison_data[month]['resolved'].append(date_count)
+            if case_status == "Resolved":
+                for case in full_cases.filter(case_resolved__gte=comparison_data[month]['first_day'], case_resolved__lte=comparison_data[month]['last_day']):
+                    if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
+                        date_count += 1
+                comparison_data[month]['resolved'].append(date_count)
+            elif case_status == "Created":
+                for case in full_cases.filter(createdtime__gte=comparison_data[month]['first_day'], createdtime__lte=comparison_data[month]['last_day']):
+                    if case.createdtime.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
+                        date_count += 1
+                comparison_data[month]['created'].append(date_count)
 
     return comparison_data
 

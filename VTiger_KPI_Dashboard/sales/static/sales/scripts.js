@@ -324,12 +324,13 @@ Example of Data:
         }
     }
 
+    Resolved Case Line Chart
 */
 
 var month_comparison = JSON.parse(document.getElementById('month_comparison').textContent);
 
 var months = Object.keys(month_comparison);
-var colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
+var colors = ['#933d41', '#fc6c85', '#ffb6c1', '#ffe4e1'] ;
 
 var line_chart_data = {};
 line_chart_data['datasets'] = [];
@@ -373,4 +374,52 @@ var lineChartConfig = {
 var lineChart = new Chart(
   document.getElementById('month_comparison_chart'),
   lineChartConfig
+);
+
+
+/* Created Case Line Chart */
+
+
+var month_comparison_created = JSON.parse(document.getElementById('month_comparison_created').textContent);
+
+var created_months = Object.keys(month_comparison_created);
+var created_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
+
+var line_chart_data_created = {};
+line_chart_data_created['datasets'] = [];
+for (month in created_months) {
+  line_chart_data_created['datasets'].push(
+    {
+      label: created_months[month],
+      data: month_comparison_created[created_months[month]]['created'],
+      fill:false,
+      tension: 0.2,
+      borderColor: created_colors[month],
+    }
+  );
+}
+line_chart_data_created['labels']  = date_labels;
+
+var lineChartOptionsCreated = {
+  responsive: true,
+  legend: {
+    position: "top"
+  },
+  plugins:{
+    title: {
+      display: true,
+      text: "Created per day VS Previous 4 Months"
+    },
+  },
+};
+
+var lineChartConfigCreated = {
+  type: "line",
+  data: line_chart_data_created,
+  options: lineChartOptionsCreated
+};
+
+var lineChartCreated = new Chart(
+  document.getElementById('month_comparison_created_chart'),
+  lineChartConfigCreated
 );
