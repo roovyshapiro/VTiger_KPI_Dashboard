@@ -180,7 +180,10 @@ def retrieve_user_assigned_total(supplied_group, full_cases):
     '''
     How many opened cases are assigned to each user
     '''
-    full_cases = full_cases.filter(assigned_groupname=supplied_group)
+    if supplied_group != 'All Groups':
+        full_cases = full_cases.filter(assigned_groupname=supplied_group)
+    
+    print(supplied_group)
 
     #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
     all_users = full_cases.values('assigned_username').distinct()

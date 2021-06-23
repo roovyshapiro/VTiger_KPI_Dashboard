@@ -222,80 +222,85 @@ https://codepen.io/bencarmichael/pen/XeYJXJ
 
 
 */
-var data_history = JSON.parse(document.getElementById('historical_data').textContent);
-var selected_history_group = localStorage.getItem("selected_group");
-
-var years = Object.keys(data_history);
-var date_label = [];
-var group_created = [];
-var group_resolved = [];
-//var group_kill_rate = [];
-for (year in years){
-    var months = Object.keys(data_history[years[year]]);
-	for (month in months){
-        date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
-        group_created.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
-        group_resolved.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
-        //group_kill_rate.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
-	}
-}
-
-var barChartData = {
-    labels: date_label,
-    datasets: [
-      {
-        label: "Created",
-        backgroundColor: "lightblue",
-        borderColor: "blue",
-        borderWidth: 1,
-        data: group_created
-      },
-      {
-        label: "Resolved",
-        backgroundColor: "pink",
-        borderColor: "red",
-        borderWidth: 1,
-        data: group_resolved,
-      },
-      /*{
-        label: "Kill Rate %",
-        backgroundColor: "#FFDEAD",
-        borderColor: "#FF7518",
-        borderWidth: 1,
-        data: group_kill_rate,
-      },*/
-    ]
-  };
+try{
+  var data_history = JSON.parse(document.getElementById('historical_data').textContent);
+  var selected_history_group = localStorage.getItem("selected_group");
   
-  var chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    legend: {
-      position: "top"
-    },  
-    plugins:{
-      title: {
-        display: true,
-        text: "Created/Resolved for all Months"
-      },
-    },
-    scales: {
-      yAxes: [{
-        ticks: {
-          beginAtZero: true
-        }
-      }]
+  var years = Object.keys(data_history);
+  var date_label = [];
+  var group_created = [];
+  var group_resolved = [];
+  //var group_kill_rate = [];
+  for (year in years){
+      var months = Object.keys(data_history[years[year]]);
+    for (month in months){
+          date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
+          group_created.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
+          group_resolved.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
+          //group_kill_rate.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
     }
   }
   
-  window.onload = function() {
-    var ctx = document.getElementById("group_chart").getContext("2d");
-    window.myBar = new Chart(ctx, {
-      type: "bar",
-      data: barChartData,
-      options: chartOptions
-    });
-  };
+  var barChartData = {
+      labels: date_label,
+      datasets: [
+        {
+          label: "Created",
+          backgroundColor: "lightblue",
+          borderColor: "blue",
+          borderWidth: 1,
+          data: group_created
+        },
+        {
+          label: "Resolved",
+          backgroundColor: "pink",
+          borderColor: "red",
+          borderWidth: 1,
+          data: group_resolved,
+        },
+        /*{
+          label: "Kill Rate %",
+          backgroundColor: "#FFDEAD",
+          borderColor: "#FF7518",
+          borderWidth: 1,
+          data: group_kill_rate,
+        },*/
+      ]
+    };
+    
+    var chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        position: "top"
+      },  
+      plugins:{
+        title: {
+          display: true,
+          text: "Created/Resolved for all Months"
+        },
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+    
+    window.onload = function() {
+      var ctx = document.getElementById("group_chart").getContext("2d");
+      window.myBar = new Chart(ctx, {
+        type: "bar",
+        data: barChartData,
+        options: chartOptions
+      });
+    };
+} catch(err){
+  console.log('group chart not available for all groups', err);
+}
+
 
 /*
 Showing how the current groups case data compares to the past 3 months
@@ -327,109 +332,117 @@ Example of Data:
 
     Resolved Case Line Chart
 */
+try{
+  var month_comparison = JSON.parse(document.getElementById('month_comparison').textContent);
 
-var month_comparison = JSON.parse(document.getElementById('month_comparison').textContent);
-
-var months = Object.keys(month_comparison);
-var colors = ['#933d41', '#fc6c85', '#ffb6c1', '#ffe4e1'] ;
-
-var line_chart_data = {};
-line_chart_data['datasets'] = [];
-for (month in months) {
-  line_chart_data['datasets'].push(
-    {
-      label: months[month],
-      data: month_comparison[months[month]]['resolved'],
-      fill:false,
-      tension: 0.2,
-      borderColor: colors[month],
-    }
-  );
-}
-
-var date_labels = [];
-for (var i = 1; i <= 31; i++) {
-  date_labels.push(i);
-}
-line_chart_data['labels']  = date_labels;
-
-var lineChartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  pointHitRadius:15,
-  pointRadius:4,
-  legend: {
-    position: "top"
-  },
-  plugins:{
-    title: {
-      display: true,
-      text: "Resolved per day VS Previous 4 Months"
+  var months = Object.keys(month_comparison);
+  var colors = ['#933d41', '#fc6c85', '#ffb6c1', '#ffe4e1'] ;
+  
+  var line_chart_data = {};
+  line_chart_data['datasets'] = [];
+  for (month in months) {
+    line_chart_data['datasets'].push(
+      {
+        label: months[month],
+        data: month_comparison[months[month]]['resolved'],
+        fill:false,
+        tension: 0.2,
+        borderColor: colors[month],
+      }
+    );
+  }
+  
+  var date_labels = [];
+  for (var i = 1; i <= 31; i++) {
+    date_labels.push(i);
+  }
+  line_chart_data['labels']  = date_labels;
+  
+  var lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    pointHitRadius:15,
+    pointRadius:4,
+    legend: {
+      position: "top"
     },
-  },
-};
+    plugins:{
+      title: {
+        display: true,
+        text: "Resolved per day VS Previous 4 Months"
+      },
+    },
+  };
+  
+  var lineChartConfig = {
+    type: "line",
+    data: line_chart_data,
+    options: lineChartOptions
+  };
+  
+  var lineChart = new Chart(
+    document.getElementById('month_comparison_chart'),
+    lineChartConfig
+  );
+}catch(err){
+  console.log('resolved case chart not available for all groups', err);
+}
 
-var lineChartConfig = {
-  type: "line",
-  data: line_chart_data,
-  options: lineChartOptions
-};
-
-var lineChart = new Chart(
-  document.getElementById('month_comparison_chart'),
-  lineChartConfig
-);
 
 
 /* Created Case Line Chart */
 
+try{
+  var month_comparison_created = JSON.parse(document.getElementById('month_comparison_created').textContent);
 
-var month_comparison_created = JSON.parse(document.getElementById('month_comparison_created').textContent);
-
-var created_months = Object.keys(month_comparison_created);
-var created_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
-
-var line_chart_data_created = {};
-line_chart_data_created['datasets'] = [];
-for (month in created_months) {
-  line_chart_data_created['datasets'].push(
-    {
-      label: created_months[month],
-      data: month_comparison_created[created_months[month]]['created'],
-      fill:false,
-      tension: 0.2,
-      borderColor: created_colors[month],
-    }
-  );
-}
-line_chart_data_created['labels']  = date_labels;
-
-var lineChartOptionsCreated = {
-  responsive: true,
-  maintainAspectRatio: false,
-  pointHitRadius:15,
-  pointRadius:4,
-  legend: {
-    position: "top"
-  },
-  plugins:{
-    title: {
-      display: true,
-      text: "Created per day VS Previous 4 Months"
+  var created_months = Object.keys(month_comparison_created);
+  var created_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
+  
+  var line_chart_data_created = {};
+  line_chart_data_created['datasets'] = [];
+  for (month in created_months) {
+    line_chart_data_created['datasets'].push(
+      {
+        label: created_months[month],
+        data: month_comparison_created[created_months[month]]['created'],
+        fill:false,
+        tension: 0.2,
+        borderColor: created_colors[month],
+      }
+    );
+  }
+  line_chart_data_created['labels']  = date_labels;
+  
+  var lineChartOptionsCreated = {
+    responsive: true,
+    maintainAspectRatio: false,
+    pointHitRadius:15,
+    pointRadius:4,
+    legend: {
+      position: "top"
     },
-  },
-};
-
-var lineChartConfigCreated = {
-  type: "line",
-  data: line_chart_data_created,
-  options: lineChartOptionsCreated
-};
-
-var lineChartCreated = new Chart(
-  document.getElementById('month_comparison_created_chart'),
-  lineChartConfigCreated
-);
+    plugins:{
+      title: {
+        display: true,
+        text: "Created per day VS Previous 4 Months"
+      },
+    },
+  };
+  
+  var lineChartConfigCreated = {
+    type: "line",
+    data: line_chart_data_created,
+    options: lineChartOptionsCreated
+  };
+  
+  var lineChartCreated = new Chart(
+    document.getElementById('month_comparison_created_chart'),
+    lineChartConfigCreated
+  );
+  
+}catch(err){
+  console.log('created chart not available for all groups', err);
+}
 
 /* User Assigned Total Open Doughnut Chart
 
@@ -444,7 +457,7 @@ var dynamicColors = function() {
 };
 var backgroundColorArray = [];
 
-user_assigned_total_open = JSON.parse(document.getElementById('user_assigned_total_open').textContent);
+var user_assigned_total_open = JSON.parse(document.getElementById('user_assigned_total_open').textContent);
 var users_assigned = Object.keys(user_assigned_total_open);
 
 //var user_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
@@ -453,8 +466,6 @@ for (user in users_assigned){
   users_assigned_amount.push(user_assigned_total_open[users_assigned[user]]);
   backgroundColorArray.push(dynamicColors());
 }
-
-console.log(backgroundColorArray);
 
 var user_assigned_data = {
   labels: users_assigned,
@@ -468,15 +479,15 @@ var user_assigned_data = {
 
 var user_assigned_options = {
   responsive: true,
-  maintainAspectRatio: false,  
+  maintainAspectRatio: false,
   plugins:{
     title: {
       display: true,
       text: "Open Assigned Per User"
     },
-  },
-  legend: {
-    position: "top"
+    legend: {
+      position: "left"
+    },  
   },
 };
 

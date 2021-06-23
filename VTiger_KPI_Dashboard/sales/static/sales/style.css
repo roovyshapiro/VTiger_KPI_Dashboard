@@ -341,9 +341,18 @@ td, th{
     display:flex;
     flex-direction:row;
     margin-top:10px;
-    height:200px;
 }
 
+#case_header_all_groups{
+    display:flex;
+    flex-direction:row;
+    margin-top:10px;
+}
+/*
+#user_assigned_total_open_chart_div{
+    width:400px;
+}
+*/
 #group_name_div{
     margin-right:auto !important;
 }
@@ -928,7 +937,13 @@ label.show_label:active {
         align-items: center;
         margin-top:10px;
     }
-    
+    #case_header_all_groups{
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items: center;
+        margin-top:10px;
+    }
     #all_open_cases_box{
         margin-right:auto;
         margin-left:auto;
