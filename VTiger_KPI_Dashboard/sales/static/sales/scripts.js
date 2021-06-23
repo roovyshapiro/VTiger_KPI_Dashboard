@@ -180,7 +180,6 @@ $(document).ready( function () {
     $('table.scrollable_table').DataTable();
 } );
 
-
 /* 
 With the use of JSON Script we can get data from the Django model and then
 access it with JS

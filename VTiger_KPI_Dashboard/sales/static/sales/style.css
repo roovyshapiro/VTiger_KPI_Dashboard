@@ -348,11 +348,11 @@ td, th{
     flex-direction:row;
     margin-top:10px;
 }
-/*
+
 #user_assigned_total_open_chart_div{
-    width:400px;
+    width:500px;
 }
-*/
+
 #group_name_div{
     margin-right:auto !important;
 }
@@ -944,6 +944,10 @@ label.show_label:active {
         align-items: center;
         margin-top:10px;
     }
+    #user_assigned_total_open_chart_div{
+        width:300px;
+    }
+
     #all_open_cases_box{
         margin-right:auto;
         margin-left:auto;
