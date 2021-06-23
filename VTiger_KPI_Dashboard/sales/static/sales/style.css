@@ -311,6 +311,16 @@ td.score_key_points {
     display:flex;
     flex-direction:column;
 }
+
+.score_tables table{
+    background-color: white;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
+    border-radius:10px;
+    border-collapse: collapse;
+    margin-right:auto;
+    margin-left:auto;
+}
+
 .score_table_title{
     text-align:center;
     padding-top:25px;
@@ -573,9 +583,11 @@ label.show_label:active {
 }
 
 #help_box{
-    border:1px blue solid;
     width:375px;
     padding:5px;
+    background-color: white;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
+    border-radius:10px;
 }
 
 #help_box_explanation{
