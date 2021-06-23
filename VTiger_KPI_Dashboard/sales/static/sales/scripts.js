@@ -233,10 +233,17 @@ try{
   for (year in years){
       var months = Object.keys(data_history[years[year]]);
     for (month in months){
-          date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
-          group_created.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
-          group_resolved.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
-          //group_kill_rate.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
+      if(document.getElementById('group_name').textContent != "All Groups"){
+        date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
+        group_created.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['created']);
+        group_resolved.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['resolved']);
+        //group_kill_rate.push(data_history[years[year]][months[month]]['created_groups'][selected_history_group]['kill_rate']);
+      }else{
+        date_label.push(`${years[year]} - ${data_history[years[year]][months[month]]['month']}`);
+        group_created.push(data_history[years[year]][months[month]]['created_all']);
+        group_resolved.push(data_history[years[year]][months[month]]['resolved_all']);
+        //group_kill_rate.push(data_history[years[year]][months[month]]['kill_rate_all']);
+      }
     }
   }
   
