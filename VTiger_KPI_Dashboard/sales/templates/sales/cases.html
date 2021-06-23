@@ -48,10 +48,10 @@
                     <span class="score_num">{{ all_open_cases.open_cases }}</span>
                     <div id = "all_groups_open_cases_div">
                         <table id="all_groups_open_cases_table">
-                            {% for group, open_cases in all_groups_open.items %}
+                            {% for group in sorted_all_groups_open %}
                                 <tr>
-                                    <td>{{ group }}</td>
-                                    <td>{{ open_cases }}</td>
+                                    <td>{{ group.0 }}</td>
+                                    <td>{{ group.1 }}</td>
                                 </tr>
                             {% endfor %}
                         </table>
@@ -76,10 +76,10 @@
                     <span class="score_num">{{ all_open_cases.open_cases }}</span>
                     <div id = "all_groups_open_cases_div">
                         <table id="all_groups_open_cases_table">
-                            {% for user, open_cases in user_assigned_total_open.items %}
+                            {% for user in sorted_user_assigned_total_open %}
                                 <tr>
-                                    <td>{{ user }}</td>
-                                    <td>{{ open_cases }}</td>
+                                    <td>{{ user.0 }}</td>
+                                    <td>{{ user.1 }}</td>
                                 </tr>
                             {% endfor %}
                         </table>

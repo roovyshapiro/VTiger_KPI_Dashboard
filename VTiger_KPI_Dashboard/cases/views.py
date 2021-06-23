@@ -44,6 +44,7 @@ def main(request):
             group_open_cases = len(group_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus='Closed')))
             if group_open_cases != 0:
                 all_groups_open[group['assigned_groupname']] = group_open_cases
+    sorted_all_groups_open = sorted(all_groups_open.items(), key=lambda x: x[1], reverse=True)
 
     #Group Specific Charts
     historical_data = retrieve_historical_data(date_group_dict['group'], full_cases)
@@ -70,6 +71,7 @@ def main(request):
     case_stats_dict_month, sorted_user_closed_month, full_cases_month, created_cases_month, resolved_cases_month = retrieve_case_data(full_cases, first_of_month, end_of_month)
 
     user_assigned_total_open = retrieve_user_assigned_total(date_group_dict['group'], full_cases)
+    sorted_user_assigned_total_open = sorted(user_assigned_total_open.items(), key=lambda x: x[1], reverse=True)
 
     #Retrieve user specific data for the entire month
     user_case_data = retrieve_user_data(first_of_month, end_of_month)
@@ -131,6 +133,7 @@ def main(request):
         "date_group_dict":date_group_dict,
         "all_open_cases":all_open_cases,
         'user_assigned_total_open':user_assigned_total_open,
+        'sorted_user_assigned_total_open':sorted_user_assigned_total_open,
 
         'user_case_data': user_case_data,
         'historical_data': historical_data,
@@ -158,6 +161,7 @@ def main(request):
         'date_dict':date_dict,
         'urls':urls,
         'all_groups_open': all_groups_open,
+        'sorted_all_groups_open': sorted_all_groups_open,
     }
 
     #If today is monday, and the user chooses to look at today's data, then the week's data will not
