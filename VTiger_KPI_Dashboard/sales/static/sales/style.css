@@ -352,7 +352,10 @@ td, th{
 #user_assigned_total_open_chart_div{
     width:500px;
 }
-
+#all_groups_open_div{
+    width:500px;
+    margin-left:40px;
+}
 #group_name_div{
     margin-right:auto !important;
 }
@@ -370,6 +373,7 @@ td, th{
 
 #score_and_all_groups_open_cases{
     display:flex;
+    flex-direction: column;
     justify-content: center;
     margin-top:10px;
     margin-bottom:10px;
@@ -947,7 +951,10 @@ label.show_label:active {
     #user_assigned_total_open_chart_div{
         width:300px;
     }
-
+    #all_groups_open_div{
+        width:300px;
+        margin-left:0px;
+    }
     #all_open_cases_box{
         margin-right:auto;
         margin-left:auto;

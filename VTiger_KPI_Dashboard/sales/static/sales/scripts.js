@@ -503,3 +503,63 @@ var doughnutChartAssigned = new Chart(
     document.getElementById('user_assigned_total_open_chart'),
   user_assigned_config
 );
+
+
+/* Total Open Per Group Doughnut Chart
+
+*/
+//There's a variable amount of groups, so depending on how many groups there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColors = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
+};
+var backgroundColorArrayGroup = [];
+
+var all_groups_open = JSON.parse(document.getElementById('all_groups_open').textContent);
+var group_names = Object.keys(all_groups_open);
+
+//var user_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
+var group_amount = []
+for (group in group_names){
+  group_amount.push(all_groups_open[group_names[group]]);
+  backgroundColorArrayGroup.push(dynamicColors());
+}
+
+var all_group_open_data = {
+  labels: group_names,
+  datasets: [{
+    label: 'Doughnut Chart',
+    data: group_amount,
+    backgroundColor: backgroundColorArrayGroup,
+    hoverOffset: 4
+  }]
+};
+
+var all_group_open_options = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins:{
+    title: {
+      display: true,
+      text: "Open Cases Per Group"
+    },
+    legend: {
+      position: "left"
+    },  
+  },
+};
+
+var groups_open_config = {
+  type: 'doughnut',
+  data: all_group_open_data,
+  options: all_group_open_options,
+};
+
+
+var doughnutGroupOpen = new Chart(
+    document.getElementById('all_groups_open_chart'),
+    groups_open_config
+);

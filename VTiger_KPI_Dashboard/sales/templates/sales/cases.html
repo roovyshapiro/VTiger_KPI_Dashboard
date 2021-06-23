@@ -34,26 +34,28 @@
             <div id = "group_name_div">
                 <p id="group_name">{{ date_group_dict.group }}</p>
             </div>
-
             {{ user_assigned_total_open|json_script:"user_assigned_total_open" }}
             <div id ="user_assigned_total_open_chart_div">
                 <canvas id="user_assigned_total_open_chart"></canvas>
             </div>
-
+            {{ all_groups_open|json_script:"all_groups_open" }}
+            <div id ="all_groups_open_div">
+                <canvas id="all_groups_open_chart"></canvas>
+            </div>
             <div id="all_open_cases_box">
                 <span class ="score_name">All Open Cases</span> 
                 <div id ="score_and_all_groups_open_cases">
                     <span class="score_num">{{ all_open_cases.open_cases }}</span>
-                        <div id = "all_groups_open_cases_div">
-                            <table id="all_groups_open_cases_table">
-                                {% for group, open_cases in all_groups_open.items %}
-                                    <tr>
-                                        <td>{{ group }}</td>
-                                        <td>{{ open_cases }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                    <div id = "all_groups_open_cases_div">
+                        <table id="all_groups_open_cases_table">
+                            {% for group, open_cases in all_groups_open.items %}
+                                <tr>
+                                    <td>{{ group }}</td>
+                                    <td>{{ open_cases }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -72,6 +74,16 @@
                 <span class ="score_name">All Open Cases</span> 
                 <div id ="score_and_all_groups_open_cases">
                     <span class="score_num">{{ all_open_cases.open_cases }}</span>
+                    <div id = "all_groups_open_cases_div">
+                        <table id="all_groups_open_cases_table">
+                            {% for user, open_cases in user_assigned_total_open.items %}
+                                <tr>
+                                    <td>{{ user }}</td>
+                                    <td>{{ open_cases }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
