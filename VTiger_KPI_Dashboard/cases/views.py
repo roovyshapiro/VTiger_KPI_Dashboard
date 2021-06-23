@@ -184,7 +184,7 @@ def retrieve_user_assigned_total(supplied_group, full_cases):
     '''
     if supplied_group != 'All Groups':
         full_cases = full_cases.filter(assigned_groupname=supplied_group)
-    
+
     print(supplied_group)
 
     #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
@@ -641,8 +641,9 @@ def month_comparison_data(supplied_group, full_cases, case_status="Resolved"):
     month = first_of_month.month
     last_day = calendar.monthrange(year,month)[1]
     end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
-
-    full_cases = full_cases.filter(assigned_groupname=supplied_group)
+    
+    if supplied_group != 'All Groups':
+        full_cases = full_cases.filter(assigned_groupname=supplied_group)
 
     comparison_data = {}
 
