@@ -180,6 +180,7 @@ $(document).ready( function () {
     $('table.scrollable_table').DataTable();
 } );
 
+
 /* 
 With the use of JSON Script we can get data from the Django model and then
 access it with JS
@@ -287,15 +288,17 @@ try{
         }]
       }
     }
-    
-    window.onload = function() {
-      var ctx = document.getElementById("group_chart").getContext("2d");
-      window.myBar = new Chart(ctx, {
-        type: "bar",
-        data: barChartData,
-        options: chartOptions
-      });
+
+    var barChartConfig = {
+      type: "bar",
+      data: barChartData,
+      options: chartOptions
     };
+
+    var barChart = new Chart(
+      document.getElementById('group_chart'),
+      barChartConfig
+    );
 } catch(err){
   console.log('group chart not available for all groups', err);
 }
