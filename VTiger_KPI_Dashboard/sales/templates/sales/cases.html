@@ -29,16 +29,16 @@
 {% block content %}
 
 <div id = "body_sizing">
-    {% if all_groups_open %}
+    {% if sorted_all_groups_open %}
         <div id="case_header_all_groups">
             <div id = "group_name_div">
                 <p id="group_name">{{ date_group_dict.group }}</p>
             </div>
-            {{ user_assigned_total_open|json_script:"user_assigned_total_open" }}
+            {{ sorted_user_assigned_total_open|json_script:"sorted_user_assigned_total_open" }}
             <div id ="user_assigned_total_open_chart_div">
                 <canvas id="user_assigned_total_open_chart"></canvas>
             </div>
-            {{ all_groups_open|json_script:"all_groups_open" }}
+            {{ sorted_all_groups_open|json_script:"sorted_all_groups_open" }}
             <div id ="all_groups_open_div">
                 <canvas id="all_groups_open_chart"></canvas>
             </div>
@@ -60,12 +60,12 @@
             </div>
         </div>
     {% endif %}
-    {% if not all_groups_open %}
+    {% if not sorted_all_groups_open %}
         <div id="case_header">
             <div id = "group_name_div">
                 <p id="group_name">{{ date_group_dict.group }}</p>
             </div>
-            {{ user_assigned_total_open|json_script:"user_assigned_total_open" }}
+            {{ sorted_user_assigned_total_open|json_script:"sorted_user_assigned_total_open" }}
             <div id ="user_assigned_total_open_chart_div">
                 <canvas id="user_assigned_total_open_chart"></canvas>
             </div>
@@ -385,7 +385,7 @@
         </table>
     </div>
 
-    {% if not all_groups_open %}
+    {% if not sorted_all_groups_open %}
         <div id = "charts">
             <!-- Sending Historical Data to display in a chart per group -->
             {{ month_comparison_created|json_script:"month_comparison_created" }}
@@ -403,7 +403,7 @@
         </div>
     {% endif %}
 
-    {% if all_groups_open %}
+    {% if sorted_all_groups_open %}
         <div id = "user_case_data_div">
             <table class = "scrollable_table">
                 <thead>

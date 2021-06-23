@@ -132,7 +132,6 @@ def main(request):
         "case_groups":case_groups,
         "date_group_dict":date_group_dict,
         "all_open_cases":all_open_cases,
-        'user_assigned_total_open':user_assigned_total_open,
         'sorted_user_assigned_total_open':sorted_user_assigned_total_open,
 
         'user_case_data': user_case_data,
@@ -160,7 +159,6 @@ def main(request):
 
         'date_dict':date_dict,
         'urls':urls,
-        'all_groups_open': all_groups_open,
         'sorted_all_groups_open': sorted_all_groups_open,
     }
 

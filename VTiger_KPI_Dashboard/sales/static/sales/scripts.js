@@ -458,13 +458,13 @@ var dynamicColors = function() {
 };
 var backgroundColorArray = [];
 
-var user_assigned_total_open = JSON.parse(document.getElementById('user_assigned_total_open').textContent);
-var users_assigned = Object.keys(user_assigned_total_open);
+var user_assigned_total_open = JSON.parse(document.getElementById('sorted_user_assigned_total_open').textContent);
 
-//var user_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
-var users_assigned_amount = []
-for (user in users_assigned){
-  users_assigned_amount.push(user_assigned_total_open[users_assigned[user]]);
+var users_assigned = [];
+var users_assigned_amount = [];
+for (user in user_assigned_total_open){
+  users_assigned.push(user_assigned_total_open[user][0]);
+  users_assigned_amount.push(user_assigned_total_open[user][1]);
   backgroundColorArray.push(dynamicColors());
 }
 
@@ -518,13 +518,13 @@ var dynamicColors = function() {
 };
 var backgroundColorArrayGroup = [];
 
-var all_groups_open = JSON.parse(document.getElementById('all_groups_open').textContent);
-var group_names = Object.keys(all_groups_open);
+var all_groups_open = JSON.parse(document.getElementById('sorted_all_groups_open').textContent);
+var group_names = [];
+var group_amount = [];
 
-//var user_colors = ['#191970', '#1e90ff', '#87cefa', '#ace5ee' ];
-var group_amount = []
-for (group in group_names){
-  group_amount.push(all_groups_open[group_names[group]]);
+for (group in all_groups_open){
+  group_names.push(all_groups_open[group][0]);
+  group_amount.push(all_groups_open[group][1]);
   backgroundColorArrayGroup.push(dynamicColors());
 }
 
