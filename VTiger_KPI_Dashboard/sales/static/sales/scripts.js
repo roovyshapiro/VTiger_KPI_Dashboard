@@ -53,7 +53,6 @@ function retrieve_saved_data() {
         }
     }
     console.log(localStorage);
-    console.log(all_products);
 }
 
 //
