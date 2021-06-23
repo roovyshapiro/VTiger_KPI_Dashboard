@@ -733,6 +733,9 @@ label.show_label:active {
         font-size:35px;
         margin-top:5px;
     }
+    #group_name_div{
+        margin-right:0px !important;
+    }
 
     .round_day_switcher {
         background-color: lightgray;
@@ -912,7 +915,8 @@ label.show_label:active {
     }
     .score_box{
         flex:1;
-        border: 3px solid blue;
+        background-color: white;
+        box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);        
         border-radius:10px;
         padding: 2px;
         margin-right: 30px;
@@ -984,19 +988,27 @@ label.show_label:active {
         align-items: center;
         margin-top:10px;
     }
+    #user_assigned_total_open_chart{
+        padding:0px;
+    }
     #user_assigned_total_open_chart_div{
         width:300px;
+        margin-bottom:20px;
     }
     #all_groups_open_div{
         width:300px;
         margin-left:0px;
+        margin-bottom:20px;
+    }
+    #all_groups_open_chart{
+        padding:0px;
     }
     #all_open_cases_box{
         margin-right:auto;
         margin-left:auto;
         margin-bottom:10px;
         margin-top:5px;
-        width:80%;
+        width:300px;
     }
 
     label.show_label {
@@ -1039,6 +1051,7 @@ label.show_label:active {
     .user_points_table{
         margin-top:10px;
         margin-bottom:10px;
+        width:300px;
     }
     #charts{
         display:flex;
@@ -1047,10 +1060,12 @@ label.show_label:active {
     #charts div{
         width:100%;
         height:400px;
+        margin-bottom:20px;
     }
     #barchart{
         width:100%;
         height:400px;
+        margin-top:0px;
     }
 
 }
