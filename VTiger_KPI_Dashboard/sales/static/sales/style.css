@@ -16,7 +16,6 @@ body{
     display:flex;
     margin-bottom:15px;
     background-color:#222B37;
-    color: #FFF;
     width:100%;
     height:75px;
     padding-right:20px;
@@ -27,48 +26,64 @@ nav > a{
     align-items: center;
     justify-content: center;
     text-align: center;
-    color:white;
+    font-size:20px;
+    color:#95A2B3;
     text-decoration: none;
-    border: 2px solid blue;
     border-radius: 5px;
     margin-top:5px;
     margin-bottom:5px;
     margin-left: 20px;
     padding-left: 20px;
     padding-right: 20px;
+    box-shadow: 0 1rem 1rem rgb(0 0 0 / 20%);
 }
 
 .header_title{
     margin-right:auto !important;
     font-weight:bold;
-    font-size:20px;
+    font-size:25px;
     border: none;
 }
-
+.header_title:hover {
+    border-radius: 5px;
+    color:white;
+    -webkit-transform: translateY(-1px);
+	transform: translateY(-1px);
+}
 .header_sales:hover {
     border-radius: 5px;
-    background-color: blue;
-    border: 1px solid orange;
+    color:white;
+    -webkit-transform: translateY(-1px);
+	transform: translateY(-1px);
 }
 .header_cases:hover {
     border-radius: 5px;
-    background-color: blue;
-    border: 1px solid orange;
+    color:white;
+    -webkit-transform: translateY(-1px);
+	transform: translateY(-1px);
 }
 
 #logout_menu{
     display:flex;
     flex-direction:column;
     font-size:11px;
+    color:#95A2B3;
 }
-
+#logout_menu:hover {
+    border-radius: 5px;
+    color:white;
+    -webkit-transform: translateY(-2px);
+	transform: translateY(-2px);
+}
 #username_button{
     text-transform:uppercase;
     font-weight:bold;
     font-size:15px;
 }
 
-
+.active_link{
+    color:white;
+}
 /****** HOME PAGE ******/
 
 
@@ -651,15 +666,12 @@ label.show_label:active {
 
 /****** Mobile Friendly ******/
 
-
-
 @media only screen and (max-width: 768px) {
     /* NAV Header */
     .header{
         display:flex;
         margin-bottom:15px;
         background-color:#222B37;
-        color: #FFF;
         width:100%;
         height:50px;
         padding-right:20px;
@@ -670,34 +682,35 @@ label.show_label:active {
         align-items: center;
         justify-content: center;
         text-align: center;
-        color:white;
+        color:#95A2B3;        
         text-decoration: none;
-        border: 2px solid blue;
         border-radius: 5px;
         margin-top:5px;
         margin-bottom:5px;
         margin-left: 5px;
         padding-left: 10px;
         padding-right: 10px;
-        font-size:12px;
+        font-size:10px;
+    }
+
+    nav > a:active{
+        color:white;
     }
 
     .header_title{
         margin-right:auto !important;
         font-weight:bold;
         border: none;
-        font-size:12px;
+        font-size:10px;
     }
 
     .header_sales:hover {
         border-radius: 5px;
-        background-color: blue;
-        border: 1px solid orange;
+        color:white;        
     }
     .header_cases:hover {
         border-radius: 5px;
-        background-color: blue;
-        border: 1px solid orange;
+        color:white;        
     }
 
     #logout_menu{

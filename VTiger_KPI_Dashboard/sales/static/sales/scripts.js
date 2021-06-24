@@ -13,6 +13,7 @@ window.onload = retrieve_saved_data;
 
 //Called when the page is reloaded
 function retrieve_saved_data() {
+    highlight_navbar();
     checkbox_status = localStorage.getItem("checkbox_status");
     checkbox_status_bool = (checkbox_status == 'true');
     refresh_minutes = localStorage.getItem("refresh_minutes");
@@ -54,6 +55,26 @@ function retrieve_saved_data() {
     }
     console.log(localStorage);
 }
+
+/* Highlight Nav bar based on page change   */
+
+function highlight_navbar(){
+  var pathname = window.location.pathname;
+  if(pathname == '/'){
+    var active_link = document.getElementById('home');
+  }else if(pathname == '/ship/'){
+    var active_link = document.getElementById('ship');
+
+  }else if(pathname == '/sales/'){
+    var active_link = document.getElementById('sales');
+
+  }else if(pathname == '/cases/'){
+    var active_link = document.getElementById('cases');
+  }
+  active_link.classList.add("active_link");
+}
+
+
 
 //
 //
