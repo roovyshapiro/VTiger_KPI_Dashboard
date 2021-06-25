@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'sales',
     'home',
     'ship',
+    'dev',
     'celery',
     'django_celery_beat',
 ]
