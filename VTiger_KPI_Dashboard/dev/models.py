@@ -82,8 +82,8 @@ class Redmine_issues(models.Model):
     custom_field1_value = models.CharField(max_length=100, null=True)
     custom_field2_value = models.CharField(max_length=100, null=True)
     custom_field3_value= models.TextField(null=True)
-    done_ratio = models.CharField(max_length=10, null=True)
-    estimated_hours = models.CharField(max_length=20, null=True)
+    done_ratio = models.IntegerField(null=True)
+    estimated_hours = models.DecimalField(null=True)
 
     start_date = models.DateTimeField(null=True)
     due_date = models.DateTimeField(null=True)
