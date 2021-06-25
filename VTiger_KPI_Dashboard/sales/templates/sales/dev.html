@@ -1,0 +1,13 @@
+{% extends 'sales/base.html' %}
+
+    {% block content %}
+        <h1>Open Redmine Issues</h1>
+        {% for issue in open_issues %}
+            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
+        {% endfor %}
+        <hr>
+        <h1>Closed Redmine Issues</h1>
+        {% for issue in closed_issues %}
+            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
+        {% endfor %}
+    {% endblock %}
