@@ -19,6 +19,7 @@ from sales import views as sales_views
 from cases import views as case_views
 from home import views as home_views
 from ship import views as ship_views
+from dev import views as dev_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -42,4 +43,5 @@ urlpatterns = [
     path('ship/', ship_views.main, name='ship_dashboard'),
     path('populateproducts/', ship_views.populate_products, name='populate_products'),
 
+    path('dev/', dev_views.main, name='dev_dashboard'),
 ]
