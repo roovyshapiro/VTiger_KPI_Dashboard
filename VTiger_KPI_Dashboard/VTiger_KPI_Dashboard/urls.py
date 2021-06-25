@@ -44,4 +44,7 @@ urlpatterns = [
     path('populateproducts/', ship_views.populate_products, name='populate_products'),
 
     path('dev/', dev_views.main, name='dev_dashboard'),
+    path('devallissues/', dev_views.get_all_issues, name='dev_dashboard'),
+    path('devrecentissues/', dev_views.get_recent_issues, name='dev_dashboard'),
+
 ]

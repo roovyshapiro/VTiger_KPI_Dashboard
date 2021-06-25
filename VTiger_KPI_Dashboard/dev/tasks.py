@@ -8,7 +8,7 @@ import redmine_api
 import json, os, datetime
 
 @shared_task
-def get_issues():
+def get_issues(recent=True):
     '''
     Example Issue:
         {
@@ -75,7 +75,10 @@ def get_issues():
     },
     '''
     db_issues = Redmine_issues.objects.all()
-    all_issues = retrieve_redmine_data()
+    if recent == True:
+        all_issues = retrieve_redmine_data('recent')   
+    elif recent == False:
+        all_issues = retrieve_redmine_data('all')
 
     for issue in all_issues:
         #If the issue exists in the database, then the issue will be updated
@@ -166,7 +169,7 @@ def get_issues():
         new_issue.save()
 
 
-def retrieve_redmine_data():
+def retrieve_redmine_data(amount):
     '''
     Returns a list of all Redmine Issues in a list of dictionaries
     '''
@@ -176,6 +179,9 @@ def retrieve_redmine_data():
         data = f.read()
     credential_dict = json.loads(data)
     redmine_issue_getter = redmine_api.Redmine_API(credential_dict['redmine_username'], credential_dict['redmine_access_key'], credential_dict['redmine_host'])
-    all_issues = redmine_issue_getter.get_all_data()
-    
+    if amount == "recent":
+        all_issues = redmine_issue_getter.get_recently_updated_data()
+    elif amount == "all":
+        all_issues = redmine_issue_getter.get_all_data()
+   
     return all_issues
