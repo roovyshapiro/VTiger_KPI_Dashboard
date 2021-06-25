@@ -20,14 +20,12 @@ class Redmine_API:
 
     def get_all_data(self):
         '''
-        Returns data about all modules within VTiger
+        Returns a list of all issues in Redmine.
+        Only a maximum of 100 issues can be returned at once which is why offset is used.
+        Read more here: https://www.redmine.org/projects/redmine/wiki/Rest_Issues
         '''
         data = self.api_call(f"{self.host}/issues.json?status_id=*&limit=100&offset=0")
         total_count = data['total_count']
-        if total_count < 1000:
-            print('total_count', total_count)
-            return None
-
         self.all_issues = []
         for issue in data['issues']:
             self.all_issues.append(issue)
