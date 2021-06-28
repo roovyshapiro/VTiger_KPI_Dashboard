@@ -667,7 +667,7 @@ label.show_label:active {
 /****** Dev/Redmine Friendly ******/
 #dev_header_all_groups{
     display:flex;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 #open_assigned_dev_charts{
     display:flex;

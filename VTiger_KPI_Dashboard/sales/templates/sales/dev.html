@@ -41,6 +41,12 @@
             </div>
         </div>
 
+        <hr>
+        <div class="points_header">
+            <p><span class="bold">TODAY:</span></p>
+            <p> {{ redmine_issues.date.today }}</p>
+        </div>
+
         <section class="points">
                     <div class = "score_box">
                         <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.updated_issues_len }}</span>
@@ -74,6 +80,12 @@
                     </div>
         </section>
 
+        <hr>
+        <div class="points_header">
+            <p><span class="bold">WEEK:</span></p>
+            <p> {{ redmine_issues.date.first_of_week }} -  {{ redmine_issues.date.end_of_week }}</p>
+        </div>
+
         <section class="points">
                     <div class = "score_box">
                         <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.updated_issues_len }}</span>
@@ -106,6 +118,12 @@
                         {% endif %}
                     </div>
         </section>
+
+        <hr>
+        <div class="points_header">
+            <p><span class="bold">MONTH:</span></p>
+            <p> {{ redmine_issues.date.first_of_month }} -  {{ redmine_issues.date.end_of_month }}</p>
+        </div>
 
         <section class="points">
                     <div class = "score_box">
