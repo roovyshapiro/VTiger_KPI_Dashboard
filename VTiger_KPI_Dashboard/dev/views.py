@@ -126,10 +126,30 @@ def main(request):
     credential_dict = json.loads(data)
     url = credential_dict['redmine_host']
 
+    #Min Max Values for Date Picker in base.html
+    date_dict = {}
+    first_case = redmine_issues['all_issues'].order_by('created_on').first().created_on
+    first_case = first_case.strftime('%Y-%m-%d')
+    date_dict = {
+        'first_db': first_case,
+        'last_db': timezone.now().strftime('%Y-%m-%d'),
+    }
+
     context ={
         'redmine_issues':redmine_issues,
         'url': url,
+        'date_dict':date_dict,
     }
+
+    #If today is monday, and the user chooses to look at today's data, then the week's data will not
+    #be shown. That is because if the current day is Monday, it will always be identical to the week's
+    #data as no other data for days beyond today exist. 
+    #However, if we look at a Monday in the past, then the data for the week will be different.
+    #In addition, the week data also won't be shown if the week and month data is the same.
+    #This occurs if the beginning of the week and the beginning of the month coincide
+    if (today.weekday() == 0 and today.strftime('%Y-%m-%d') == timezone.now().strftime('%Y-%m-%d')) or (len(redmine_issues['issues_week']['all_issues']) == len(redmine_issues['issues_month']['all_issues'])):
+        del redmine_issues['issues_week']
+
     return render(request, "sales/dev.html", context) 
 
 def retrieve_dates(date_request):
