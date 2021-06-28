@@ -1,5 +1,8 @@
-{% extends 'sales/base.html' %}
-
+{% extends 'sales/refresh_date_picker.html' %}
+{% block form %}
+    <button type="submit" id="cases_submit" onclick="save_group_date()">SUBMIT</button>
+    </form>
+{% endblock %}
     {% block content %}
     <div id = "body_sizing">
         <img src="https://i.imgur.com/lp8JEzh.png" alt="Redmine Logo" id="redmine_logo">

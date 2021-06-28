@@ -70,7 +70,10 @@ function highlight_navbar(){
 
   }else if(pathname == '/cases/'){
     var active_link = document.getElementById('cases');
-  }
+  
+  }else if(pathname == '/dev/'){
+  var active_link = document.getElementById('dev');
+}
   active_link.classList.add("active_link");
 }
 
