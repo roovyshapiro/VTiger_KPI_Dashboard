@@ -1,13 +1,22 @@
 {% extends 'sales/base.html' %}
 
     {% block content %}
+        <h1>Redmine Issues Status</h1>
+        <p>All Issues: {{redmine_issues.all_issues_len}}</p>
+        <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
+        <p>Closed Issues: {{redmine_issues.closed_issues_len}}</p>
+        <p>Rejected Issues: {{redmine_issues.rejected_issues_len}}</p>
         <h1>Open Redmine Issues</h1>
-        {% for issue in open_issues %}
-            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
+        {% for issue in redmine_issues.open_issues %}
+            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.status_name}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
         {% endfor %}
         <hr>
         <h1>Closed Redmine Issues</h1>
-        {% for issue in closed_issues %}
-            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
+        {% for issue in redmine_issues.closed_issues %}
+            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.status_name}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
+        {% endfor %}
+        <h1>Rejected Redmine Issues</h1>
+        {% for issue in redmine_issues.rejected_issues %}
+            <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.status_name}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
         {% endfor %}
     {% endblock %}
