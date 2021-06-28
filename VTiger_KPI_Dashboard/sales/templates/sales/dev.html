@@ -37,23 +37,45 @@
             </div>
         </div>
 
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.updated_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.open_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.closed_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_today.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if redmine_issues.issues_today.user_assigned_dict|length > 0 %}
+                            <table class = "user_points_table">
+                                <tbody>
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>CLOSED</th>
+                                    </tr>
+                                    {% for user  in redmine_issues.issues_today.user_assigned_dict %}
+                                        <tr>
+                                            <td>{{ user.0 }}</td>
+                                            <td>{{ user.1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
+
         <h1>Redmine Issues Status</h1>
         <p>All Issues: {{redmine_issues.all_issues_len}}</p>
         <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
         <p>Closed Issues: {{redmine_issues.closed_issues_len}}</p>
         <p>Rejected Issues: {{redmine_issues.rejected_issues_len}}</p>
-        <h1>Open Issues per User</h1>
-        {% for user in redmine_issues.user_assigned_dict %}
-            <p>{{user.0}} - {{user.1}}</p>
-        {% endfor %}
-        <h1>Open Issues per Status</h1>
-        {% for status in redmine_issues.status_assigned_dict %}
-            <p>{{status.0}} - {{status.1}}</p>
-        {% endfor %}
-        <h1>Open Issues per Project</h1>
-        {% for project in redmine_issues.project_assigned_dict %}
-            <p>{{project.0}} - {{project.1}}</p>
-        {% endfor %}
+
         <h1>Open Redmine Issues</h1>
         {% for issue in redmine_issues.open_issues %}
             <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.status_name}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
