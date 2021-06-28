@@ -5,7 +5,11 @@
 {% endblock %}
     {% block content %}
     <div id = "body_sizing">
-        <img src="https://i.imgur.com/lp8JEzh.png" alt="Redmine Logo" id="redmine_logo">
+        <img src="https://i.imgur.com/lp8JEzh.png" alt="Redmine Logo" id="redmine_logo">       
+        <p>All Issues: {{redmine_issues.all_issues_len}}</p>
+        <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
+        <p>Closed Issues: {{redmine_issues.closed_issues_len}}</p>
+        <p>Rejected Issues: {{redmine_issues.rejected_issues_len}}</p>
         <div id="dev_header_all_groups">
             {{ redmine_issues.status_assigned_dict|json_script:"redmine_issues_status_assigned_dict" }}
             <div id ="redmine_status_assigned_total_open_chart_div" class="redmine_chart">
@@ -70,11 +74,72 @@
                     </div>
         </section>
 
-        <h1>Redmine Issues Status</h1>
-        <p>All Issues: {{redmine_issues.all_issues_len}}</p>
-        <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
-        <p>Closed Issues: {{redmine_issues.closed_issues_len}}</p>
-        <p>Rejected Issues: {{redmine_issues.rejected_issues_len}}</p>
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.updated_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.open_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.closed_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_week.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if redmine_issues.issues_week.user_assigned_dict|length > 0 %}
+                            <table class = "user_points_table">
+                                <tbody>
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>CLOSED</th>
+                                    </tr>
+                                    {% for user  in redmine_issues.issues_week.user_assigned_dict %}
+                                        <tr>
+                                            <td>{{ user.0 }}</td>
+                                            <td>{{ user.1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
+
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.updated_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.open_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.closed_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_month.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if redmine_issues.issues_month.user_assigned_dict|length > 0 %}
+                            <table class = "user_points_table">
+                                <tbody>
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>CLOSED</th>
+                                    </tr>
+                                    {% for user  in redmine_issues.issues_month.user_assigned_dict %}
+                                        <tr>
+                                            <td>{{ user.0 }}</td>
+                                            <td>{{ user.1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
+
 
         <h1>Open Redmine Issues</h1>
         {% for issue in redmine_issues.open_issues %}

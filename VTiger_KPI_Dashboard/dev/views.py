@@ -88,6 +88,8 @@ def main(request):
     redmine_issues['date']['end_of_month'] = end_of_month.strftime('%A, %B %d')
 
     redmine_issues['issues_today'] = retrieve_issue_data(redmine_issues, today, end_of_day)
+    redmine_issues['issues_week'] = retrieve_issue_data(redmine_issues, first_of_week, end_of_week)
+    redmine_issues['issues_month'] = retrieve_issue_data(redmine_issues, first_of_month, end_of_month)
 
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
