@@ -97,13 +97,27 @@ def main(request):
     for issue in redmine_issues['issues_today']['open_issues']:
         redmine_issues['open_issues_dict_day'][issue.issue_id] = issue.issue_id
 
+    redmine_issues['open_issues_dict_week'] = {}
+    for issue in redmine_issues['issues_week']['open_issues']:
+        redmine_issues['open_issues_dict_week'][issue.issue_id] = issue.issue_id
+
+    redmine_issues['open_issues_dict_month'] = {}
+    for issue in redmine_issues['issues_month']['open_issues']:
+        redmine_issues['open_issues_dict_month'][issue.issue_id] = issue.issue_id
+
     #We supply dictionaries of all the resolved issues to the html context so that we can easily pinpoint issues that were
     #resolved in that time frame. We highlight created issues in green and resolved issues in red.
     redmine_issues['resolved_issues_dict_day'] = {}
     for issue in redmine_issues['issues_today']['closed_issues']:
         redmine_issues['resolved_issues_dict_day'][issue.issue_id] = issue.issue_id
 
+    redmine_issues['resolved_issues_dict_week'] = {}
+    for issue in redmine_issues['issues_week']['closed_issues']:
+        redmine_issues['resolved_issues_dict_week'][issue.issue_id] = issue.issue_id
 
+    redmine_issues['resolved_issues_dict_month'] = {}
+    for issue in redmine_issues['issues_month']['closed_issues']:
+        redmine_issues['resolved_issues_dict_month'][issue.issue_id] = issue.issue_id
 
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
