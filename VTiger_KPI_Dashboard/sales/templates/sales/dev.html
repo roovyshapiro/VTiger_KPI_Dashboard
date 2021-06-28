@@ -1,6 +1,39 @@
 {% extends 'sales/base.html' %}
 
     {% block content %}
+    <div id = "body_sizing">
+        <img src="https://i.imgur.com/lp8JEzh.png" alt="Redmine Logo" id="redmine_logo">
+        <div id="dev_header_all_groups">
+            {{ redmine_issues.status_assigned_dict|json_script:"redmine_issues_status_assigned_dict" }}
+            <div id ="redmine_status_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_status_assigned_total_open_chart"></canvas>
+            </div>
+            {{ redmine_issues.project_assigned_dict|json_script:"redmine_issues_project_assigned_dict" }}
+            <div id ="redmine_project_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_project_assigned_total_open_chart"></canvas>
+            </div>
+            {{ redmine_issues.user_assigned_dict|json_script:"redmine_issues_user_assigned_dict" }}
+            <div id ="redmine_user_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_user_assigned_total_open_chart"></canvas>
+            </div>
+            <div id="all_open_cases_box">
+                <span class ="score_name">All Open Issues</span> 
+                <div id ="score_and_all_groups_open_cases">
+                    <span class="score_num">{{redmine_issues.open_issues_len}}</span>
+                    <div id = "all_groups_open_issues_div">
+                        <table id="all_groups_open_issues_table">
+                            {% for user in redmine_issues.user_assigned_dict %}
+                                <tr>
+                                    <td>{{ user.0 }}</td>
+                                    <td>{{ user.1 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <h1>Redmine Issues Status</h1>
         <p>All Issues: {{redmine_issues.all_issues_len}}</p>
         <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
@@ -31,4 +64,5 @@
         {% for issue in redmine_issues.rejected_issues %}
             <p><a href = '{{url}}/issues/{{issue.issue_id}}'>{{issue.issue_id}}</a> - {{issue.updated_on}} - {{issue.status_name}} - {{issue.subject}} - {{issue.assigned_to_name}}</p>
         {% endfor %}
+    </div>
     {% endblock %}

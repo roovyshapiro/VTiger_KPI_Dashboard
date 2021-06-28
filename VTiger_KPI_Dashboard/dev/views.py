@@ -1,10 +1,12 @@
 from django.shortcuts import render, HttpResponseRedirect
 from django.http import HttpResponse
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 from .tasks import get_issues
 from .models import Redmine_issues
 import os, json
 
+@login_required()
 def main(request):
     '''
     Redmine Statuses:
