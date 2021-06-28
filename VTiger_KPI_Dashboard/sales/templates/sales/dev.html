@@ -80,6 +80,48 @@
                     </div>
         </section>
 
+        <input type=checkbox id="show_label_day">
+        <label for="show_label_day" class="show_label">SHOW ISSUES</label>
+        <div id = "case_table_day">
+            <table class = "scrollable_table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Number</th>
+                        <th>Project</th>
+                        <th>Author</th>
+                        <th>Assigned To</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Created (UTC)</th>
+                        <th>Modified (UTC)</th>
+                        <th>Resolved (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in redmine_issues.issues_today.all_issues %}
+                        {% if issue.issue_id in redmine_issues.resolved_issues_dict_day %}
+                            <tr id = "resolved_row">
+                        {% elif issue.issue_id in redmine_issues.open_issues_dict_day %}
+                            <tr id = "created_row">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                            <td>{{ issue.project_name }}</td>
+                            <td>{{ issue.author_name }}</td>
+                            <td>{{ issue.assigned_to_name }}</td>
+                            <td>{{ issue.subject }}</td>
+                            <td>{{ issue.status_name }}</td>
+                            <td>{{ issue.created_on }}</td>
+                            <td>{{ issue.updated_on }}</td>
+                            <td>{{ issue.closed_on }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         <hr>
         <div class="points_header">
             <p><span class="bold">WEEK:</span></p>

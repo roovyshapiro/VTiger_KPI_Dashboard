@@ -91,6 +91,20 @@ def main(request):
     redmine_issues['issues_week'] = retrieve_issue_data(redmine_issues, first_of_week, end_of_week)
     redmine_issues['issues_month'] = retrieve_issue_data(redmine_issues, first_of_month, end_of_month)
 
+    #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
+    #created in that time frame. We highlight created cases in green and resolved cases in red.
+    redmine_issues['open_issues_dict_day'] = {}
+    for issue in redmine_issues['issues_today']['open_issues']:
+        redmine_issues['open_issues_dict_day'][issue.issue_id] = issue.issue_id
+
+    #We supply dictionaries of all the resolved issues to the html context so that we can easily pinpoint issues that were
+    #resolved in that time frame. We highlight created issues in green and resolved issues in red.
+    redmine_issues['resolved_issues_dict_day'] = {}
+    for issue in redmine_issues['issues_today']['closed_issues']:
+        redmine_issues['resolved_issues_dict_day'][issue.issue_id] = issue.issue_id
+
+
+
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
     with open(credentials_path) as f:
@@ -187,6 +201,8 @@ def retrieve_issue_data(redmine_issues, date_request, date_request_end):
     #Sort the dictionary so that the the dictionary with the highest value is displayed first
     #redmine_issues['user_assigned_dict'] = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
     issues_dict['user_assigned_dict'] = sorted(user_assigned_dict.items(), key=lambda x: x[1], reverse=True)
+
+    issues_dict['all_issues'] = issues_dict['open_issues'] | issues_dict['updated_issues'] | issues_dict['closed_issues']
 
     return issues_dict 
 
