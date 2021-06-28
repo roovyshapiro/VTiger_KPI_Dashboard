@@ -1,0 +1,328 @@
+{% extends 'sales/refresh_date_picker.html' %}
+{% block form %}
+    <button type="submit" id="cases_submit" onclick="save_group_date()">SUBMIT</button>
+    </form>
+{% endblock %}
+    {% block content %}
+    <div id = "body_sizing">
+        <img src="https://i.imgur.com/lp8JEzh.png" alt="Redmine Logo" id="redmine_logo">       
+        <p>All Issues: {{redmine_issues.all_issues_len}}</p>
+        <p>Open Issues: {{redmine_issues.open_issues_len}}</p>
+        <p>Closed Issues: {{redmine_issues.closed_issues_len}}</p>
+        <p>Rejected Issues: {{redmine_issues.rejected_issues_len}}</p>
+        <div id="dev_header_all_groups">
+            {{ redmine_issues.status_assigned_dict|json_script:"redmine_issues_status_assigned_dict" }}
+            <div id ="redmine_status_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_status_assigned_total_open_chart"></canvas>
+            </div>
+            {{ redmine_issues.project_assigned_dict|json_script:"redmine_issues_project_assigned_dict" }}
+            <div id ="redmine_project_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_project_assigned_total_open_chart"></canvas>
+            </div>
+            {{ redmine_issues.user_assigned_dict|json_script:"redmine_issues_user_assigned_dict" }}
+            <div id ="redmine_user_assigned_total_open_chart_div" class="redmine_chart">
+                <canvas id="redmine_user_assigned_total_open_chart"></canvas>
+            </div>
+            <div id="all_open_cases_box">
+                <span class ="score_name">All Open Issues</span> 
+                <div id ="score_and_all_groups_open_cases">
+                    <span class="score_num">{{redmine_issues.open_issues_len}}</span>
+                    <div id = "all_groups_open_issues_div">
+                        <table id="all_groups_open_issues_table">
+                            {% for user in redmine_issues.user_assigned_dict %}
+                                <tr>
+                                    <td>{{ user.0 }}</td>
+                                    <td>{{ user.1 }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type=checkbox id="show_label_all">
+        <label for="show_label_all" class="show_label">SHOW ISSUES</label>
+        <div id = "case_table_all">
+            <table class = "scrollable_table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Number</th>
+                        <th>Project</th>
+                        <th>Author</th>
+                        <th>Assigned To</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Created (UTC)</th>
+                        <th>Modified (UTC)</th>
+                        <th>Resolved (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in redmine_issues.open_issues %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                            <td>{{ issue.project_name }}</td>
+                            <td>{{ issue.author_name }}</td>
+                            <td>{{ issue.assigned_to_name }}</td>
+                            <td>{{ issue.subject }}</td>
+                            <td>{{ issue.status_name }}</td>
+                            <td>{{ issue.created_on }}</td>
+                            <td>{{ issue.updated_on }}</td>
+                            <td>{{ issue.closed_on }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+
+        <div class="points_header">
+            <p><span class="bold">TODAY:</span></p>
+            <p> {{ redmine_issues.date.today }}</p>
+        </div>
+
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.updated_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.open_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_today.closed_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_today.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if redmine_issues.issues_today.user_assigned_dict|length > 0 %}
+                            <table class = "user_points_table">
+                                <tbody>
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>CLOSED</th>
+                                    </tr>
+                                    {% for user  in redmine_issues.issues_today.user_assigned_dict %}
+                                        <tr>
+                                            <td>{{ user.0 }}</td>
+                                            <td>{{ user.1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
+
+        <input type=checkbox id="show_label_day">
+        <label for="show_label_day" class="show_label">SHOW ISSUES</label>
+        <div id = "case_table_day">
+            <table class = "scrollable_table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Number</th>
+                        <th>Project</th>
+                        <th>Author</th>
+                        <th>Assigned To</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Created (UTC)</th>
+                        <th>Modified (UTC)</th>
+                        <th>Resolved (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in redmine_issues.issues_today.all_issues %}
+                        {% if issue.issue_id in redmine_issues.resolved_issues_dict_day %}
+                            <tr id = "resolved_row">
+                        {% elif issue.issue_id in redmine_issues.open_issues_dict_day %}
+                            <tr id = "created_row">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                            <td>{{ issue.project_name }}</td>
+                            <td>{{ issue.author_name }}</td>
+                            <td>{{ issue.assigned_to_name }}</td>
+                            <td>{{ issue.subject }}</td>
+                            <td>{{ issue.status_name }}</td>
+                            <td>{{ issue.created_on }}</td>
+                            <td>{{ issue.updated_on }}</td>
+                            <td>{{ issue.closed_on }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+        {% if redmine_issues.issues_week %}
+            <div class="points_header">
+                <p><span class="bold">WEEK:</span></p>
+                <p> {{ redmine_issues.date.first_of_week }} -  {{ redmine_issues.date.end_of_week }}</p>
+            </div>
+
+            <section class="points">
+                        <div class = "score_box">
+                            <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.updated_issues_len }}</span>
+                        </div>
+                        <div class = "score_box">
+                            <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.open_issues_len }}</span>
+                        </div>
+                        <div class = "score_box">
+                            <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_week.closed_issues_len }}</span>
+                        </div>
+                        <div class = "score_box">
+                            <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_week.kill_rate }}%</span>
+                        </div>
+                        <div>
+                            {% if redmine_issues.issues_week.user_assigned_dict|length > 0 %}
+                                <table class = "user_points_table">
+                                    <tbody>
+                                        <tr>
+                                            <th>USER</th>
+                                            <th>CLOSED</th>
+                                        </tr>
+                                        {% for user  in redmine_issues.issues_week.user_assigned_dict %}
+                                            <tr>
+                                                <td>{{ user.0 }}</td>
+                                                <td>{{ user.1 }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% endif %}
+                        </div>
+            </section>
+
+
+            <input type=checkbox id="show_label_week">
+            <label for="show_label_week" class="show_label">SHOW ISSUES</label>
+            <div id = "case_table_week">
+                <table class = "scrollable_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Number</th>
+                            <th>Project</th>
+                            <th>Author</th>
+                            <th>Assigned To</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Created (UTC)</th>
+                            <th>Modified (UTC)</th>
+                            <th>Resolved (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in redmine_issues.issues_week.all_issues %}
+                            {% if issue.issue_id in redmine_issues.resolved_issues_dict_week %}
+                                <tr id = "resolved_row">
+                            {% elif issue.issue_id in redmine_issues.open_issues_dict_week %}
+                                <tr id = "created_row">
+                            {% else %}
+                                <tr>
+                            {% endif %}
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                                <td>{{ issue.project_name }}</td>
+                                <td>{{ issue.author_name }}</td>
+                                <td>{{ issue.assigned_to_name }}</td>
+                                <td>{{ issue.subject }}</td>
+                                <td>{{ issue.status_name }}</td>
+                                <td>{{ issue.created_on }}</td>
+                                <td>{{ issue.updated_on }}</td>
+                                <td>{{ issue.closed_on }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+        {% endif %}
+
+        <div class="points_header">
+            <p><span class="bold">MONTH:</span></p>
+            <p> {{ redmine_issues.date.first_of_month }} -  {{ redmine_issues.date.end_of_month }}</p>
+        </div>
+
+        <section class="points">
+                    <div class = "score_box">
+                        <span class ="score_name">UPDATED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.updated_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">CREATED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.open_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">RESOLVED</span> </br> <span class="score_num">{{ redmine_issues.issues_month.closed_issues_len }}</span>
+                    </div>
+                    <div class = "score_box">
+                        <span class ="score_name">KILL RATE</span> </br> <span class="score_num">{{ redmine_issues.issues_month.kill_rate }}%</span>
+                    </div>
+                    <div>
+                        {% if redmine_issues.issues_month.user_assigned_dict|length > 0 %}
+                            <table class = "user_points_table">
+                                <tbody>
+                                    <tr>
+                                        <th>USER</th>
+                                        <th>CLOSED</th>
+                                    </tr>
+                                    {% for user  in redmine_issues.issues_month.user_assigned_dict %}
+                                        <tr>
+                                            <td>{{ user.0 }}</td>
+                                            <td>{{ user.1 }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+        </section>
+        <input type=checkbox id="show_label_month">
+        <label for="show_label_month" class="show_label">SHOW ISSUES</label>
+        <div id = "case_table_month">
+            <table class = "scrollable_table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Number</th>
+                        <th>Project</th>
+                        <th>Author</th>
+                        <th>Assigned To</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Created (UTC)</th>
+                        <th>Modified (UTC)</th>
+                        <th>Resolved (UTC)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for issue in redmine_issues.issues_month.all_issues %}
+                        {% if issue.issue_id in redmine_issues.resolved_issues_dict_month %}
+                            <tr id = "resolved_row">
+                        {% elif issue.issue_id in redmine_issues.open_issues_dict_month %}
+                            <tr id = "created_row">
+                        {% else %}
+                            <tr>
+                        {% endif %}
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                            <td>{{ issue.project_name }}</td>
+                            <td>{{ issue.author_name }}</td>
+                            <td>{{ issue.assigned_to_name }}</td>
+                            <td>{{ issue.subject }}</td>
+                            <td>{{ issue.status_name }}</td>
+                            <td>{{ issue.created_on }}</td>
+                            <td>{{ issue.updated_on }}</td>
+                            <td>{{ issue.closed_on }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <hr>
+    </div>
+    {% endblock %}

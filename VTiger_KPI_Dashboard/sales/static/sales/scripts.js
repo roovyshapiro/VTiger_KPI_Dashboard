@@ -70,7 +70,10 @@ function highlight_navbar(){
 
   }else if(pathname == '/cases/'){
     var active_link = document.getElementById('cases');
-  }
+  
+  }else if(pathname == '/dev/'){
+  var active_link = document.getElementById('dev');
+}
   active_link.classList.add("active_link");
 }
 
@@ -485,52 +488,56 @@ var dynamicColors = function() {
   return "rgb(" + r + "," + g + "," + b + ")";
 };
 var backgroundColorArray = [];
+try{
+  var user_assigned_total_open = JSON.parse(document.getElementById('sorted_user_assigned_total_open').textContent);
 
-var user_assigned_total_open = JSON.parse(document.getElementById('sorted_user_assigned_total_open').textContent);
-
-var users_assigned = [];
-var users_assigned_amount = [];
-for (user in user_assigned_total_open){
-  users_assigned.push(user_assigned_total_open[user][0]);
-  users_assigned_amount.push(user_assigned_total_open[user][1]);
-  backgroundColorArray.push(dynamicColors());
+  var users_assigned = [];
+  var users_assigned_amount = [];
+  for (user in user_assigned_total_open){
+    users_assigned.push(user_assigned_total_open[user][0]);
+    users_assigned_amount.push(user_assigned_total_open[user][1]);
+    backgroundColorArray.push(dynamicColors());
+  }
+  
+  var user_assigned_data = {
+    labels: users_assigned,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: users_assigned_amount,
+      backgroundColor: backgroundColorArray,
+      hoverOffset: 4
+    }]
+  };
+  
+  var user_assigned_options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: "Open Assigned Per User"
+      },
+      legend: {
+        position: "left"
+      },  
+    },
+  };
+  
+  var user_assigned_config = {
+    type: 'doughnut',
+    data: user_assigned_data,
+    options: user_assigned_options,
+  };
+  
+  
+  var doughnutChartAssigned = new Chart(
+      document.getElementById('user_assigned_total_open_chart'),
+    user_assigned_config
+  );
+}catch(err){
+  console.log('user assigned_total_open not available', err);
 }
 
-var user_assigned_data = {
-  labels: users_assigned,
-  datasets: [{
-    label: 'Doughnut Chart',
-    data: users_assigned_amount,
-    backgroundColor: backgroundColorArray,
-    hoverOffset: 4
-  }]
-};
-
-var user_assigned_options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins:{
-    title: {
-      display: true,
-      text: "Open Assigned Per User"
-    },
-    legend: {
-      position: "left"
-    },  
-  },
-};
-
-var user_assigned_config = {
-  type: 'doughnut',
-  data: user_assigned_data,
-  options: user_assigned_options,
-};
-
-
-var doughnutChartAssigned = new Chart(
-    document.getElementById('user_assigned_total_open_chart'),
-  user_assigned_config
-);
 
 
 /* Total Open Per Group Doughnut Chart
@@ -546,48 +553,240 @@ var dynamicColors = function() {
 };
 var backgroundColorArrayGroup = [];
 
-var all_groups_open = JSON.parse(document.getElementById('sorted_all_groups_open').textContent);
-var group_names = [];
-var group_amount = [];
-
-for (group in all_groups_open){
-  group_names.push(all_groups_open[group][0]);
-  group_amount.push(all_groups_open[group][1]);
-  backgroundColorArrayGroup.push(dynamicColors());
+try{
+  var all_groups_open = JSON.parse(document.getElementById('sorted_all_groups_open').textContent);
+  var group_names = [];
+  var group_amount = [];
+  
+  for (group in all_groups_open){
+    group_names.push(all_groups_open[group][0]);
+    group_amount.push(all_groups_open[group][1]);
+    backgroundColorArrayGroup.push(dynamicColors());
+  }
+  
+  var all_group_open_data = {
+    labels: group_names,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: group_amount,
+      backgroundColor: backgroundColorArrayGroup,
+      hoverOffset: 4
+    }]
+  };
+  
+  var all_group_open_options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: "Open Cases Per Group"
+      },
+      legend: {
+        position: "left"
+      },  
+    },
+  };
+  
+  var groups_open_config = {
+    type: 'doughnut',
+    data: all_group_open_data,
+    options: all_group_open_options,
+  };
+  
+  
+  var doughnutGroupOpen = new Chart(
+      document.getElementById('all_groups_open_chart'),
+      groups_open_config
+  );
+}catch(err){
+  console.log('group assigned not available', err);
 }
 
-var all_group_open_data = {
-  labels: group_names,
-  datasets: [{
-    label: 'Doughnut Chart',
-    data: group_amount,
-    backgroundColor: backgroundColorArrayGroup,
-    hoverOffset: 4
-  }]
-};
 
-var all_group_open_options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins:{
-    title: {
-      display: true,
-      text: "Open Cases Per Group"
+
+/* /dev Redmine Issue User Assigned Total Open Doughnut Chart
+
+*/
+//There's a variable amount of users, so depending on how many users there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColors = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
+};
+var backgroundColorArrayDevUser = [];
+try{
+  var redmine_user_assigned_total_open = JSON.parse(document.getElementById('redmine_issues_user_assigned_dict').textContent);
+
+  var users_assigned_redmine = [];
+  var users_assigned_amount_redmine = [];
+  for (user in redmine_user_assigned_total_open){
+    users_assigned_redmine.push(redmine_user_assigned_total_open[user][0]);
+    users_assigned_amount_redmine.push(redmine_user_assigned_total_open[user][1]);
+    backgroundColorArrayDevUser.push(dynamicColors());
+  }
+  
+  var user_assigned_data_redmine = {
+    labels: users_assigned_redmine,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: users_assigned_amount_redmine,
+      backgroundColor: backgroundColorArrayDevUser,
+      hoverOffset: 4
+    }]
+  };
+  
+  var user_assigned_options_redmine = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: "Open Assigned Per User"
+      },
+      legend: {
+        position: "left"
+      },  
     },
-    legend: {
-      position: "left"
-    },  
-  },
+  };
+  
+  var user_assigned_config_redmine = {
+    type: 'doughnut',
+    data: user_assigned_data_redmine,
+    options: user_assigned_options_redmine,
+  };
+  
+  
+  var doughnutChartAssignedRedmine = new Chart(
+      document.getElementById('redmine_user_assigned_total_open_chart'),
+      user_assigned_config_redmine
+  );
+}catch(err){
+  console.log('redmine issue per user not available', err);
+}
+
+/* /dev Redmine Issue Status Assigned Total Open Doughnut Chart
+
+*/
+//There's a variable amount of statuses, so depending on how many statuses there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColors = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
 };
+var backgroundColorArrayDevStatus = [];
+try{
+  var redmine_status_assigned_total_open = JSON.parse(document.getElementById('redmine_issues_status_assigned_dict').textContent);
 
-var groups_open_config = {
-  type: 'doughnut',
-  data: all_group_open_data,
-  options: all_group_open_options,
+  var status_assigned_redmine = [];
+  var status_assigned_amount_redmine = [];
+  for (status in redmine_status_assigned_total_open){
+    status_assigned_redmine.push(redmine_status_assigned_total_open[status][0]);
+    status_assigned_amount_redmine.push(redmine_status_assigned_total_open[status][1]);
+    backgroundColorArrayDevStatus.push(dynamicColors());
+  }
+  
+  var status_assigned_data_redmine = {
+    labels: status_assigned_redmine,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: status_assigned_amount_redmine,
+      backgroundColor: backgroundColorArrayDevStatus,
+      hoverOffset: 4
+    }]
+  };
+  
+  var status_assigned_options_redmine = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: "Open Assigned Per Status"
+      },
+      legend: {
+        position: "left"
+      },  
+    },
+  };
+  
+  var status_assigned_config_redmine = {
+    type: 'doughnut',
+    data: status_assigned_data_redmine,
+    options: status_assigned_options_redmine,
+  };
+  
+  
+  var doughnutChartAssignedRedmineStatus = new Chart(
+      document.getElementById('redmine_status_assigned_total_open_chart'),
+      status_assigned_config_redmine
+  );
+}catch(err){
+  console.log('redmine issue per status not available', err);
+}
+
+/* /dev Redmine Issue Project Assigned Total Open Doughnut Chart
+
+*/
+//There's a variable amount of projects, so depending on how many projects there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColors = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
 };
+var backgroundColorArrayDevProject = [];
+try{
+  var redmine_project_assigned_total_open = JSON.parse(document.getElementById('redmine_issues_project_assigned_dict').textContent);
 
-
-var doughnutGroupOpen = new Chart(
-    document.getElementById('all_groups_open_chart'),
-    groups_open_config
-);
+  var project_assigned_redmine = [];
+  var project_assigned_amount_redmine = [];
+  for (project in redmine_project_assigned_total_open){
+    project_assigned_redmine.push(redmine_project_assigned_total_open[project][0]);
+    project_assigned_amount_redmine.push(redmine_project_assigned_total_open[project][1]);
+    backgroundColorArrayDevProject.push(dynamicColors());
+  }
+  
+  var project_assigned_data_redmine = {
+    labels: project_assigned_redmine,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: project_assigned_amount_redmine,
+      backgroundColor: backgroundColorArrayDevStatus,
+      hoverOffset: 4
+    }]
+  };
+  
+  var project_assigned_options_redmine = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: "Open Assigned Per Project"
+      },
+      legend: {
+        position: "left"
+      },  
+    },
+  };
+  
+  var project_assigned_config_redmine = {
+    type: 'doughnut',
+    data: project_assigned_data_redmine,
+    options: project_assigned_options_redmine,
+  };
+  
+  
+  var doughnutChartAssignedRedmineProjecy = new Chart(
+      document.getElementById('redmine_project_assigned_total_open_chart'),
+      project_assigned_config_redmine
+  );
+}catch(err){
+  console.log('redmine issue per project not available', err);
+}

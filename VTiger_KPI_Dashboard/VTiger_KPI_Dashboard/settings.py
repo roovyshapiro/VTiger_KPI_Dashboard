@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'sales',
     'home',
     'ship',
+    'dev',
     'celery',
     'django_celery_beat',
 ]
@@ -256,5 +257,9 @@ CELERY_BEAT_SCHEDULE = {
      'get_products': {
        'task': 'ship.tasks.get_products',
        'schedule': crontab(minute='39', hour='*/5', day_of_week='1,2,3,4,5'),
+    },
+    'get_issues': {
+       'task': 'dev.tasks.get_issues',
+       'schedule': crontab(minute='39', hour='*/1', day_of_week='*'),
     },
 }

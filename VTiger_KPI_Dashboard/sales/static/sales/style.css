@@ -664,6 +664,39 @@ label.show_label:active {
     padding:10px;
 }
 
+/****** Dev/Redmine Friendly ******/
+#dev_header_all_groups{
+    display:flex;
+    justify-content: space-between;
+}
+#open_assigned_dev_charts{
+    display:flex;
+}
+.redmine_chart{
+    width:425px;
+}
+#all_groups_open_issues_div{
+    column-count:2;
+    -moz-column-count:2;
+    -webkit-column-count:2;
+     height:200px;
+     margin-left:20px;
+}
+#all_groups_open_issues_table td, th{
+    padding:1px;
+    padding-right:10px;
+    padding-bottom:3px;
+    border:none;
+    font-style:italic;
+    font-size:13px;
+    font-weight:bold;
+}
+#redmine_logo{
+    margin-left:40%;
+    width:400px;
+    height:80px;
+    margin-bottom:15px;
+}
 /****** Mobile Friendly ******/
 
 @media only screen and (max-width: 768px) {
