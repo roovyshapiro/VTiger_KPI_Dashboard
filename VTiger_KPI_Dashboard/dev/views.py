@@ -18,6 +18,7 @@ def main(request):
     redmine_issues = {}
     all_issues = Redmine_issues.objects.all().order_by('-updated_on')
     redmine_issues['all_issues'] = all_issues
+    redmine_issues['all_issues_created_ordered'] = all_issues.order_by('-created_on')
     redmine_issues['open_issues'] = all_issues.filter(~Q(status_name="Done") & ~Q(status_name="Resolved") & ~Q(status_name="Rejected") & ~Q(status_name="Out of date") & ~Q(status_name="Not relevant") & ~Q(status_name="Unreproducible") & ~Q(status_name="Duplicate") & ~Q(status_name="Already fixed"))
     redmine_issues['closed_issues'] = all_issues.filter(Q(status_name="Done")  | Q(status_name="Resolved"))
     redmine_issues['rejected_issues'] = all_issues.filter(Q(status_name="Rejected") | Q(status_name="Out of date") | Q(status_name="Not relevant") | Q(status_name="Unreproducible") | Q(status_name="Duplicate") | Q(status_name="Already fixed"))
@@ -119,7 +120,7 @@ def main(request):
     for issue in redmine_issues['issues_month']['closed_issues']:
         redmine_issues['resolved_issues_dict_month'][issue.issue_id] = issue.issue_id
 
-    redmine_issues['historical_data'] = retrieve_historical_data(all_issues)
+    redmine_issues['historical_data'] = retrieve_historical_data(redmine_issues['all_issues_created_ordered'])
 
 
     credentials_file = 'credentials.json'
