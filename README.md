@@ -154,6 +154,8 @@ The values shown in the score_key in the HTML are static and have no bearing on 
 DataTables.Net is used to display the tables in a user-friendly way and comes with built in functionality such as
 sorting, filtering and pagination.
 https://datatables.net/
+[![](https://i.imgur.com/xhH8y8U.png)](https://i.imgur.com/xhH8y8U.png)
 
 Chart.JS is used to display the data retrieved from the Django DB into user-friendly charts and graphs.
 https://www.chartjs.org/
+[![](https://i.imgur.com/LeVX1MD.png)](https://i.imgur.com/LeVX1MD.png)
