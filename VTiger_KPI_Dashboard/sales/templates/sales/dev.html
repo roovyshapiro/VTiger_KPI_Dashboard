@@ -324,5 +324,9 @@
             </table>
         </div>
         <hr>
+        {{ redmine_issues.historical_data|json_script:"historical_data_redmine" }}
+        <div id = "barchart">
+            <canvas id="redmine_bar_chart"></canvas>
+        </div>
     </div>
     {% endblock %}

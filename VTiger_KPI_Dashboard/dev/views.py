@@ -32,7 +32,7 @@ def main(request):
     all_status = all_issues.values('status_name').distinct()
     all_project = all_issues.values('project_name').distinct()
 
-    #Showcase all open issues according to User, Status and Project
+    #Showissue all open issues according to User, Status and Project
     #Sort them so that they are displayed from greatest to fewest
     #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0, 'unassigned':0,}
     user_dict = {}
@@ -91,8 +91,8 @@ def main(request):
     redmine_issues['issues_week'] = retrieve_issue_data(redmine_issues, first_of_week, end_of_week)
     redmine_issues['issues_month'] = retrieve_issue_data(redmine_issues, first_of_month, end_of_month)
 
-    #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
-    #created in that time frame. We highlight created cases in green and resolved cases in red.
+    #We supply dictionaries of all the created issues to the html context so that we can easily pinpoint issues that were
+    #created in that time frame. We highlight created issues in green and resolved issues in red.
     redmine_issues['open_issues_dict_day'] = {}
     for issue in redmine_issues['issues_today']['open_issues']:
         redmine_issues['open_issues_dict_day'][issue.issue_id] = issue.issue_id
@@ -119,6 +119,9 @@ def main(request):
     for issue in redmine_issues['issues_month']['closed_issues']:
         redmine_issues['resolved_issues_dict_month'][issue.issue_id] = issue.issue_id
 
+    redmine_issues['historical_data'] = retrieve_historical_data(all_issues)
+
+
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
     with open(credentials_path) as f:
@@ -128,10 +131,10 @@ def main(request):
 
     #Min Max Values for Date Picker in base.html
     date_dict = {}
-    first_case = redmine_issues['all_issues'].order_by('created_on').first().created_on
-    first_case = first_case.strftime('%Y-%m-%d')
+    first_issue = redmine_issues['all_issues'].order_by('created_on').first().created_on
+    first_issue = first_issue.strftime('%Y-%m-%d')
     date_dict = {
-        'first_db': first_case,
+        'first_db': first_issue,
         'last_db': timezone.now().strftime('%Y-%m-%d'),
     }
 
@@ -189,8 +192,8 @@ def retrieve_issue_data(redmine_issues, date_request, date_request_end):
     '''
     Returns data regards to the issues and users specified for the supplied time frame.
     '''
-    #Prepare calculated data to present as a simple summary overview of the cases
-    #full_cases = Cases.objects.all()
+    #Prepare calculated data to present as a simple summary overview of the issues
+    #full_issues = Cases.objects.all()
     issues_dict = {}
 
     issues_dict['open_issues'] = redmine_issues['all_issues'].filter(created_on__gte=date_request, created_on__lte=date_request_end)
@@ -210,7 +213,7 @@ def retrieve_issue_data(redmine_issues, date_request, date_request_end):
         #If there are 0 opened issues and 3 closed issues, the kill rate will become 300%.
         issues_dict['kill_rate'] = int(issues_dict['closed_issues_len'] * 100)
 
-    #We calculate how many cases were closed per user and add it to the context to be displayed
+    #We calculate how many issues were closed per user and add it to the context to be displayed
     #redmine_issues['all_users] = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
 
     #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0}
@@ -239,6 +242,106 @@ def retrieve_issue_data(redmine_issues, date_request, date_request_end):
     issues_dict['all_issues'] = issues_dict['open_issues'] | issues_dict['updated_issues'] | issues_dict['closed_issues']
 
     return issues_dict 
+
+def retrieve_historical_data(all_issues):
+    '''
+    First, we go through all issues and find all the unique years based on created time.
+    A dicitionary is generated for each year and each month.
+    Ultimately, it looks like this:
+    {
+    2020:{
+        1:{},
+        2:{},
+        3:{},
+        ..
+        12:{},
+        }
+    2021:{
+        1:{}
+        2:{}
+        3:{}
+        ..
+        12:{},
+        }
+    }
+
+    Each month dict has data associated for that month including 
+    first and last day,
+    year,
+    month name,
+    created, resolved, kill rates,
+    {
+        1: {
+            'first_of_month': datetime.datetime(2021, 1, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 1, 31, 23, 59, 59, tzinfo=<UTC>), 
+            'month': 'January', 
+            'year': 2021, 
+            'created_all': 282, 
+            'resolved_all': 252
+            }, 
+        2: {
+            'first_of_month': datetime.datetime(2021, 2, 1, 0, 0, tzinfo=<UTC>), 
+            'end_of_month': datetime.datetime(2021, 2, 28, 23, 59, 59, tzinfo=<UTC>), 
+            'month': 'February', 
+            'year': 2021, 
+            'created_all': 253, 
+            'resolved_all': 212
+            },
+    }
+    '''
+    #Only show data for the past two years
+    #Otherwise, there's too many months and the chart gets clogged
+    thisyear = all_issues.first().created_on.year
+    two_years_ago = all_issues.first().created_on.replace(year=thisyear - 2, month=1, day = 1, hour =0, minute = 0)
+    full_issues = all_issues.filter(created_on__gte=two_years_ago)
+    #get a list of all unique years which are used in issues
+    issue_years = []
+    for issue in full_issues:
+        year = issue.created_on.year
+        if year not in issue_years:
+            issue_years.append(year)
+
+    all_data = {}
+    for year in issue_years:
+        #Each year gets associated to a dict for each month
+        months = {i:{} for i in range(1,13)}
+        all_data[year] = months
+
+        #Generating the data per month
+        for i in months:
+            first_of_month = timezone.now().replace(month=i, year=year, day=1, hour=0, minute=0, second=0, microsecond=0)
+            months[i]['first_of_month'] = first_of_month
+            year = first_of_month.year
+            month = first_of_month.month
+            last_day = calendar.monthrange(year,month)[1]
+            end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+            months[i]['end_of_month'] = end_of_month
+
+            months[i]['month'] = first_of_month.strftime('%B')
+            months[i]['year'] = first_of_month.year
+            created_issues = full_issues.filter(created_on__gte=first_of_month, created_on__lte=end_of_month)
+            months[i]['created_all'] = len(created_issues)
+            resolved_issues = full_issues.filter(closed_on__gte=first_of_month, closed_on__lte=end_of_month)
+            months[i]['resolved_all'] = len(resolved_issues)
+        
+            try:
+                months[i]['kill_rate_all'] = int((months[i]['resolved_all'] / months[i]['created_all']) * 100)
+            except ValueError:
+                months[i]['kill_rate_all'] = int(0)
+            except ZeroDivisionError:
+                #If there are 0 opened issues and 3 closed issues, the kill rate will become 300%.
+                months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
+
+
+    #Ultimately, we only want to display data that exists and not empty data for all future and past months
+    #A new dict is created which only contains non-empty month data inside
+    all_dict_non_empty = {i:{} for i in all_data}
+    for year, months in all_data.items():
+        for month, month_dict in months.items():
+            if month_dict['created_all'] != 0 and month_dict['resolved_all'] != 0:
+                all_dict_non_empty[year][month] = month_dict
+    return all_dict_non_empty
+
 
 def get_all_issues(request):
     get_issues(recent=False)

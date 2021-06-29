@@ -790,3 +790,89 @@ try{
 }catch(err){
   console.log('redmine issue per project not available', err);
 }
+
+
+/* 
+
+Using the historical issue data and displaying them as 
+a bar chart using chartjs. 
+Note: Kill Rate is commented out as it is a percentage value.
+If there are a large amount of issues, the kill rate bar will appear
+small, and vice versae. It negatively impacts the look of the chart
+but may be useful in the future.
+https://www.chartjs.org/docs/latest/getting-started/
+https://codepen.io/bencarmichael/pen/XeYJXJ
+
+
+*/
+try{
+  var data_history_redmine = JSON.parse(document.getElementById('historical_data_redmine').textContent);
+  
+  var years_redmine = Object.keys(data_history_redmine);
+  var date_label_redmine = [];
+  var created_redmine = [];
+  var resolved_redmine = [];
+  for (year in years_redmine){
+      var months = Object.keys(data_history_redmine[years_redmine[year]]);
+    for (month in months){
+      date_label_redmine.push(`${years_redmine[year]} - ${data_history_redmine[years_redmine[year]][months[month]]['month']}`);
+      created_redmine.push(data_history_redmine[years_redmine[year]][months[month]]['created_all']);
+      resolved_redmine.push(data_history_redmine[years_redmine[year]][months[month]]['resolved_all']);
+      }
+    }
+  
+  
+  var barChartDataRedmine = {
+      labels: date_label_redmine,
+      datasets: [
+        {
+          label: "Created",
+          backgroundColor: "lightblue",
+          borderColor: "blue",
+          borderWidth: 1,
+          data: created_redmine
+        },
+        {
+          label: "Resolved",
+          backgroundColor: "pink",
+          borderColor: "red",
+          borderWidth: 1,
+          data: resolved_redmine,
+        },
+      ]
+    };
+    
+    var chartOptionsRedmine = {
+      responsive: true,
+      maintainAspectRatio: false,
+      legend: {
+        position: "top"
+      },  
+      plugins:{
+        title: {
+          display: true,
+          text: "Created/Resolved for past 2 years"
+        },
+      },
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+
+    var barChartConfigRedmine = {
+      type: "bar",
+      data: barChartDataRedmine,
+      options: chartOptionsRedmine
+    };
+
+    var barChartRednube = new Chart(
+      document.getElementById('redmine_bar_chart'),
+      barChartConfigRedmine
+    );
+} catch(err){
+  console.log('redmine bar chart not available', err);
+}
