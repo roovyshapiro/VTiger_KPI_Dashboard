@@ -676,6 +676,9 @@ label.show_label:active {
 #all_issues_total_table td, th{
     padding:1px;
 }
+.right_aligned_td{
+    text-align:right;
+}
 
 #dev_header_all_groups{
     display:flex;
