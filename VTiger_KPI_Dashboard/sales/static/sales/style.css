@@ -138,8 +138,8 @@ nav > a{
 #home_page_buttons{
     display:flex;
     justify-content: space-around;
-    margin-left: 25%;
-    margin-right: 25%;
+    margin-left: 15%;
+    margin-right: 15%;
 }
 
 .button p{
