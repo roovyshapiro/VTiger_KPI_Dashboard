@@ -24,7 +24,7 @@ def main(request):
 
     #Returns dictionary with "assigned_groupname" as key, and the actual name as the value.
     #We pass these groups to the html to populate the drop down menu for filtering
-    case_groups = Cases.objects.values('assigned_groupname').distinct()
+    case_groups = full_cases.order_by().values('assigned_groupname').distinct()
 
     #We get the form submission from the drop down and use it to then filter the "full_case"
     #query set to only return and display the cases which match that group. If no group is 
@@ -40,7 +40,7 @@ def main(request):
     else:
         date_group_dict['group'] = 'All Groups'
         for group in case_groups:
-            group_cases = Cases.objects.all().filter(assigned_groupname=group['assigned_groupname'])
+            group_cases = full_cases.filter(assigned_groupname=group['assigned_groupname'])
             group_open_cases = len(group_cases.filter(~Q(casestatus="Resolved") & ~Q(casestatus='Closed')))
             if group_open_cases != 0:
                 all_groups_open[group['assigned_groupname']] = group_open_cases
@@ -74,7 +74,7 @@ def main(request):
     sorted_user_assigned_total_open = sorted(user_assigned_total_open.items(), key=lambda x: x[1], reverse=True)
 
     #Retrieve user specific data for the entire month
-    user_case_data = retrieve_user_data(first_of_month, end_of_month)
+    user_case_data = retrieve_user_data(full_cases,first_of_month, end_of_month)
 
     #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
     #created in that time frame. We highlight created cases in green and resolved cases in red.
@@ -107,7 +107,7 @@ def main(request):
     date_dict = {}
     #Min Max Values for Date Picker in base.html
     try:
-        first_case = Cases.objects.all().order_by('modifiedtime').first().modifiedtime
+        first_case = full_cases.order_by('modifiedtime').first().modifiedtime
         first_case = first_case.strftime('%Y-%m-%d')
         date_dict = {
             'first_db': first_case,
@@ -184,8 +184,6 @@ def retrieve_user_assigned_total(supplied_group, full_cases):
     '''
     if supplied_group != 'All Groups':
         full_cases = full_cases.filter(assigned_groupname=supplied_group)
-
-    print(supplied_group)
 
     #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
     all_users = full_cases.values('assigned_username').distinct()
@@ -264,7 +262,7 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
 
     #We calculate how many cases were closed per user and add it to the context to be displayed
     #all_users = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
-    all_users = Cases.objects.values('assigned_username').distinct()
+    all_users = full_cases.order_by().values('assigned_username').distinct()
 
     #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0}
     user_dict = {}
@@ -296,7 +294,7 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
 
     return case_stats_dict, sorted_user_closed, all_cases, created_cases, resolved_cases
 
-def retrieve_user_data(date_request, date_request_end):
+def retrieve_user_data(full_cases,date_request, date_request_end):
     '''
     User based statistics:
 
@@ -334,7 +332,6 @@ def retrieve_user_data(date_request, date_request_end):
       "avg_time_spent":99.96
     }
     '''
-    full_cases = Cases.objects.all().order_by('-modifiedtime')
     full_cases_date = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
     open_cases = full_cases_date.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
     all_open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
@@ -377,7 +374,6 @@ def retrieve_user_data(date_request, date_request_end):
             if case.assigned_username == user['assigned_username']:
                 user_cases[user['assigned_username']]['resolved'] += 1
 
-        #print('USER:', user['assigned_username'])
         time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
         open_cases_len = len(all_open_cases.filter(assigned_username=user['assigned_username']))
         user_cases[user['assigned_username']]['assigned_all'] = open_cases_len
@@ -391,16 +387,6 @@ def retrieve_user_data(date_request, date_request_end):
             avg_time_spent = 0
         #user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
         user_cases[user['assigned_username']]['avg_time_spent'] = avg_time_spent
-        #print('AVG Time Spent:', user_cases[user['assigned_username']]['avg_time_spent'])
-
-        #print('Open Assigned:', user_cases[user['assigned_username']]['assigned'])
-        #print('Total Assigned:',user_cases[user['assigned_username']]['assigned_all'])
-        #print('Total Resolved:',user_cases[user['assigned_username']]['resolved'])
-
-        #print('Feedback - Satisfied', user_cases[user['assigned_username']]['feedback']['satisfied'])
-        #print('Feedback - Neutral', user_cases[user['assigned_username']]['feedback']['neutral'])
-        #print('Feedback - Not Satisfied', user_cases[user['assigned_username']]['feedback']['not_satisfied']) 
-        #print()
 
     return user_cases
 
@@ -569,8 +555,6 @@ def retrieve_historical_data(supplied_group, full_cases_list):
             except ZeroDivisionError:
                 #If there are 0 opened cases and 3 closed cases, the kill rate will become 300%.
                 months[i]['kill_rate_all'] = int(months[i]['resolved_all'] * 100)
-        
-            #print(f"{months[i]['first_of_month'].strftime('%B')}-{months[i]['first_of_month'].year} = C:{months[i]['created_all']} R:{months[i]['resolved_all']} K:{months[i]['kill_rate_all']}%")
 
             #For each month, we show created, resolved and kill rate per group
             #Each month has a dict called "group_data_month" which looks like this:
@@ -595,8 +579,6 @@ def retrieve_historical_data(supplied_group, full_cases_list):
                         group_data_month[group['assigned_groupname']]['kill_rate'] = int(len(resolved_group_cases) * 100)
 
             months[i]['created_groups'] = group_data_month
-            #print(months[i]['month'], months[i]['created_groups'])
-        #print(months)
 
     #Ultimately, we only want to display data that exists and not empty data for all future and past months
     #A new dict is created which only contains non-empty month data inside
@@ -604,9 +586,7 @@ def retrieve_historical_data(supplied_group, full_cases_list):
     for year, months in all_data.items():
         for month, month_dict in months.items():
             if month_dict['created_all'] != 0 and month_dict['resolved_all'] != 0:
-                #print(year, month, month_dict['created_groups'][case_groups[0]['assigned_groupname']])
                 all_dict_non_empty[year][month] = month_dict
-    #print(all_data)
     return(all_dict_non_empty)
 
 
@@ -683,7 +663,6 @@ def month_comparison_data(supplied_group, full_cases, case_status="Resolved"):
     #Makes a list of all days in the range of the beginning and end of the available days in db
     for month in comparison_data:
         date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (comparison_data[month]['last_day'] - comparison_data[month]['first_day']).days + 1)]
-        #print(date_range)
         for date in date_range:
             date_count = 0
             if case_status == "Resolved":
