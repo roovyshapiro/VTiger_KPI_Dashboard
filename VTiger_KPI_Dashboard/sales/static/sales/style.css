@@ -664,7 +664,19 @@ label.show_label:active {
     padding:10px;
 }
 
-/****** Dev/Redmine Friendly ******/
+/****** Dev/Redmine  ******/
+#logo_and_issues_total{
+    display:flex;
+}
+#all_issues_total_table{
+    border-collapse: collapse;
+    margin-right:auto;
+    margin-left:auto;
+}
+#all_issues_total_table td, th{
+    padding:1px;
+}
+
 #dev_header_all_groups{
     display:flex;
     justify-content: space-between;
@@ -692,7 +704,6 @@ label.show_label:active {
     font-weight:bold;
 }
 #redmine_logo{
-    margin-left:40%;
     width:400px;
     height:80px;
     margin-bottom:15px;
@@ -1123,6 +1134,22 @@ label.show_label:active {
         width:100%;
         height:400px;
         margin-top:0px;
+    }
+    /* DEV */
+    #redmine_logo{
+        width:200px;
+        height:40px;
+    }
+    #dev_header_all_groups{
+        flex-direction: column;
+    }
+    .redmine_chart{
+        width:auto;
+    }
+    #all_groups_open_issues_table td, th{
+        padding-right:0px;
+        padding-bottom:0px;
+        font-size:10px;
     }
 
 }
