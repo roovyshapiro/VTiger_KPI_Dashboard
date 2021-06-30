@@ -113,7 +113,6 @@ def main(request):
 
         'sales_data': sales_data,
     }
-    #print(sales_data)
     return render(request, "sales/sales.html", context) 
 
 def retrieve_points_data(sales_data, startdate, enddate):

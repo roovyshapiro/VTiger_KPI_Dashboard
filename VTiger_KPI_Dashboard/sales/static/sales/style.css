@@ -624,6 +624,7 @@ label.show_label:active {
     white-space: pre;
 }
 
+/*  Today Opp/Call Tables */
 #today_opp_table,#show_today_opps {
     display:none;
 }
@@ -637,6 +638,38 @@ label.show_label:active {
 #show_today_calls:checked ~ #today_call_table{
     display:block;
 }
+
+/*  WEEK Opp/Call Tables */
+#week_opp_table,#show_week_opps {
+    display:none;
+}
+#show_week_opps:checked ~ #week_opp_table{
+    display:block;
+}
+
+#week_call_table,#show_week_calls {
+    display:none;
+}
+#show_week_calls:checked ~ #week_call_table{
+    display:block;
+}
+
+
+/*  MONTH Opp/Call Tables */
+#month_opp_table,#show_month_opps {
+    display:none;
+}
+#show_month_opps:checked ~ #month_opp_table{
+    display:block;
+}
+
+#month_call_table,#show_month_calls {
+    display:none;
+}
+#show_month_calls:checked ~ #month_call_table{
+    display:block;
+}
+
 
 
 #charts{
