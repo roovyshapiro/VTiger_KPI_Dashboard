@@ -321,6 +321,16 @@ td.score_key_points {
     font-weight:bold;
 }
 
+#no_points_yet{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    font-style: italic;
+    margin-top:30px;
+    margin-bottom:30px;
+}
+
+
 /* Point Tables */
 .score_tables{
     display:flex;

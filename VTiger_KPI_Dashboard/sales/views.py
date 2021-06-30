@@ -29,20 +29,8 @@ def main(request):
     sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales')
     sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
-    #Only display users who have either modified an opportunity or made a phone call within the past 7 days.
-    #There could be a sales person whose last phone call was one year ago. We wouldn't want that user's data to be continually
-    #displayed with 0 points
-    seven_days_ago = today + timezone.timedelta(days = -7)
-    seven_days_ago_opps = sales_data['all_sales_opps'].filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
-    seven_days_ago_calls = sales_data['all_sales_calls'].filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
-
-    #In order to get all the sales users who've made contributions within the past 7 days, 
-    #we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
-    #This will get us all the users but as you can see there may be duplicates.
-    #<QuerySet [{'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}, {'assigned_username': 'Horace Builderguild'}]>
-    #<QuerySet [{'assigned_username': 'Phillibus Pickens'}, {'assigned_username': 'Frank Dinkins'}, {'assigned_username': 'Joshua Weathertree'}]>
-    sales_users_opps = seven_days_ago_opps.values('assigned_username').distinct()
-    sales_users_calls = seven_days_ago_calls.values('assigned_username').distinct()
+    sales_users_opps = sales_data['all_sales_opps'].values('assigned_username').distinct()
+    sales_users_calls = sales_data['all_sales_calls'].values('assigned_username').distinct()
 
     #Next we create a list with all the users
     #[{'assigned_username': 'Phillibus Pickens'}, 
@@ -196,6 +184,13 @@ def retrieve_points_data(sales_data, startdate, enddate):
     for k,v in sales_data_time_frame['user_total_score'].items():
         if v != 0:
             del(sales_data_time_frame['user_last_cont'][k])
+
+    #If a user has 0 points for that given time frame, they are not displayed.
+    for user in sales_data['sales_users']:
+        if sales_data_time_frame['user_total_score'][user['assigned_username']] == 0:
+            del(sales_data_time_frame['user_total_score'][user['assigned_username']])
+            del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
+
     return sales_data_time_frame
 
 def retrieve_dates(date_request):

@@ -11,7 +11,7 @@
         <label for="help_button" class="show_label" id="help_label">POINTS?</label>
         <div id="help_box">
             <div id="help_box_explanation">
-                <p><span id="help_title">What do these numbers mean?</span>A Sales person earns a certain number of points for changing the status in an Opportunity and for making Phone Calls. The goal is to get to 100 points in a single day by any means necessary. As an example, a sales person can make 50 calls and give 5 demos, or they could schedule 10 demos, give 2 demos, and make 30 calls. A sales person's points will only be displayed if they made contributions within the past 7 days.</p>
+                <p><span id="help_title">What do these numbers mean?</span>A Sales person earns a certain number of points for changing the status in an Opportunity and for making Phone Calls. The goal is to get to 100 points in a single day by any means necessary. As an example, a sales person can make 50 calls and give 5 demos, or they could schedule 10 demos, give 2 demos, and make 30 calls. A sales person's points will only be displayed if they made contributions within the specified timeframe.</p>
             </div>
             <div class = "score_key">
                 <p>Score Key</p>
@@ -51,29 +51,34 @@
         <p> {{ sales_data.date.today }}</p>
     </div>
     <div id = "data_for_selected_day">
-        <section class="points" id="sales_points">
-            {% for user, score in sales_data.points_today.user_total_score.items %}
-                    <div class = "score_box">
-                        <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                        {% if score == 0 %}
-                            {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
-                                {% if user_cont == user %}
-                                    <table id = "all_groups_open_cases_table">
-                                        <tr>
-                                            <td>Last Phone Call:</td>
-                                            <td>{{value.call}}
-                                        </tr>
-                                        <tr>
-                                            <td>Last Opportunity:</td>
-                                            <td>{{value.opp}}</td>
-                                        </tr>
-                                    </table>
+            {% if sales_data.points_today.user_total_score %}
+                <section class="points" id="sales_points">
+                    {% for user, score in sales_data.points_today.user_total_score.items %}
+                            <div class = "score_box">
+                                <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                                {% if score == 0 %}
+                                    {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
+                                        {% if user_cont == user %}
+                                            <table id = "all_groups_open_cases_table">
+                                                <tr>
+                                                    <td>Last Phone Call:</td>
+                                                    <td>{{value.call}}
+                                                </tr>
+                                                <tr>
+                                                    <td>Last Opportunity:</td>
+                                                    <td>{{value.opp}}</td>
+                                                </tr>
+                                            </table>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% endif %}
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-            {% endfor %}
-        </section>
+                            </div>
+                    {% endfor %}
+                </section>
+            {% else %}
+                <p id = "no_points_yet">No Points Scored Today! <i id = "sad_face" class="far fa-frown"></i></p>
+                
+            {% endif %}
 
         <section class="score_tables">
             {% for user, value in sales_data.points_today.user_opp_dict.items %}
