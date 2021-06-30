@@ -47,11 +47,11 @@
     </div>
 
     <section class="points" id="sales_points">
-        {% for user, score in user_total_score.items %}
+        {% for user, score in sales_data.points_today.user_total_score.items %}
                 <div class = "score_box">
                     <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
                     {% if score == 0 %}
-                        {% for user_cont, value in user_last_cont.items %}
+                        {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
                             {% if user_cont == user %}
                                 <table id = "all_groups_open_cases_table">
                                     <tr>
@@ -71,7 +71,7 @@
     </section>
 
     <section class="score_tables">
-        {% for user, value in user_opp_dict.items %}
+        {% for user, value in sales_data.points_today.user_opp_dict.items %}
             <p class="score_table_title">{{ user }}</p>
                 <table class="sales_score_table">
                     <thead class="sales_score_thead">
@@ -147,7 +147,7 @@
                     <th>Created Time</th>
                 </thead>
                 <tbody>
-                    {% for opp in today_opps %}
+                    {% for opp in sales_data.points_today.today_opps %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
@@ -179,7 +179,7 @@
                     <th>Recording</th>
                 </thead>
                 <tbody>
-                    {% for call in today_phone_calls %}
+                    {% for call in sales_data.points_today.today_phone_calls %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>{{ call.assigned_username }}</td>

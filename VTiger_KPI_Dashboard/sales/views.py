@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import Phone_call, Opportunities
 import VTiger_API
-import datetime, json, os
+import datetime, json, os, calendar
 
 
 @login_required()
@@ -24,15 +24,17 @@ def main(request):
 
     end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
 
-    all_sales_opps = Opportunities.objects.all().filter(assigned_groupname='Sales')
-    all_sales_calls = Phone_call.objects.all().filter(assigned_groupname='Sales')
+    sales_data = {}
+
+    sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales')
+    sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
     #Only display users who have either modified an opportunity or made a phone call within the past 7 days.
     #There could be a sales person whose last phone call was one year ago. We wouldn't want that user's data to be continually
     #displayed with 0 points
     seven_days_ago = today + timezone.timedelta(days = -7)
-    seven_days_ago_opps = all_sales_opps.filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
-    seven_days_ago_calls = all_sales_calls.filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    seven_days_ago_opps = sales_data['all_sales_opps'].filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    seven_days_ago_calls = sales_data['all_sales_calls'].filter(modifiedtime__gte=seven_days_ago,  modifiedtime__lte=end_of_day).order_by('-modifiedtime')
 
     #In order to get all the sales users who've made contributions within the past 7 days, 
     #we get distinct "assigned_usernames" from both the opportunities and phone call DBs.
@@ -49,7 +51,7 @@ def main(request):
     # {'assigned_username': 'Frank Dinkins'}, 
     # {'assigned_username': 'Joshua Weathertree'}, 
     # {'assigned_username': 'Horace Builderguild'}]
-    sales_users_all = []
+    sales_users_all  = []
     for user in sales_users_calls:
         sales_users_all.append(user) 
     for user in sales_users_opps:
@@ -60,93 +62,26 @@ def main(request):
     # {'assigned_username': 'Frank Dinkins'}, 
     # {'assigned_username': 'Joshua Weathertree'},
     # {'assigned_username': 'Horace Builderguild'}]
-    sales_users = list({v['assigned_username']:v for v in sales_users_all}.values())
+    sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all}.values())
 
-    today_opps = all_sales_opps.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
-    today_phone_calls = all_sales_calls.filter(modifiedtime__gte=today, modifiedtime__lte=end_of_day).order_by('-modifiedtime')
+    today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
 
-    #user_dict is the total score for both phone calls and opportunity stage changes
-    user_total_score = {}
-    #user_opp_dict is how many times each sales stage changed in the given time frame
-    user_opp_dict = {}
-    #User specific phone calls and opportunities
-    user_opps = {}
-    user_calls = {}
-    #Dictionary with the users' last phone call/opportunity
-    user_last_cont = {}
+    sales_data['date'] = {}
+    sales_data['date']['today'] = today.strftime('%A, %B %d')
+    sales_data['date']['end_of_day'] = end_of_day.strftime('%A, %B %d')
+    sales_data['date']['first_of_week'] = first_of_week.strftime('%A, %B %d')
+    sales_data['date']['end_of_week'] = end_of_week.strftime('%A, %B %d')
+    sales_data['date']['first_of_month'] = first_of_month.strftime('%A, %B %d')
+    sales_data['date']['end_of_month'] = end_of_month.strftime('%A, %B %d')
 
-    for user in sales_users:
-        user_total_score[user['assigned_username']] = 0
-        user_last_cont[user['assigned_username']] = {'opp':'','call':''}
-        user_opp_dict[user['assigned_username']] = {
-            'Demo Scheduled':0,
-            'Demo Given':0,
-            'Quote Sent':0,
-            'Pilot':0,
-            'Needs Analysis':0,
-            'Closed Won':0,
-            'Closed Lost':0,
-            'Phone Calls':0,
-        }
-        #If we want to display opp and phone call data per user
-        #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
-        #user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
-
-
-    for opp in today_opps:
-        #if opp.assigned_username in user_total_score:
-        #    user_total_score[opp.assigned_username] += 1
-
-        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > today and opp.demo_scheduled_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Demo Scheduled'] += 1
-            user_total_score[opp.assigned_username] += 5
-        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > today and opp.demo_given_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Demo Given'] += 1
-            user_total_score[opp.assigned_username] += 10
-        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > today and opp.quote_sent_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Quote Sent'] += 1
-        if opp.pilot_changed_at != None and opp.pilot_changed_at > today and opp.pilot_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Pilot'] += 1
-        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > today and opp.needs_analysis_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Needs Analysis'] += 1
-        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > today and opp.closed_won_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Closed Won'] += 1
-        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > today and opp.closed_lost_changed_at < end_of_day:
-            user_opp_dict[opp.assigned_username]['Closed Lost'] += 1
-
-
-    for call in today_phone_calls:
-        if call.assigned_username in user_total_score:
-            user_total_score[call.assigned_username] += 1
-            user_opp_dict[call.assigned_username]['Phone Calls'] += 1
-
-    #We find the most recent phone call and opportunity modified for each user
-    #If their score is zero for the day, then the time of their most recent contribution is displayed
-    #(After seven days of no contributions, we no longer display that user)
-    before_today_opps = Opportunities.objects.all().filter(modifiedtime__lte=end_of_day)
-    before_today_calls = Phone_call.objects.all().filter(modifiedtime__lte=end_of_day)
-        
-    for k in user_total_score:
-        last_opp = before_today_opps.filter(assigned_username=k).order_by('modifiedtime').last()
-        last_call = before_today_calls.filter(assigned_username=k).order_by('modifiedtime').last()
-        try:
-            user_last_cont[k]['opp'] = last_opp.modifiedtime
-        except AttributeError:
-            #This user doesn't have any modified opportunities
-            user_last_cont[k]['opp'] = 'never'
-        try:
-            user_last_cont[k]['call'] = last_call.modifiedtime
-        except AttributeError:
-            #This user didn't make any phone calls
-            user_last_cont[k]['call'] = 'never'
-    for k,v in user_total_score.items():
-        if v != 0:
-            del(user_last_cont[k])
+    sales_data['points_today'] = retrieve_points_data(sales_data, today, end_of_day)
+    sales_data['points_week'] = retrieve_points_data(sales_data, first_of_week, end_of_week)
+    sales_data['points_month'] = retrieve_points_data(sales_data, first_of_month, end_of_month)
 
     date_dict = {}
     #Min Max Values for Date Picker in base.html
     try:
-        first_opp = all_sales_opps.order_by('modifiedtime').first().modifiedtime
+        first_opp = sales_data['all_sales_opps'].order_by('modifiedtime').first().modifiedtime
         first_opp = first_opp.strftime('%Y-%m-%d')
         date_dict = {
             'first_db': first_opp,
@@ -171,18 +106,130 @@ def main(request):
     urls['calls_url'] = credential_dict['host_url_calls']
 
 
+
     context = {
-        'user_total_score':user_total_score,
-        'user_opp_dict': user_opp_dict,
-        'user_opps':user_opps,
-        'user_calls':user_calls,
-        'today_opps':today_opps,
-        'today_phone_calls':today_phone_calls,
         'date_dict':date_dict,
         'urls':urls,
-        'user_last_cont':user_last_cont,
+
+        'sales_data': sales_data,
     }
+    #print(sales_data)
     return render(request, "sales/sales.html", context) 
+
+def retrieve_points_data(sales_data, startdate, enddate):
+    sales_data_time_frame = {}
+
+
+    sales_data_time_frame['today_opps'] = sales_data['all_sales_opps'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
+    sales_data_time_frame['today_phone_calls'] = sales_data['all_sales_calls'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
+
+    #user_dict is the total score for both phone calls and opportunity stage changes
+    sales_data_time_frame['user_total_score'] = {}
+    #user_opp_dict is how many times each sales stage changed in the given time frame
+    sales_data_time_frame['user_opp_dict'] = {}
+    #User specific phone calls and opportunities
+    #user_opps = {}
+    #user_calls = {}
+    #Dictionary with the users' last phone call/opportunity
+    sales_data_time_frame['user_last_cont'] = {}
+
+    for user in sales_data['sales_users']:
+        sales_data_time_frame['user_total_score'][user['assigned_username']] = 0
+        sales_data_time_frame['user_last_cont'][user['assigned_username']] = {'opp':'','call':''}
+        sales_data_time_frame['user_opp_dict'][user['assigned_username']] = {
+            'Demo Scheduled':0,
+            'Demo Given':0,
+            'Quote Sent':0,
+            'Pilot':0,
+            'Needs Analysis':0,
+            'Closed Won':0,
+            'Closed Lost':0,
+            'Phone Calls':0,
+        }
+        #If we want to display opp and phone call data per user
+        #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
+        #user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
+
+
+    for opp in sales_data_time_frame['today_opps']:
+        #if opp.assigned_username in user_total_score:
+        #    user_total_score[opp.assigned_username] += 1
+
+        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > startdate and opp.demo_scheduled_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Scheduled'] += 1
+            sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
+        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > startdate and opp.demo_given_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Given'] += 1
+            sales_data_time_frame['user_total_score'][opp.assigned_username] += 10
+        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > startdate and opp.quote_sent_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Quote Sent'] += 1
+        if opp.pilot_changed_at != None and opp.pilot_changed_at > startdate and opp.pilot_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Pilot'] += 1
+        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > startdate and opp.needs_analysis_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Needs Analysis'] += 1
+        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > startdate and opp.closed_won_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Won'] += 1
+        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > startdate and opp.closed_lost_changed_at < enddate:
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Lost'] += 1
+
+
+    for call in sales_data_time_frame['today_phone_calls']:
+        if call.assigned_username in sales_data_time_frame['user_total_score']:
+            sales_data_time_frame['user_total_score'][call.assigned_username] += 1
+            sales_data_time_frame['user_opp_dict'][call.assigned_username]['Phone Calls'] += 1
+    
+    #We find the most recent phone call and opportunity modified for each user
+    #If their score is zero for the day, then the time of their most recent contribution is displayed
+    #(After seven days of no contributions, we no longer display that user)
+    for k in sales_data_time_frame['user_total_score']:
+        last_opp = sales_data['all_sales_opps'].filter(assigned_username=k).order_by('modifiedtime').last()
+        last_call = sales_data['all_sales_calls'].filter(assigned_username=k).order_by('modifiedtime').last()
+        try:
+            sales_data_time_frame['user_last_cont'][k]['opp'] = last_opp.modifiedtime
+        except AttributeError:
+            #This user doesn't have any modified opportunities
+            sales_data_time_frame['user_last_cont'][k]['opp'] = 'never'
+        try:
+            sales_data_time_frame['user_last_cont'][k]['call'] = last_call.modifiedtime
+        except AttributeError:
+            #This user didn't make any phone calls
+            sales_data_time_frame['user_last_cont'][k]['call'] = 'never'
+    for k,v in sales_data_time_frame['user_total_score'].items():
+        if v != 0:
+            del(sales_data_time_frame['user_last_cont'][k])
+    return sales_data_time_frame
+
+def retrieve_dates(date_request):
+    '''
+    today = (datetime.datetime(2020, 12, 4, 0, 0) 
+    end_of_day = (datetime.datetime(2020, 12, 4, 23, 59) 
+
+    first_of_week = (datetime.datetime(2020, 11, 30, 0, 0) 
+    end_of_week = (datetime.datetime(2020, 12, 6, 23, 59) 
+
+    first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
+    end_of_month = (datetime.datetime(2020, 12, 31, 23, 59)
+    '''
+    if date_request == '' or date_request == None:
+        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    else:
+        today = make_aware(datetime.datetime.strptime(date_request, '%Y-%m-%d'))
+
+    end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
+
+    #0 = monday, 5 = Saturday, 6 = Sunday 
+    day = today.weekday()
+    first_of_week = today + timezone.timedelta(days = -day)
+    end_of_week = first_of_week + timezone.timedelta(days = 6)
+    end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
+
+    first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    year = first_of_month.year
+    month = first_of_month.month
+    last_day = calendar.monthrange(year,month)[1]
+    end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+
+    return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
 
 @login_required()
 @staff_member_required
