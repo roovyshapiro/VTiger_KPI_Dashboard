@@ -337,6 +337,7 @@ try{
 /*
 Showing how the current groups case data compares to the past 3 months
 https://www.chartjs.org/docs/latest/charts/line.html
+This same chart is used for /dev to show the last 3 months of Redmine issues
 
 Example of Data:
     {
@@ -422,7 +423,7 @@ try{
 
 
 
-/* Created Case Line Chart */
+/* Created Case & Redmine Issue Line Chart */
 
 try{
   var month_comparison_created = JSON.parse(document.getElementById('month_comparison_created').textContent);

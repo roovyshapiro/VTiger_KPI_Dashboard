@@ -121,7 +121,8 @@ def main(request):
         redmine_issues['resolved_issues_dict_month'][issue.issue_id] = issue.issue_id
 
     redmine_issues['historical_data'] = retrieve_historical_data(redmine_issues['all_issues_created_ordered'])
-
+    redmine_issues['month_comparison_resolved'] = month_comparison_data(redmine_issues['all_issues'], issue_status="resolved")
+    redmine_issues['month_comparison_created'] = month_comparison_data(redmine_issues['all_issues'], issue_status="created")
 
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
@@ -343,6 +344,90 @@ def retrieve_historical_data(all_issues):
                 all_dict_non_empty[year][month] = month_dict
     return all_dict_non_empty
 
+def month_comparison_data(all_issues, issue_status):
+    '''
+    {
+    June':{
+        'first_day': datetime.datetime(2021, 6, 1, 0, 0, tzinfo=<UTC>),
+        'last_day': datetime.datetime(2021, 6, 30, 23, 59, 59, tzinfo=<UTC>), 
+        'resolved': [6, 6, 6, 10, 0, 0, 6, 6, 7, 7, 6, 0, 0, 6, 4, 7, 3, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+        }, 
+    'May':{
+        'first_day': datetime.datetime(2021, 5, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 5, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [0, 0, 5, 7, 8, 7, 7, 0, 0, 7, 6, 9, 6, 5, 0, 0, 7, 3, 4, 11, 2, 0, 0, 19, 7, 2, 7, 2, 3, 0, 0]
+    }, 
+    'April': {
+        'first_day': datetime.datetime(2021, 4, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 4, 30, 0, 0, tzinfo=<UTC>), 
+        'resolved': [9, 3, 0, 0, 11, 6, 3, 7, 4, 1, 0, 4, 1, 12, 3, 6, 0, 0, 20, 5, 9, 6, 12, 0, 1, 9, 5, 6, 5, 0]
+        }, 
+    'March': {
+        'first_day': datetime.datetime(2021, 3, 1, 0, 0, tzinfo=<UTC>), 
+        'last_day': datetime.datetime(2021, 3, 31, 0, 0, tzinfo=<UTC>), 
+        'resolved': [10, 16, 3, 8, 0, 2, 1, 11, 9, 9, 6, 16, 0, 0, 11, 7, 9, 8, 1, 0, 0, 6, 5, 5, 4, 24, 0,0, 9, 4, 0]
+        }
+    }
+    '''
+    today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    year = first_of_month.year
+    month = first_of_month.month
+    last_day = calendar.monthrange(year,month)[1]
+    end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+
+    comparison_data = {}
+
+    last_day_of_previous_month1 = first_of_month - datetime.timedelta(days=1)
+    first_day_of_previous_month1 = last_day_of_previous_month1.replace(day=1)
+    
+    last_day_of_previous_month2 = first_day_of_previous_month1 - datetime.timedelta(days=1)
+    first_day_of_previous_month2 = last_day_of_previous_month2.replace(day=1)
+
+    last_day_of_previous_month3 = first_day_of_previous_month2 - datetime.timedelta(days=1)
+    first_day_of_previous_month3 = last_day_of_previous_month3.replace(day=1)
+
+    comparison_data[first_of_month.strftime('%B')] = {}
+    comparison_data[first_of_month.strftime('%B')]['first_day'] = first_of_month
+    comparison_data[first_of_month.strftime('%B')]['last_day'] = end_of_month
+    comparison_data[first_of_month.strftime('%B')]['resolved'] = []
+    comparison_data[first_of_month.strftime('%B')]['created'] = []
+
+    comparison_data[first_day_of_previous_month1.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['first_day'] = first_day_of_previous_month1
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['last_day'] = last_day_of_previous_month1
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month1.strftime('%B')]['created'] = []
+
+    comparison_data[first_day_of_previous_month2.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['first_day'] = first_day_of_previous_month2
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['last_day'] = last_day_of_previous_month2
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month2.strftime('%B')]['created'] = []
+
+    comparison_data[first_day_of_previous_month3.strftime('%B')] = {}
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['first_day'] = first_day_of_previous_month3
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['last_day'] = last_day_of_previous_month3
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['resolved'] = []
+    comparison_data[first_day_of_previous_month3.strftime('%B')]['created'] = []
+
+    #Makes a list of all days in the range of the beginning and end of the available days in db
+    for month in comparison_data:
+        date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (comparison_data[month]['last_day'] - comparison_data[month]['first_day']).days + 1)]
+        for date in date_range:
+            date_count = 0
+            if issue_status == "resolved":
+                for issue in all_issues.filter(closed_on__gte=comparison_data[month]['first_day'], closed_on__lte=comparison_data[month]['last_day']):
+                    if issue.closed_on.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
+                        date_count += 1
+                comparison_data[month]['resolved'].append(date_count)
+            elif issue_status == "created":
+                for issue in all_issues.filter(created_on__gte=comparison_data[month]['first_day'], created_on__lte=comparison_data[month]['last_day']):
+                    if issue.created_on.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
+                        date_count += 1
+                comparison_data[month]['created'].append(date_count)
+    print(comparison_data)
+    return comparison_data
 
 def get_all_issues(request):
     get_issues(recent=False)

@@ -345,6 +345,17 @@
             </table>
         </div>
         <hr>
+        <div id = "charts">
+            <!-- Sending Historical Data to display in a chart per group -->
+            {{ redmine_issues.month_comparison_created|json_script:"month_comparison_created" }}
+            <div>
+                <canvas id="month_comparison_created_chart"></canvas>
+            </div>
+            {{ redmine_issues.month_comparison_resolved|json_script:"month_comparison" }}
+            <div>
+                <canvas id="month_comparison_chart"></canvas>
+            </div>
+        </div>
         {{ redmine_issues.historical_data|json_script:"historical_data_redmine" }}
         <div id = "barchart">
             <canvas id="redmine_bar_chart"></canvas>
