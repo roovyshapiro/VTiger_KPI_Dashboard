@@ -426,7 +426,6 @@ def month_comparison_data(all_issues, issue_status):
                     if issue.created_on.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                         date_count += 1
                 comparison_data[month]['created'].append(date_count)
-    print(comparison_data)
     return comparison_data
 
 def get_all_issues(request):
