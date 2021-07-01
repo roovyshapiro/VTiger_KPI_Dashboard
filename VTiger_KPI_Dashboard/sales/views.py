@@ -7,7 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import Phone_call, Opportunities
 import VTiger_API
-import datetime, json, os, calendar
+import datetime, json, os, calendar, holidays
 
 
 @login_required()
@@ -52,7 +52,7 @@ def main(request):
     # {'assigned_username': 'Horace Builderguild'}]
     sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all}.values())
 
-    today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month = retrieve_dates(date_request)
+    today, end_of_day, first_of_week, end_of_week, week_business_days, first_of_month, end_of_month, month_business_days = retrieve_dates(date_request)
 
     sales_data['date'] = {}
     sales_data['date']['today'] = today.strftime('%A, %B %d')
@@ -216,14 +216,68 @@ def retrieve_dates(date_request):
     first_of_week = today + timezone.timedelta(days = -day)
     end_of_week = first_of_week + timezone.timedelta(days = 6)
     end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
+    week_business_days = calculate_business_days(first_of_week, end_of_week)
 
     first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     year = first_of_month.year
     month = first_of_month.month
     last_day = calendar.monthrange(year,month)[1]
     end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
+    month_business_days = calculate_business_days(first_of_month, end_of_month)
 
-    return today, end_of_day, first_of_week, end_of_week, first_of_month, end_of_month
+    return today, end_of_day, first_of_week, end_of_week, week_business_days, first_of_month, end_of_month, month_business_days
+
+def calculate_business_days(startdate, enddate):
+    '''
+    In order to calculate a salesperson's average points per day in a month's timeframe,
+    We need to know how many business days are in that month.
+    You can't do 100 * 30 because months have variable days.
+    Weekends and holidays must be taken into account as well.
+    Once we know exactly how many working days are in a month (and week) we can then
+    multiply that number by 100 and set a goal for the salesperson to reach an average
+    of 100 points per day over that timeframe.
+    The Holidays packace is used to determine holidays for a given timeframe.
+    '''
+
+    #range is exclusive
+    number_of_days = (enddate - startdate).days + 1
+
+    #Get a list of all the dates in this timeframe
+    all_dates = [startdate + datetime.timedelta(days=x) for x in range(number_of_days)]
+
+    #create a new list which excludes all dates if the date falls on a weekend
+    #.date() is important as holidays supplies datetime dates without times
+    dates_no_weekend = [d.date() for d in all_dates if not d.isoweekday() in [6,7]]
+
+    """     
+    Create a new list with all the current year's holidays
+    (datetime.date(2021, 1, 1), "New Year's Day")
+    (datetime.date(2021, 12, 31), "New Year's Day (Observed)")
+    (datetime.date(2021, 1, 18), 'Martin Luther King Jr. Day')
+    (datetime.date(2021, 2, 15), "Washington's Birthday")
+    (datetime.date(2021, 5, 31), 'Memorial Day')
+    (datetime.date(2021, 7, 4), 'Independence Day')
+    (datetime.date(2021, 7, 5), 'Independence Day (Observed)')
+    (datetime.date(2021, 9, 6), 'Labor Day')
+    (datetime.date(2021, 10, 11), 'Columbus Day')
+    (datetime.date(2021, 11, 11), 'Veterans Day')
+    (datetime.date(2021, 11, 25), 'Thanksgiving')
+    (datetime.date(2021, 12, 25), 'Christmas Day')
+    (datetime.date(2021, 12, 24), 'Christmas Day (Observed)') 
+
+    Since it returns a tuple with the datetime date and the name of the holiday,
+    only the datetime is saved.
+    """
+    year = startdate.year
+    holiday_list = []
+    for holiday in holidays.UnitedStates(years=year).items():
+	    holiday_list.append(holiday[0])
+
+    no_weekend_holiday_date_list = [date for date in dates_no_weekend if date not in holiday_list]
+
+    print(no_weekend_holiday_date_list)
+    return no_weekend_holiday_date_list
+
 
 @login_required()
 @staff_member_required
