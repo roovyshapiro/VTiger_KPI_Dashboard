@@ -47,8 +47,8 @@
 
     <!-- Only showing data for the selected day -->
     <div class="points_header">
-        <p><span class="bold">DAY:</span></p>
-        <p> {{ sales_data.date.today }}</p>
+        <p><span class="bold">DAY: </span></p>
+        <p>{{ sales_data.date.today }} </p>
     </div>
     <div id = "data_for_selected_day">
             {% if sales_data.points_today.user_total_score %}
@@ -194,10 +194,17 @@
     <!-- Only showing data for the selected Week -->
     <hr>
     <div class="points_header">
-        <p><span class="bold">WEEK: </span> {{ sales_data.date.first_of_week }} - {{ sales_data.date.end_of_week }}</p>
-        <p>Business Days: {{ sales_data.business_days.week_business_days_so_far | length }} / {{ sales_data.business_days.week_business_days | length }}</p>
-        <p>Possible Points: {{ sales_data.business_days.week_business_days_so_far_points }} / {{ sales_data.business_days.week_business_days_points }}</p>
-    </div>    
+        <p><span class="bold">WEEK: </span></p>
+        <p> {{ sales_data.date.first_of_week }} - {{ sales_data.date.end_of_week }}</p>
+        {% if sales_data.today_selected_week %}
+            <p>Business Days: {{ sales_data.business_days.week_business_days_so_far | length }} / {{ sales_data.business_days.week_business_days | length }}</p>
+            <p>Possible Points: {{ sales_data.business_days.week_business_days_so_far_points }} / {{ sales_data.business_days.week_business_days_points }}</p>
+        {% else %}
+            <p>Total Business Days: {{ sales_data.business_days.week_business_days | length }}</p>
+            <p>Total Possible Points: {{ sales_data.business_days.week_business_days_points }}</p>
+        {% endif %}
+    </div>
+
     <div id = "data_for_selected_day">
         <section class="points" id="sales_points">
             {% for user, score in sales_data.points_week.user_total_score.items %}
@@ -335,9 +342,15 @@
     <!-- Only showing data for the selected Month -->
     <hr>
     <div class="points_header">
-        <p><span class="bold">MONTH: </span> {{ sales_data.date.first_of_month }} - {{ sales_data.date.end_of_month }}</p>
-        <p>Business Days: {{ sales_data.business_days.month_business_days_so_far | length }} / {{ sales_data.business_days.month_business_days | length }}</p>
-        <p>Possible Points: {{ sales_data.business_days.month_business_days_so_far_points }} / {{ sales_data.business_days.month_business_days_points }}</p>
+        <p><span class="bold">MONTH: </span></p>
+        <p>{{ sales_data.date.first_of_month }} - {{ sales_data.date.end_of_month }}</p>
+        {% if sales_data.today_selected_month %}
+            <p>Business Days: {{ sales_data.business_days.month_business_days_so_far | length }} / {{ sales_data.business_days.month_business_days | length }}</p>
+            <p>Possible Points: {{ sales_data.business_days.month_business_days_so_far_points }} / {{ sales_data.business_days.month_business_days_points }}</p>
+        {% else %}
+            <p>Total Business Days: {{ sales_data.business_days.month_business_days | length }}</p>
+            <p>Total Possible Points: {{ sales_data.business_days.month_business_days_points }}</p>
+        {% endif %}
     </div>  
     <div id = "data_for_selected_day">
         <section class="points" id="sales_points">

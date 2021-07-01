@@ -134,8 +134,7 @@
     </div>
     <hr>
     <div class="points_header">
-        <p><span class="bold">TODAY:</span></p>
-        <p> {{ date_group_dict.today }}</p>
+        <p><span class="bold">TODAY:</span> {{ date_group_dict.today }}</p>
     </div>
     <section class="points">
                 <div class = "score_box">
@@ -218,8 +217,7 @@
 
     {% if case_stats_dict_week %}
         <div class="points_header">
-            <p><span class="bold">WEEK:</span></p>
-            <p> {{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
+            <p><span class="bold">WEEK:</span>  {{ date_group_dict.first_of_week }} - {{ date_group_dict.end_of_week }}</p>
         </div>
         <section class="points">
                     <div class = "score_box">
@@ -303,8 +301,7 @@
     {% endif %}
 
     <div class="points_header">
-        <p><span class="bold">MONTH:</span></p>
-        <p> {{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
+        <p><span class="bold">MONTH:</span>  {{ date_group_dict.first_of_month }} - {{ date_group_dict.end_of_month }}</p>
     </div>
     <section class="points">
                 <div class = "score_box">

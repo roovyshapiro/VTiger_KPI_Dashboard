@@ -52,7 +52,10 @@ def main(request):
     # {'assigned_username': 'Horace Builderguild'}]
     sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all}.values())
 
-    today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days = retrieve_dates(date_request)
+    today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month = retrieve_dates(date_request)
+
+    sales_data['today_selected_week'] = today_selected_week
+    sales_data['today_selected_month'] = today_selected_month
 
     sales_data['date'] = {}
     sales_data['date']['today'] = today.strftime('%A, %B %d')
@@ -214,6 +217,12 @@ def retrieve_dates(date_request):
 
     first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
     end_of_month = (datetime.datetime(2020, 12, 31, 23, 59)
+
+    #today_selected lets us know if the selected date is today
+    #if so we change how many possible total points are available
+    #in previous days and months, the full score for the entire month and week is shown
+    #so it doesn't make sense to show many month points are available for the selected date
+    #unless its today and the rest of the month hasn't happened yet
     '''
     if date_request == '' or date_request == None:
         today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
@@ -227,16 +236,19 @@ def retrieve_dates(date_request):
     first_of_week = today + timezone.timedelta(days = -day)
     end_of_week = first_of_week + timezone.timedelta(days = 6)
     end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
-    week_business_days_so_far, week_business_days = calculate_business_days(today, first_of_week, end_of_week)
+    week_business_days_so_far, week_business_days, today_selected_week = calculate_business_days(today, first_of_week, end_of_week)
 
     first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
     year = first_of_month.year
     month = first_of_month.month
     last_day = calendar.monthrange(year,month)[1]
     end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
-    month_business_days_so_far, month_business_days = calculate_business_days(today, first_of_month, end_of_month)
+    month_business_days_so_far, month_business_days, today_selected_month = calculate_business_days(today, first_of_month, end_of_month)
 
-    return today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days
+    print(today)
+    print(today_selected_week)
+    print(today_selected_month)
+    return today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month
 
 def calculate_business_days(today, startdate, enddate):
     '''
@@ -270,19 +282,44 @@ def calculate_business_days(today, startdate, enddate):
     for holiday in holidays.UnitedStates(years=year).items():
 	    holiday_list.append(holiday[0])
     '''
+    now = timezone.now()
 
     #range is exclusive
     number_of_days = (enddate - startdate).days + 1
-
     #Get a list of all the dates in this timeframe
     all_dates = [startdate + datetime.timedelta(days=x) for x in range(number_of_days)]
-    #We also retrieve how many non-weekend/holiday dates have past thus far in the selected date
-    number_of_days_so_far = (today - startdate).days + 1
+
+    #We also retrieve how many total non-weekend/holiday dates have past thus far in the selected date
+    #For the entire week, the front end on the HTML would look like this regardless of how many days
+    #have passed in this time frame:
+    #DAY:
+    #Tuesday, June 29
+    #
+    #WEEK:
+    #Monday, June 28 - Sunday, July 04
+    #Business Days: 4 / 5
+    #Possible Points: 400 / 500
+    #If we change "now" to today, then the business would update
+    #For each corresponding day
+    #Its done this way because when you select a previous day from the drop down, it will show a total point calculation
+    #For the entire month and week.
+    #We don't show the total score for only the days so far in that selected timeframe
+    #If you look at Tuesday of last week, the total score will reflect, Mon-Sunday
+    #Instead of just Monday and Tuesday
+    number_of_days_so_far = (now - startdate).days + 1
     all_dates_so_far = [startdate + datetime.timedelta(days=x) for x in range(number_of_days_so_far)]
+    
+    #Get all of the dates for the current timeframe for Today
+    #range is exclusive
+    number_of_days_now = (enddate - now).days + 1
+    #Get a list of all the dates in this timeframe
+    all_dates_now = [now + datetime.timedelta(days=x) for x in range(number_of_days_now)]
+
 
     #Remove times with "date()"
     all_dates = [d.date() for d in all_dates]
     all_dates_so_far = [d.date() for d in all_dates_so_far]
+    all_dates_now = [d.date() for d in all_dates_now]
 
     #See docstring for more info
     year = startdate.year
@@ -292,12 +329,19 @@ def calculate_business_days(today, startdate, enddate):
     #Creates new list which excludes all dates if the date falls on a holiday
     dates_no_holiday = [d for d in all_dates if d not in holiday_list]
     dates_no_holiday_so_far = [d for d in all_dates_so_far if d not in holiday_list]
+    dates_no_holiday_now = [d for d in all_dates_now if d not in holiday_list]
 
     #create a new list which excludes all dates if the date falls on a weekend
     no_weekend_holiday_date_list = [d for d in dates_no_holiday if not d.isoweekday() in [6,7]]
     no_weekend_holiday_date_list_so_far = [d for d in dates_no_holiday_so_far if not d.isoweekday() in [6,7]]
+    no_weekend_holiday_date_list_now = [d for d in dates_no_holiday_now if not d.isoweekday() in [6,7]]
 
-    return no_weekend_holiday_date_list_so_far, no_weekend_holiday_date_list
+    if now.date() in no_weekend_holiday_date_list_now:
+        today_selected = True
+    else:
+        today_selected = False
+
+    return no_weekend_holiday_date_list_so_far, no_weekend_holiday_date_list, today_selected
 
 
 @login_required()
