@@ -447,6 +447,8 @@ td, th{
 .points_header{
     margin-top:10px;
     margin-bottom:10px;
+    display:flex;
+    flex-direction: column;
 }
 
 .points_header p{

@@ -64,9 +64,14 @@ def main(request):
 
     sales_data['business_days'] = {}
     sales_data['business_days']['week_business_days'] = week_business_days
+    sales_data['business_days']['week_business_days_points'] = len(week_business_days) * 100
     sales_data['business_days']['week_business_days_so_far'] = week_business_days_so_far
+    sales_data['business_days']['week_business_days_so_far_points'] = len(week_business_days_so_far) * 100
+
     sales_data['business_days']['month_business_days'] = month_business_days
+    sales_data['business_days']['month_business_days_points'] = len(month_business_days) * 100
     sales_data['business_days']['month_business_days_so_far'] = month_business_days_so_far
+    sales_data['business_days']['month_business_days_so_far_points'] = len(month_business_days_so_far) * 100
 
     sales_data['points_today'] = retrieve_points_data(sales_data, today, end_of_day)
     sales_data['points_week'] = retrieve_points_data(sales_data, first_of_week, end_of_week)
@@ -231,7 +236,7 @@ def retrieve_dates(date_request):
     end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
     month_business_days_so_far, month_business_days = calculate_business_days(today, first_of_month, end_of_month)
 
-    return today, end_of_day, first_of_week, end_of_week, week_business_days, week_business_days_so_far, first_of_month, end_of_month, month_business_days_so_far, month_business_days
+    return today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days
 
 def calculate_business_days(today, startdate, enddate):
     '''
