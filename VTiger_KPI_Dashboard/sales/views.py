@@ -245,9 +245,6 @@ def retrieve_dates(date_request):
     end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
     month_business_days_so_far, month_business_days, today_selected_month = calculate_business_days(today, first_of_month, end_of_month)
 
-    print(today)
-    print(today_selected_week)
-    print(today_selected_month)
     return today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month
 
 def calculate_business_days(today, startdate, enddate):
