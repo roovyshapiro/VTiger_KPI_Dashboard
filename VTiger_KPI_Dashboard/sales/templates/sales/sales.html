@@ -6,483 +6,485 @@
 {% endblock %}
 
 {% block content %}
-    <div id="help_btn_container" class="help_btn_container">
-        <input type=checkbox id="help_button">
-        <label for="help_button" class="show_label" id="help_label">POINTS?</label>
-        <div id="help_box">
-            <div id="help_box_explanation">
-                <p><span id="help_title">What do these numbers mean?</span>A Sales person earns a certain number of points for changing the status in an Opportunity and for making Phone Calls. The goal is to get to 100 points in a single day by any means necessary. As an example, a sales person can make 50 calls and give 5 demos, or they could schedule 10 demos, give 2 demos, and make 30 calls. A sales person's points will only be displayed if they made contributions within the specified timeframe.</p>
-            </div>
-            <div class = "score_key">
-                <p>Score Key</p>
-                <table class="score_key_table">
-                    <thead class="score_key_thead">
-                        <tr>
-                            <th>Demo Scheduled:</th>
-                            <th>Demo Given:</th>
-                            <th>Quote Sent:</th>
-                            <th>Pilot:</th>
-                            <th>Needs Analysis:</th>
-                            <th>Closed Won:</th>
-                            <th>Closed Lost:</th>
-                            <th>Phone Calls:</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td label='Demo Scheduled' class = "score_key_points">5</td>
-                            <td label='Demo Given' class = "score_key_points">10</td>
-                            <td label='Quote Sent' class = "score_key_points">0</td>
-                            <td label='Pilot' class = "score_key_points">0</td>
-                            <td label='Needs Analysis' class = "score_key_points">0</td>
-                            <td label='Closed Won' class = "score_key_points">0</td>
-                            <td label='Closed Lost' class = "score_key_points">0</td>
-                            <td label='Phone Calls' class = "score_key_points">1</td>
-                        </tr>
-                    </tbody>
-                </table>
+    <div id = "body_sizing">
+        <div id="help_btn_container" class="help_btn_container">
+            <input type=checkbox id="help_button">
+            <label for="help_button" class="show_label" id="help_label">POINTS?</label>
+            <div id="help_box">
+                <div id="help_box_explanation">
+                    <p><span id="help_title">What do these numbers mean?</span>A Sales person earns a certain number of points for changing the status in an Opportunity and for making Phone Calls. The goal is to get to 100 points in a single day by any means necessary. As an example, a sales person can make 50 calls and give 5 demos, or they could schedule 10 demos, give 2 demos, and make 30 calls. A sales person's points will only be displayed if they made contributions within the specified timeframe.</p>
+                </div>
+                <div class = "score_key">
+                    <p>Score Key</p>
+                    <table class="score_key_table">
+                        <thead class="score_key_thead">
+                            <tr>
+                                <th>Demo Scheduled:</th>
+                                <th>Demo Given:</th>
+                                <th>Quote Sent:</th>
+                                <th>Pilot:</th>
+                                <th>Needs Analysis:</th>
+                                <th>Closed Won:</th>
+                                <th>Closed Lost:</th>
+                                <th>Phone Calls:</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td label='Demo Scheduled' class = "score_key_points">5</td>
+                                <td label='Demo Given' class = "score_key_points">10</td>
+                                <td label='Quote Sent' class = "score_key_points">0</td>
+                                <td label='Pilot' class = "score_key_points">0</td>
+                                <td label='Needs Analysis' class = "score_key_points">0</td>
+                                <td label='Closed Won' class = "score_key_points">0</td>
+                                <td label='Closed Lost' class = "score_key_points">0</td>
+                                <td label='Phone Calls' class = "score_key_points">1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Only showing data for the selected day -->
-    <div class="points_header">
-        <p><span class="bold">DAY: </span></p>
-        <p>{{ sales_data.date.today }} </p>
-    </div>
-    <div id = "data_for_selected_day">
-            {% if sales_data.points_today.user_total_score %}
-                <section class="points" id="sales_points">
-                    {% for user, score in sales_data.points_today.user_total_score.items %}
-                            <div class = "score_box">
-                                <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                                {% if score == 0 %}
-                                    {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
-                                        {% if user_cont == user %}
-                                            <table id = "all_groups_open_cases_table">
-                                                <tr>
-                                                    <td>Last Phone Call:</td>
-                                                    <td>{{value.call}}
-                                                </tr>
-                                                <tr>
-                                                    <td>Last Opportunity:</td>
-                                                    <td>{{value.opp}}</td>
-                                                </tr>
-                                            </table>
-                                        {% endif %}
+        <!-- Only showing data for the selected day -->
+        <div class="points_header">
+            <p><span class="bold">DAY: </span></p>
+            <p>{{ sales_data.date.today }} </p>
+        </div>
+        <div id = "data_for_selected_day">
+                {% if sales_data.points_today.user_total_score %}
+                    <section class="points" id="sales_points">
+                        {% for user, score in sales_data.points_today.user_total_score.items %}
+                                <div class = "score_box">
+                                    <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                                    {% if score == 0 %}
+                                        {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
+                                            {% if user_cont == user %}
+                                                <table id = "all_groups_open_cases_table">
+                                                    <tr>
+                                                        <td>Last Phone Call:</td>
+                                                        <td>{{value.call}}
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Last Opportunity:</td>
+                                                        <td>{{value.opp}}</td>
+                                                    </tr>
+                                                </table>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                        {% endfor %}
+                    </section>
+                {% else %}
+                    <p id = "no_points_yet">No Points Scored Today! <i id = "sad_face" class="far fa-frown"></i></p>
+                    
+                {% endif %}
+
+            <section class="score_tables">
+                {% for user, value in sales_data.points_today.user_opp_dict.items %}
+                    <p class="score_table_title">{{ user }}</p>
+                        <table class="sales_score_table">
+                            <thead class="sales_score_thead">
+                                <tr>
+                                    <th>Demo Scheduled</th>
+                                    <th>Demo Given</th>
+                                    <th>Quote Sent</th>
+                                    <th>Pilot</th>
+                                    <th>Needs Analysis</th>
+                                    <th>Closed Won</th>
+                                    <th>Closed Lost</th>
+                                    <th>Phone Calls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for item, points in value.items %}
+                                        <td label='{{ item }}' class = "sales_score_td">
+                                            {{ points }}
+                                        </td>
                                     {% endfor %}
-                                {% endif %}
-                            </div>
-                    {% endfor %}
-                </section>
+                                </tr>
+                            </tbody>
+                        </table>
+                {% endfor %}
+            </section>
+
+
+            <!-- Showing all Cases and Opps for the selected day -->
+
+            <section id = "opp_call_tables">
+                <input type=checkbox id="show_today_opps">
+                <label for="show_today_opps" class="show_label">SHOW OPPs</label>
+
+                <input type=checkbox id="show_today_calls">
+                <label for="show_today_calls" class="show_label">SHOW CALLs</label>
+
+                <div id = "today_opp_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>Number</th>
+                            <th>Assigned To</th>
+                            <th>Modified By</th>
+                            <th>Name</th>
+                            <th>Stage</th>
+                            <th>Current Stage Changed</th>
+                            <th>Modified Time</th>
+                            <th>Created Time</th>
+                        </thead>
+                        <tbody>
+                            {% for opp in sales_data.points_today.today_opps %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
+                                    <td>{{ opp.assigned_username }}</td>
+                                    <td>{{ opp.modified_username }}</td>
+                                    <td>{{ opp.opp_name }}</td>
+                                    <td>{{ opp.opp_stage }}</td>
+                                    <td>{{ opp.current_stage_entry_time }}</td>
+                                    <td>{{ opp.modifiedtime }}</td>
+                                    <td>{{ opp.createdtime }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div id = "today_call_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Call ID</th>
+                            <th>Call Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Direction</th>
+                            <th>Duration</th>
+                            <th>Customer Number</th>
+                            <th>Recording</th>
+                        </thead>
+                        <tbody>
+                            {% for call in sales_data.points_today.today_phone_calls %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ call.assigned_username }}</td>
+                                    <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
+                                    <td>{{ call.modifiedtime }}</td>
+                                    <td>{{ call.endtime }}</td>
+                                    <td>{{ call.call_status }}</td>
+                                    <td>{{ call.direction }}</td>
+                                    <td>{{ call.total_duration }}</td>
+                                    <td>{{ call.customer_number }}</td>
+                                    {% if call.recording_url %}
+                                        <td><a href='{{call.recording_url}}'>Recording</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+
+
+
+        <!-- Only showing data for the selected Week -->
+        <hr>
+        <div class="points_header">
+            <p><span class="bold">WEEK: </span></p>
+            <p> {{ sales_data.date.first_of_week }} - {{ sales_data.date.end_of_week }}</p>
+            {% if sales_data.today_selected_week %}
+                <p>Business Days: {{ sales_data.business_days.week_business_days_so_far | length }} / {{ sales_data.business_days.week_business_days | length }}</p>
+                <p>Possible Points: {{ sales_data.business_days.week_business_days_so_far_points }} / {{ sales_data.business_days.week_business_days_points }}</p>
             {% else %}
-                <p id = "no_points_yet">No Points Scored Today! <i id = "sad_face" class="far fa-frown"></i></p>
-                
+                <p>Total Business Days: {{ sales_data.business_days.week_business_days | length }}</p>
+                <p>Total Possible Points: {{ sales_data.business_days.week_business_days_points }}</p>
             {% endif %}
+        </div>
 
-        <section class="score_tables">
-            {% for user, value in sales_data.points_today.user_opp_dict.items %}
-                <p class="score_table_title">{{ user }}</p>
-                    <table class="sales_score_table">
-                        <thead class="sales_score_thead">
-                            <tr>
-                                <th>Demo Scheduled</th>
-                                <th>Demo Given</th>
-                                <th>Quote Sent</th>
-                                <th>Pilot</th>
-                                <th>Needs Analysis</th>
-                                <th>Closed Won</th>
-                                <th>Closed Lost</th>
-                                <th>Phone Calls</th>
-                            </tr>
+        <div id = "data_for_selected_day">
+            <section class="points" id="sales_points">
+                {% for user, score in sales_data.points_week.user_total_score.items %}
+                        <div class = "score_box">
+                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                            {% if score == 0 %}
+                                {% for user_cont, value in sales_data.points_week.user_last_cont.items %}
+                                    {% if user_cont == user %}
+                                        <table id = "all_groups_open_cases_table">
+                                            <tr>
+                                                <td>Last Phone Call:</td>
+                                                <td>{{value.call}}
+                                            </tr>
+                                            <tr>
+                                                <td>Last Opportunity:</td>
+                                                <td>{{value.opp}}</td>
+                                            </tr>
+                                        </table>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                {% endfor %}
+            </section>
+
+            <section class="score_tables">
+                {% for user, value in sales_data.points_week.user_opp_dict.items %}
+                    <p class="score_table_title">{{ user }}</p>
+                        <table class="sales_score_table">
+                            <thead class="sales_score_thead">
+                                <tr>
+                                    <th>Demo Scheduled</th>
+                                    <th>Demo Given</th>
+                                    <th>Quote Sent</th>
+                                    <th>Pilot</th>
+                                    <th>Needs Analysis</th>
+                                    <th>Closed Won</th>
+                                    <th>Closed Lost</th>
+                                    <th>Phone Calls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for item, points in value.items %}
+                                        <td label='{{ item }}' class = "sales_score_td">
+                                            {{ points }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                {% endfor %}
+            </section>
+
+
+            <!-- Showing all Cases and Opps for the selected WEEK -->
+
+            <section id = "opp_call_tables">
+                <input type=checkbox id="show_week_opps">
+                <label for="show_week_opps" class="show_label">SHOW OPPs</label>
+
+                <input type=checkbox id="show_week_calls">
+                <label for="show_week_calls" class="show_label">SHOW CALLs</label>
+
+                <div id = "week_opp_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>Number</th>
+                            <th>Assigned To</th>
+                            <th>Modified By</th>
+                            <th>Name</th>
+                            <th>Stage</th>
+                            <th>Current Stage Changed</th>
+                            <th>Modified Time</th>
+                            <th>Created Time</th>
                         </thead>
                         <tbody>
-                            <tr>
-                                {% for item, points in value.items %}
-                                    <td label='{{ item }}' class = "sales_score_td">
-                                        {{ points }}
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                        </tbody>
-                    </table>
-            {% endfor %}
-        </section>
-
-
-        <!-- Showing all Cases and Opps for the selected day -->
-
-        <section id = "opp_call_tables">
-            <input type=checkbox id="show_today_opps">
-            <label for="show_today_opps" class="show_label">SHOW OPPs</label>
-
-            <input type=checkbox id="show_today_calls">
-            <label for="show_today_calls" class="show_label">SHOW CALLs</label>
-
-            <div id = "today_opp_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>Number</th>
-                        <th>Assigned To</th>
-                        <th>Modified By</th>
-                        <th>Name</th>
-                        <th>Stage</th>
-                        <th>Current Stage Changed</th>
-                        <th>Modified Time</th>
-                        <th>Created Time</th>
-                    </thead>
-                    <tbody>
-                        {% for opp in sales_data.points_today.today_opps %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
-                                <td>{{ opp.assigned_username }}</td>
-                                <td>{{ opp.modified_username }}</td>
-                                <td>{{ opp.opp_name }}</td>
-                                <td>{{ opp.opp_stage }}</td>
-                                <td>{{ opp.current_stage_entry_time }}</td>
-                                <td>{{ opp.modifiedtime }}</td>
-                                <td>{{ opp.createdtime }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div id = "today_call_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>User</th>
-                        <th>Call ID</th>
-                        <th>Call Time</th>
-                        <th>End Time</th>
-                        <th>Status</th>
-                        <th>Direction</th>
-                        <th>Duration</th>
-                        <th>Customer Number</th>
-                        <th>Recording</th>
-                    </thead>
-                    <tbody>
-                        {% for call in sales_data.points_today.today_phone_calls %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ call.assigned_username }}</td>
-                                <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
-                                <td>{{ call.modifiedtime }}</td>
-                                <td>{{ call.endtime }}</td>
-                                <td>{{ call.call_status }}</td>
-                                <td>{{ call.direction }}</td>
-                                <td>{{ call.total_duration }}</td>
-                                <td>{{ call.customer_number }}</td>
-                                {% if call.recording_url %}
-                                    <td><a href='{{call.recording_url}}'>Recording</a></td>
-                                {% else %}
-                                    <td></td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-
-
-    <!-- Only showing data for the selected Week -->
-    <hr>
-    <div class="points_header">
-        <p><span class="bold">WEEK: </span></p>
-        <p> {{ sales_data.date.first_of_week }} - {{ sales_data.date.end_of_week }}</p>
-        {% if sales_data.today_selected_week %}
-            <p>Business Days: {{ sales_data.business_days.week_business_days_so_far | length }} / {{ sales_data.business_days.week_business_days | length }}</p>
-            <p>Possible Points: {{ sales_data.business_days.week_business_days_so_far_points }} / {{ sales_data.business_days.week_business_days_points }}</p>
-        {% else %}
-            <p>Total Business Days: {{ sales_data.business_days.week_business_days | length }}</p>
-            <p>Total Possible Points: {{ sales_data.business_days.week_business_days_points }}</p>
-        {% endif %}
-    </div>
-
-    <div id = "data_for_selected_day">
-        <section class="points" id="sales_points">
-            {% for user, score in sales_data.points_week.user_total_score.items %}
-                    <div class = "score_box">
-                        <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                        {% if score == 0 %}
-                            {% for user_cont, value in sales_data.points_week.user_last_cont.items %}
-                                {% if user_cont == user %}
-                                    <table id = "all_groups_open_cases_table">
-                                        <tr>
-                                            <td>Last Phone Call:</td>
-                                            <td>{{value.call}}
-                                        </tr>
-                                        <tr>
-                                            <td>Last Opportunity:</td>
-                                            <td>{{value.opp}}</td>
-                                        </tr>
-                                    </table>
-                                {% endif %}
+                            {% for opp in sales_data.points_week.today_opps %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
+                                    <td>{{ opp.assigned_username }}</td>
+                                    <td>{{ opp.modified_username }}</td>
+                                    <td>{{ opp.opp_name }}</td>
+                                    <td>{{ opp.opp_stage }}</td>
+                                    <td>{{ opp.current_stage_entry_time }}</td>
+                                    <td>{{ opp.modifiedtime }}</td>
+                                    <td>{{ opp.createdtime }}</td>
+                                </tr>
                             {% endfor %}
-                        {% endif %}
-                    </div>
-            {% endfor %}
-        </section>
-
-        <section class="score_tables">
-            {% for user, value in sales_data.points_week.user_opp_dict.items %}
-                <p class="score_table_title">{{ user }}</p>
-                    <table class="sales_score_table">
-                        <thead class="sales_score_thead">
-                            <tr>
-                                <th>Demo Scheduled</th>
-                                <th>Demo Given</th>
-                                <th>Quote Sent</th>
-                                <th>Pilot</th>
-                                <th>Needs Analysis</th>
-                                <th>Closed Won</th>
-                                <th>Closed Lost</th>
-                                <th>Phone Calls</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {% for item, points in value.items %}
-                                    <td label='{{ item }}' class = "sales_score_td">
-                                        {{ points }}
-                                    </td>
-                                {% endfor %}
-                            </tr>
                         </tbody>
                     </table>
-            {% endfor %}
-        </section>
+                </div>
 
-
-        <!-- Showing all Cases and Opps for the selected WEEK -->
-
-        <section id = "opp_call_tables">
-            <input type=checkbox id="show_week_opps">
-            <label for="show_week_opps" class="show_label">SHOW OPPs</label>
-
-            <input type=checkbox id="show_week_calls">
-            <label for="show_week_calls" class="show_label">SHOW CALLs</label>
-
-            <div id = "week_opp_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>Number</th>
-                        <th>Assigned To</th>
-                        <th>Modified By</th>
-                        <th>Name</th>
-                        <th>Stage</th>
-                        <th>Current Stage Changed</th>
-                        <th>Modified Time</th>
-                        <th>Created Time</th>
-                    </thead>
-                    <tbody>
-                        {% for opp in sales_data.points_week.today_opps %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
-                                <td>{{ opp.assigned_username }}</td>
-                                <td>{{ opp.modified_username }}</td>
-                                <td>{{ opp.opp_name }}</td>
-                                <td>{{ opp.opp_stage }}</td>
-                                <td>{{ opp.current_stage_entry_time }}</td>
-                                <td>{{ opp.modifiedtime }}</td>
-                                <td>{{ opp.createdtime }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
-            <div id = "week_call_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>User</th>
-                        <th>Call ID</th>
-                        <th>Call Time</th>
-                        <th>End Time</th>
-                        <th>Status</th>
-                        <th>Direction</th>
-                        <th>Duration</th>
-                        <th>Customer Number</th>
-                        <th>Recording</th>
-                    </thead>
-                    <tbody>
-                        {% for call in sales_data.points_week.today_phone_calls %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ call.assigned_username }}</td>
-                                <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
-                                <td>{{ call.modifiedtime }}</td>
-                                <td>{{ call.endtime }}</td>
-                                <td>{{ call.call_status }}</td>
-                                <td>{{ call.direction }}</td>
-                                <td>{{ call.total_duration }}</td>
-                                <td>{{ call.customer_number }}</td>
-                                {% if call.recording_url %}
-                                    <td><a href='{{call.recording_url}}'>Recording</a></td>
-                                {% else %}
-                                    <td></td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </div>
-
-    <!-- Only showing data for the selected Month -->
-    <hr>
-    <div class="points_header">
-        <p><span class="bold">MONTH: </span></p>
-        <p>{{ sales_data.date.first_of_month }} - {{ sales_data.date.end_of_month }}</p>
-        {% if sales_data.today_selected_month %}
-            <p>Business Days: {{ sales_data.business_days.month_business_days_so_far | length }} / {{ sales_data.business_days.month_business_days | length }}</p>
-            <p>Possible Points: {{ sales_data.business_days.month_business_days_so_far_points }} / {{ sales_data.business_days.month_business_days_points }}</p>
-        {% else %}
-            <p>Total Business Days: {{ sales_data.business_days.month_business_days | length }}</p>
-            <p>Total Possible Points: {{ sales_data.business_days.month_business_days_points }}</p>
-        {% endif %}
-    </div>  
-    <div id = "data_for_selected_day">
-        <section class="points" id="sales_points">
-            {% for user, score in sales_data.points_month.user_total_score.items %}
-                    <div class = "score_box">
-                        <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                        {% if score == 0 %}
-                            {% for user_cont, value in sales_data.points_month.user_last_cont.items %}
-                                {% if user_cont == user %}
-                                    <table id = "all_groups_open_cases_table">
-                                        <tr>
-                                            <td>Last Phone Call:</td>
-                                            <td>{{value.call}}
-                                        </tr>
-                                        <tr>
-                                            <td>Last Opportunity:</td>
-                                            <td>{{value.opp}}</td>
-                                        </tr>
-                                    </table>
-                                {% endif %}
+                <div id = "week_call_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Call ID</th>
+                            <th>Call Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Direction</th>
+                            <th>Duration</th>
+                            <th>Customer Number</th>
+                            <th>Recording</th>
+                        </thead>
+                        <tbody>
+                            {% for call in sales_data.points_week.today_phone_calls %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ call.assigned_username }}</td>
+                                    <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
+                                    <td>{{ call.modifiedtime }}</td>
+                                    <td>{{ call.endtime }}</td>
+                                    <td>{{ call.call_status }}</td>
+                                    <td>{{ call.direction }}</td>
+                                    <td>{{ call.total_duration }}</td>
+                                    <td>{{ call.customer_number }}</td>
+                                    {% if call.recording_url %}
+                                        <td><a href='{{call.recording_url}}'>Recording</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
                             {% endfor %}
-                        {% endif %}
-                    </div>
-            {% endfor %}
-        </section>
-
-        <section class="score_tables">
-            {% for user, value in sales_data.points_month.user_opp_dict.items %}
-                <p class="score_table_title">{{ user }}</p>
-                    <table class="sales_score_table">
-                        <thead class="sales_score_thead">
-                            <tr>
-                                <th>Demo Scheduled</th>
-                                <th>Demo Given</th>
-                                <th>Quote Sent</th>
-                                <th>Pilot</th>
-                                <th>Needs Analysis</th>
-                                <th>Closed Won</th>
-                                <th>Closed Lost</th>
-                                <th>Phone Calls</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                {% for item, points in value.items %}
-                                    <td label='{{ item }}' class = "sales_score_td">
-                                        {{ points }}
-                                    </td>
-                                {% endfor %}
-                            </tr>
                         </tbody>
                     </table>
-            {% endfor %}
-        </section>
+                </div>
+            </section>
+        </div>
+
+        <!-- Only showing data for the selected Month -->
+        <hr>
+        <div class="points_header">
+            <p><span class="bold">MONTH: </span></p>
+            <p>{{ sales_data.date.first_of_month }} - {{ sales_data.date.end_of_month }}</p>
+            {% if sales_data.today_selected_month %}
+                <p>Business Days: {{ sales_data.business_days.month_business_days_so_far | length }} / {{ sales_data.business_days.month_business_days | length }}</p>
+                <p>Possible Points: {{ sales_data.business_days.month_business_days_so_far_points }} / {{ sales_data.business_days.month_business_days_points }}</p>
+            {% else %}
+                <p>Total Business Days: {{ sales_data.business_days.month_business_days | length }}</p>
+                <p>Total Possible Points: {{ sales_data.business_days.month_business_days_points }}</p>
+            {% endif %}
+        </div>  
+        <div id = "data_for_selected_day">
+            <section class="points" id="sales_points">
+                {% for user, score in sales_data.points_month.user_total_score.items %}
+                        <div class = "score_box">
+                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                            {% if score == 0 %}
+                                {% for user_cont, value in sales_data.points_month.user_last_cont.items %}
+                                    {% if user_cont == user %}
+                                        <table id = "all_groups_open_cases_table">
+                                            <tr>
+                                                <td>Last Phone Call:</td>
+                                                <td>{{value.call}}
+                                            </tr>
+                                            <tr>
+                                                <td>Last Opportunity:</td>
+                                                <td>{{value.opp}}</td>
+                                            </tr>
+                                        </table>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                {% endfor %}
+            </section>
+
+            <section class="score_tables">
+                {% for user, value in sales_data.points_month.user_opp_dict.items %}
+                    <p class="score_table_title">{{ user }}</p>
+                        <table class="sales_score_table">
+                            <thead class="sales_score_thead">
+                                <tr>
+                                    <th>Demo Scheduled</th>
+                                    <th>Demo Given</th>
+                                    <th>Quote Sent</th>
+                                    <th>Pilot</th>
+                                    <th>Needs Analysis</th>
+                                    <th>Closed Won</th>
+                                    <th>Closed Lost</th>
+                                    <th>Phone Calls</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    {% for item, points in value.items %}
+                                        <td label='{{ item }}' class = "sales_score_td">
+                                            {{ points }}
+                                        </td>
+                                    {% endfor %}
+                                </tr>
+                            </tbody>
+                        </table>
+                {% endfor %}
+            </section>
 
 
-        <!-- Showing all Cases and Opps for the selected MONTH -->
+            <!-- Showing all Cases and Opps for the selected MONTH -->
 
-        <section id = "opp_call_tables">
-            <input type=checkbox id="show_month_opps">
-            <label for="show_month_opps" class="show_label">SHOW OPPs</label>
+            <section id = "opp_call_tables">
+                <input type=checkbox id="show_month_opps">
+                <label for="show_month_opps" class="show_label">SHOW OPPs</label>
 
-            <input type=checkbox id="show_month_calls">
-            <label for="show_month_calls" class="show_label">SHOW CALLs</label>
+                <input type=checkbox id="show_month_calls">
+                <label for="show_month_calls" class="show_label">SHOW CALLs</label>
 
-            <div id = "month_opp_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>Number</th>
-                        <th>Assigned To</th>
-                        <th>Modified By</th>
-                        <th>Name</th>
-                        <th>Stage</th>
-                        <th>Current Stage Changed</th>
-                        <th>Modified Time</th>
-                        <th>Created Time</th>
-                    </thead>
-                    <tbody>
-                        {% for opp in sales_data.points_month.today_opps %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
-                                <td>{{ opp.assigned_username }}</td>
-                                <td>{{ opp.modified_username }}</td>
-                                <td>{{ opp.opp_name }}</td>
-                                <td>{{ opp.opp_stage }}</td>
-                                <td>{{ opp.current_stage_entry_time }}</td>
-                                <td>{{ opp.modifiedtime }}</td>
-                                <td>{{ opp.createdtime }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                <div id = "month_opp_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>Number</th>
+                            <th>Assigned To</th>
+                            <th>Modified By</th>
+                            <th>Name</th>
+                            <th>Stage</th>
+                            <th>Current Stage Changed</th>
+                            <th>Modified Time</th>
+                            <th>Created Time</th>
+                        </thead>
+                        <tbody>
+                            {% for opp in sales_data.points_month.today_opps %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href='{{urls.opps_url}}{{ opp.opp_url_id }}'>{{ opp.opp_no }}</a></td>
+                                    <td>{{ opp.assigned_username }}</td>
+                                    <td>{{ opp.modified_username }}</td>
+                                    <td>{{ opp.opp_name }}</td>
+                                    <td>{{ opp.opp_stage }}</td>
+                                    <td>{{ opp.current_stage_entry_time }}</td>
+                                    <td>{{ opp.modifiedtime }}</td>
+                                    <td>{{ opp.createdtime }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
-            <div id = "month_call_table">
-                <table class="scrollable_table">
-                    <thead>
-                        <th>#</th>
-                        <th>User</th>
-                        <th>Call ID</th>
-                        <th>Call Time</th>
-                        <th>End Time</th>
-                        <th>Status</th>
-                        <th>Direction</th>
-                        <th>Duration</th>
-                        <th>Customer Number</th>
-                        <th>Recording</th>
-                    </thead>
-                    <tbody>
-                        {% for call in sales_data.points_month.today_phone_calls %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>{{ call.assigned_username }}</td>
-                                <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
-                                <td>{{ call.modifiedtime }}</td>
-                                <td>{{ call.endtime }}</td>
-                                <td>{{ call.call_status }}</td>
-                                <td>{{ call.direction }}</td>
-                                <td>{{ call.total_duration }}</td>
-                                <td>{{ call.customer_number }}</td>
-                                {% if call.recording_url %}
-                                    <td><a href='{{call.recording_url}}'>Recording</a></td>
-                                {% else %}
-                                    <td></td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <div id = "month_call_table">
+                    <table class="scrollable_table">
+                        <thead>
+                            <th>#</th>
+                            <th>User</th>
+                            <th>Call ID</th>
+                            <th>Call Time</th>
+                            <th>End Time</th>
+                            <th>Status</th>
+                            <th>Direction</th>
+                            <th>Duration</th>
+                            <th>Customer Number</th>
+                            <th>Recording</th>
+                        </thead>
+                        <tbody>
+                            {% for call in sales_data.points_month.today_phone_calls %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ call.assigned_username }}</td>
+                                    <td><a href='{{urls.calls_url}}{{ call.phonecall_url_id }}'>{{ call.phonecall_url_id }}</a></td>
+                                    <td>{{ call.modifiedtime }}</td>
+                                    <td>{{ call.endtime }}</td>
+                                    <td>{{ call.call_status }}</td>
+                                    <td>{{ call.direction }}</td>
+                                    <td>{{ call.total_duration }}</td>
+                                    <td>{{ call.customer_number }}</td>
+                                    {% if call.recording_url %}
+                                        <td><a href='{{call.recording_url}}'>Recording</a></td>
+                                    {% else %}
+                                        <td></td>
+                                    {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
     </div>
 {% endblock %}
