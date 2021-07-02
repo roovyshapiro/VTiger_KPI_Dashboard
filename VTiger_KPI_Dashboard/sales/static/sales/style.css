@@ -1028,6 +1028,10 @@ label.show_label:active {
     }
 
     /****** SALES ******/
+    .score_box_and_table{
+        margin:20px;
+    }
+
     #selected_sales_date{
         display:flex;
         justify-content:center;
@@ -1091,6 +1095,7 @@ label.show_label:active {
     .score_box_sales{
         background-color:none;
         box-shadow:none;
+        border-radius:20px;
     }
     .score_name{
         padding-bottom:5px;
