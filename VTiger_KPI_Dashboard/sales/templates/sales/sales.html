@@ -52,67 +52,54 @@
             <p>{{ sales_data.date.today }} </p>
         </div>
         <div id = "data_for_selected_day">
-                {% if sales_data.points_today.user_total_score %}
-                    <section class="points" id="sales_points">
-                        {% for user, score in sales_data.points_today.user_total_score.items %}
-                                <div class = "score_box">
+            {% if sales_data.points_today.user_total_score %}
+                <section class="points" id="sales_points">
+                    {% for user, score in sales_data.points_today.user_total_score.items %}
+                        <div class = "score_box_and_table">
+                                <div class = "score_box score_box_sales">
                                     <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                                    {% if score == 0 %}
-                                        {% for user_cont, value in sales_data.points_today.user_last_cont.items %}
-                                            {% if user_cont == user %}
-                                                <table id = "all_groups_open_cases_table">
-                                                    <tr>
-                                                        <td>Last Phone Call:</td>
-                                                        <td>{{value.call}}
-                                                    </tr>
-                                                    <tr>
-                                                        <td>Last Opportunity:</td>
-                                                        <td>{{value.opp}}</td>
-                                                    </tr>
-                                                </table>
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% endif %}
                                 </div>
-                        {% endfor %}
-                    </section>
-                {% else %}
-                    <p id = "no_points_yet">No Points Scored Today! <i id = "sad_face" class="far fa-frown"></i></p>
-                    
-                {% endif %}
+                            <section class="score_tables">
+                                {% for user2, value in sales_data.points_today.user_opp_dict.items %}
+                                    {% if user == user2 %}
+                                        <table class="sales_score_table">
+                                            <thead class="sales_score_thead">
+                                                <tr>
+                                                    <th>Demo Scheduled</th>
+                                                    <th>Demo Given</th>
+                                                    <th>Quote Sent</th>
+                                                    <th>Pilot</th>
+                                                    <th>Needs Analysis</th>
+                                                    <th>Closed Won</th>
+                                                    <th>Closed Lost</th>
+                                                    <th>Phone Calls</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    {% for item, points in value.items %}
+                                                        <td label='{{ item }}' class = "sales_score_td">
+                                                            {{ points }}
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    {% endif %}
+                                {% endfor %}
+                            </section>
+                        </div>
+                    {% endfor %}
+            {% else %}
+                <p id = "no_points_yet">No Points Scored Today! <i id = "sad_face" class="far fa-frown"></i></p>
+            {% endif %}
+        </div>
 
-            <section class="score_tables">
-                {% for user, value in sales_data.points_today.user_opp_dict.items %}
-                    <p class="score_table_title">{{ user }}</p>
-                        <table class="sales_score_table">
-                            <thead class="sales_score_thead">
-                                <tr>
-                                    <th>Demo Scheduled</th>
-                                    <th>Demo Given</th>
-                                    <th>Quote Sent</th>
-                                    <th>Pilot</th>
-                                    <th>Needs Analysis</th>
-                                    <th>Closed Won</th>
-                                    <th>Closed Lost</th>
-                                    <th>Phone Calls</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    {% for item, points in value.items %}
-                                        <td label='{{ item }}' class = "sales_score_td">
-                                            {{ points }}
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            </tbody>
-                        </table>
-                {% endfor %}
-            </section>
+
 
 
             <!-- Showing all Cases and Opps for the selected day -->
-
+        <div>
             <section id = "opp_call_tables">
                 <input type=checkbox id="show_today_opps">
                 <label for="show_today_opps" class="show_label">SHOW OPPs</label>
@@ -209,7 +196,8 @@
         <div id = "data_for_selected_day">
             <section class="points" id="sales_points">
                 {% for user, score in sales_data.points_week.user_total_score.items %}
-                        <div class = "score_box">
+                    <div class = "score_box_and_table">
+                        <div class = "score_box score_box_sales">
                             <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
                             {% if score == 0 %}
                                 {% for user_cont, value in sales_data.points_week.user_last_cont.items %}
@@ -228,37 +216,40 @@
                                 {% endfor %}
                             {% endif %}
                         </div>
+                        <section class="score_tables">
+                            {% for user2, value in sales_data.points_week.user_opp_dict.items %}
+                                    {% if user == user2 %}
+                                        <table class="sales_score_table">
+                                            <thead class="sales_score_thead">
+                                                <tr>
+                                                    <th>Demo Scheduled</th>
+                                                    <th>Demo Given</th>
+                                                    <th>Quote Sent</th>
+                                                    <th>Pilot</th>
+                                                    <th>Needs Analysis</th>
+                                                    <th>Closed Won</th>
+                                                    <th>Closed Lost</th>
+                                                    <th>Phone Calls</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    {% for item, points in value.items %}
+                                                        <td label='{{ item }}' class = "sales_score_td">
+                                                            {{ points }}
+                                                        </td>
+                                                    {% endfor %}
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    {% endif %}
+                            {% endfor %}
+                        </section>
+                    </div>
                 {% endfor %}
             </section>
 
-            <section class="score_tables">
-                {% for user, value in sales_data.points_week.user_opp_dict.items %}
-                    <p class="score_table_title">{{ user }}</p>
-                        <table class="sales_score_table">
-                            <thead class="sales_score_thead">
-                                <tr>
-                                    <th>Demo Scheduled</th>
-                                    <th>Demo Given</th>
-                                    <th>Quote Sent</th>
-                                    <th>Pilot</th>
-                                    <th>Needs Analysis</th>
-                                    <th>Closed Won</th>
-                                    <th>Closed Lost</th>
-                                    <th>Phone Calls</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    {% for item, points in value.items %}
-                                        <td label='{{ item }}' class = "sales_score_td">
-                                            {{ points }}
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            </tbody>
-                        </table>
-                {% endfor %}
-            </section>
+
 
 
             <!-- Showing all Cases and Opps for the selected WEEK -->
@@ -356,56 +347,45 @@
         <div id = "data_for_selected_day">
             <section class="points" id="sales_points">
                 {% for user, score in sales_data.points_month.user_total_score.items %}
-                        <div class = "score_box">
+                    <div class = "score_box_and_table">
+                        <div class = "score_box score_box_sales">
                             <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
-                            {% if score == 0 %}
-                                {% for user_cont, value in sales_data.points_month.user_last_cont.items %}
-                                    {% if user_cont == user %}
-                                        <table id = "all_groups_open_cases_table">
-                                            <tr>
-                                                <td>Last Phone Call:</td>
-                                                <td>{{value.call}}
-                                            </tr>
-                                            <tr>
-                                                <td>Last Opportunity:</td>
-                                                <td>{{value.opp}}</td>
-                                            </tr>
-                                        </table>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
                         </div>
+                        <div>
+                            <section class="score_tables">
+                                {% for user2, value in sales_data.points_month.user_opp_dict.items %}
+                                        {% if user == user2 %}
+                                            <table class="sales_score_table">
+                                                <thead class="sales_score_thead">
+                                                    <tr>
+                                                        <th>Demo Scheduled</th>
+                                                        <th>Demo Given</th>
+                                                        <th>Quote Sent</th>
+                                                        <th>Pilot</th>
+                                                        <th>Needs Analysis</th>
+                                                        <th>Closed Won</th>
+                                                        <th>Closed Lost</th>
+                                                        <th>Phone Calls</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        {% for item, points in value.items %}
+                                                            <td label='{{ item }}' class = "sales_score_td">
+                                                                {{ points }}
+                                                            </td>
+                                                        {% endfor %}
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        {% endif %}
+                                {% endfor %}
+                            </section>
+                        </div>
+                    </div>
                 {% endfor %}
             </section>
 
-            <section class="score_tables">
-                {% for user, value in sales_data.points_month.user_opp_dict.items %}
-                    <p class="score_table_title">{{ user }}</p>
-                        <table class="sales_score_table">
-                            <thead class="sales_score_thead">
-                                <tr>
-                                    <th>Demo Scheduled</th>
-                                    <th>Demo Given</th>
-                                    <th>Quote Sent</th>
-                                    <th>Pilot</th>
-                                    <th>Needs Analysis</th>
-                                    <th>Closed Won</th>
-                                    <th>Closed Lost</th>
-                                    <th>Phone Calls</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    {% for item, points in value.items %}
-                                        <td label='{{ item }}' class = "sales_score_td">
-                                            {{ points }}
-                                        </td>
-                                    {% endfor %}
-                                </tr>
-                            </tbody>
-                        </table>
-                {% endfor %}
-            </section>
 
 
             <!-- Showing all Cases and Opps for the selected MONTH -->

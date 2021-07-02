@@ -293,6 +293,7 @@ td.score_key_points {
 .points{
     display:flex;
     flex-direction:row;
+    justify-content: space-evenly;
     margin-bottom:5px;
     margin-top:10px;
 }
@@ -302,6 +303,29 @@ td.score_key_points {
 }
 */
 
+.score_tables{
+    display:flex;
+    flex-direction:column;
+    margin-bottom:20px;
+}
+
+.score_table_title{
+    font-size:25px;
+}
+
+ table.sales_score_table thead.sales_score_thead {
+    display: none;
+  }
+  table.sales_score_table td.sales_score_td {
+    display: flex;
+    font-size:12px;
+  }
+
+  table.sales_score_table td.sales_score_td::before {
+    content: attr(label);
+    font-size:12px;
+    width: 250px;
+  }
 .score_box{
     flex:1;
     border-radius:10px;
@@ -311,6 +335,18 @@ td.score_key_points {
     text-align:center;
     background-color: white;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
+}
+.score_box_and_table{
+    border-radius: 20px;
+    box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
+    background-color: white;
+}
+.score_box_sales{
+    width:100%;
+    flex:0;
+    box-shadow:none;
+    border-radius:none;
+    border-radius: 20px;
 }
 .score_name{
     padding-bottom:5px;
@@ -339,9 +375,6 @@ td.score_key_points {
 }
 
 .score_tables table{
-    background-color: white;
-    box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
-    border-radius:10px;
     border-collapse: collapse;
     margin-right:auto;
     margin-left:auto;
@@ -354,6 +387,16 @@ td.score_key_points {
     font-size:1.2em;
     font-weight:bold;
 }
+.sales_score_table td, tr{
+    padding:2px 20px;
+}
+.sales_score_td{
+    font-size:12px;
+}
+.sales_score_td label{
+    font-size:12px;
+}
+
 table{
     border-collapse: collapse;
     margin-right:auto;
@@ -362,7 +405,6 @@ table{
 td, th{
     padding:10px;
 }
-
 
 /****** CASES ******/
 
@@ -1045,6 +1087,10 @@ label.show_label:active {
         margin-bottom:15px;
         justify-content:center;
         text-align:center;
+    }
+    .score_box_sales{
+        background-color:none;
+        box-shadow:none;
     }
     .score_name{
         padding-bottom:5px;
