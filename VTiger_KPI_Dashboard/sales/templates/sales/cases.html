@@ -78,7 +78,7 @@
                         <table id="all_groups_open_cases_table">
                             {% for user in sorted_user_assigned_total_open %}
                                 <tr>
-                                    <td>{{ user.0 }}</td>
+                                    <td><a href="/user/{{user.0}}", target="_blank">{{ user.0 }}</a></td>
                                     <td>{{ user.1 }}</td>
                                 </tr>
                             {% endfor %}
@@ -119,7 +119,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                         <td>{{ case.assigned_groupname }}</td>
-                        <td>{{ case.assigned_username }}</td>
+                        <td><a href="/user/{{case.assigned_username}}", target="_blank">{{ case.assigned_username }}</a></td>
                         <td>{{ case.modified_username }}</td>
                         <td>{{ case.title }}</td>
                         <td>{{ case.casestatus }}</td>
@@ -159,7 +159,7 @@
                                 </tr>
                                 {% for score  in sorted_user_closed %}
                                     <tr>
-                                        <td>{{ score.0 }}</td>
+                                        <td><a href="/user/{{score.0}}", target="_blank">{{ score.0 }}</a></td>
                                         <td>{{ score.1 }}</td>
                                     </tr>
                                 {% endfor %}
@@ -200,7 +200,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                         <td>{{ case.assigned_groupname }}</td>
-                        <td>{{ case.assigned_username }}</td>
+                        <td><a href="/user/{{case.assigned_username}}", target="_blank">{{ case.assigned_username }}</a></td>
                         <td>{{ case.modified_username }}</td>
                         <td>{{ case.title }}</td>
                         <td>{{ case.casestatus }}</td>
@@ -242,7 +242,7 @@
                                     </tr>
                                     {% for score  in sorted_user_closed_week %}
                                         <tr>
-                                            <td>{{ score.0 }}</td>
+                                            <td><a href="/user/{{score.0}}", target="_blank">{{ score.0 }}</a></td>
                                             <td>{{ score.1 }}</td>
                                         </tr>
                                     {% endfor %}
@@ -284,7 +284,7 @@
                             <td>{{ forloop.counter }}</td>
                             <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                             <td>{{ case.assigned_groupname }}</td>
-                            <td>{{ case.assigned_username }}</td>
+                            <td><a href="/user/{{case.assigned_username}}", target="_blank">{{ case.assigned_username }}</a></td>
                             <td>{{ case.modified_username }}</td>
                             <td>{{ case.title }}</td>
                             <td>{{ case.casestatus }}</td>
@@ -326,7 +326,7 @@
                                 </tr>
                                 {% for score  in sorted_user_closed_month %}
                                     <tr>
-                                        <td>{{ score.0 }}</td>
+                                        <td><a href="/user/{{score.0}}", target="_blank">{{ score.0 }}</a></td>
                                         <td>{{ score.1 }}</td>
                                     </tr>
                                 {% endfor %}
@@ -368,7 +368,7 @@
                         <td>{{ forloop.counter }}</td>
                         <td><a href='{{urls.cases_url}}{{ case.case_url_id }}'>{{ case.case_no }}</a></td>
                         <td>{{ case.assigned_groupname }}</td>
-                        <td>{{ case.assigned_username }}</td>
+                        <td><a href="/user/{{case.assigned_username}}", target="_blank">{{ case.assigned_username }}</a></td>
                         <td>{{ case.modified_username }}</td>
                         <td>{{ case.title }}</td>
                         <td>{{ case.casestatus }}</td>
