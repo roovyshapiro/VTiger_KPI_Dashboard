@@ -7,6 +7,7 @@ from django.db.models import Q
 
 
 from cases.models import Cases
+from sales.models import Phone_call
 
 #import datetime, json, os, calendar, holidays
 
@@ -14,14 +15,19 @@ def main(request, username):
     '''
     /user/{username} goes here
     '''
+    all_cases = Cases.objects.all()
+    all_calls = Phone_call.objects.all()
+
     user_data = {}
     user_data['cases'] = {}
-
+    user_data['calls'] = {}
     user_data['username'] = username
+
+    user_calls = all_calls.filter(assigned_username = username)
+    user_data['calls']['all_calls'] = len(user_calls)
 
     user_data['all_users'] = []
 
-    all_cases = Cases.objects.all()
     all_users = all_cases.values('assigned_username').distinct()
     for user in all_users:
         if user['assigned_username'] != '':
