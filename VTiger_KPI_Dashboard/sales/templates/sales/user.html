@@ -1,0 +1,9 @@
+{% extends 'sales/base.html' %}
+
+{% block content %}
+    {% if not user_data.username %}
+        <h1> Please choose a User!</h1>
+    {% else %}
+        <h1>{{ user_data.username }}</h1>
+    {% endif %}
+{% endblock %}

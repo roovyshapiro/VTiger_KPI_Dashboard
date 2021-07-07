@@ -8,9 +8,26 @@ from django.contrib.auth.decorators import login_required
 #import datetime, json, os, calendar, holidays
 
 @login_required()
-def main(request, user):
+def main(request, username):
     '''
-    Useful for testing functionality
+    /user/{username} goes here
     '''
-    print(user)
-    return HttpResponse(f"You selected {user}")
+    user_data = {}
+
+    user_data['username'] = username
+
+    context = {
+        'user_data': user_data,
+    }
+    return render(request, "sales/user.html", context) 
+
+def user_home(request):
+    '''
+    If /user is navigated to without a user pre-selected
+    '''
+    user_data = {}
+    user_data['username'] = False
+    context = {
+        'user_data': user_data,
+    }
+    return render(request, "sales/user.html", context) 

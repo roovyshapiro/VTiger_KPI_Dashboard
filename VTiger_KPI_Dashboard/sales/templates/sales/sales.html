@@ -198,7 +198,7 @@
                 {% for user, score in sales_data.points_week.user_total_score.items %}
                     <div class = "score_box_and_table">
                         <div class = "score_box score_box_sales">
-                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                            <span class ="score_name"><a href = "/user/{{user}}">{{ user }}</a></span> </br> <span class="score_num">{{ score }}</span>
                             {% if score == 0 %}
                                 {% for user_cont, value in sales_data.points_week.user_last_cont.items %}
                                     {% if user_cont == user %}
@@ -349,7 +349,7 @@
                 {% for user, score in sales_data.points_month.user_total_score.items %}
                     <div class = "score_box_and_table">
                         <div class = "score_box score_box_sales">
-                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ score }}</span>
+                            <span class ="score_name"><a href = "/user/{{user}}">{{ user }}</a></span> </br> <span class="score_num">{{ score }}</span>
                         </div>
                         <div>
                             <section class="score_tables">

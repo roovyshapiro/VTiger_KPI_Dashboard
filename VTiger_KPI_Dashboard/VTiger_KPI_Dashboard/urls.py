@@ -49,5 +49,6 @@ urlpatterns = [
     path('devallissues/', dev_views.get_all_issues, name='dev_dashboard'),
     path('devrecentissues/', dev_views.get_recent_issues, name='dev_dashboard'),
 
-    path('user/<str:user>/', user_views.main),
+    path('user/', user_views.user_home, name='user_home'),
+    path('user/<str:username>/', user_views.main, name='user_dashboard'),
 ]
