@@ -73,9 +73,6 @@ def main(request):
     user_assigned_total_open = retrieve_user_assigned_total(date_group_dict['group'], full_cases)
     sorted_user_assigned_total_open = sorted(user_assigned_total_open.items(), key=lambda x: x[1], reverse=True)
 
-    #Retrieve user specific data for the entire month
-    user_case_data = retrieve_user_data(full_cases,first_of_month, end_of_month)
-
     #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
     #created in that time frame. We highlight created cases in green and resolved cases in red.
     created_cases_dict_day = {}
@@ -293,102 +290,6 @@ def retrieve_case_data(full_cases, date_request, date_request_end):
     all_cases = modified_cases | created_cases | resolved_cases
 
     return case_stats_dict, sorted_user_closed, all_cases, created_cases, resolved_cases
-
-def retrieve_user_data(full_cases,date_request, date_request_end):
-    '''
-    User based statistics:
-
-    USER: Krinp Jristen
-    AVG Time Spent: 34.37
-    Open Assigned: 7
-    Total Assigned: 14
-    Total Resolved: 7
-    Feedback - Satisfied 1
-    Feedback - Neutral 0
-    Feedback - Not Satisfied 0
-
-    USER: Erin Horacefield
-    AVG Time Spent: 27.21
-    Open Assigned: 7
-    Total Assigned: 13
-    Total Resolved: 6
-    Feedback - Satisfied 1
-    Feedback - Neutral 0
-    Feedback - Not Satisfied 0
-
-    The returned user_cases is a dict of dicts which looks like this for each user:
-    "Shawn Checkzberg":{
-      "time_spent":[
-         "99.956"
-      ],
-      "feedback":{
-         "satisfied":0,
-         "neutral":0,
-         "not_satisfied":0
-      },
-      "assigned":1,
-      "resolved":0,
-      "assigned_all":1,
-      "avg_time_spent":99.96
-    }
-    '''
-    full_cases_date = full_cases.filter(createdtime__gte=date_request, createdtime__lte=date_request_end)
-    open_cases = full_cases_date.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
-    all_open_cases = full_cases.filter(~Q(casestatus="Closed") & ~Q(casestatus="Resolved"))
-    closed_cases = full_cases.filter(case_resolved__gte=date_request, case_resolved__lte=date_request_end)
-
-
-    all_users = full_cases_date.values('assigned_username').distinct()
-    user_cases = {}
-
-    for user in all_users:
-        user_cases[user['assigned_username']] = {}
-        user_cases[user['assigned_username']]['time_spent'] = []
-        user_cases[user['assigned_username']]['feedback'] = {}
-        user_cases[user['assigned_username']]['feedback']['satisfied'] = 0
-        user_cases[user['assigned_username']]['feedback']['neutral'] = 0
-        user_cases[user['assigned_username']]['feedback']['not_satisfied'] = 0
-
-        for case in full_cases_date:
-            if case.assigned_username == user['assigned_username']:
-                time_spent = case.time_spent
-                if time_spent == '' or time_spent == ' ' or time_spent == None:
-                    time_spent = '0'
-                user_cases[user['assigned_username']]['time_spent'].append(time_spent)
-                if case.satisfaction_index == 'Satisfied':
-                    user_cases[user['assigned_username']]['feedback']['satisfied'] += 1
-                elif case.satisfaction_index == 'Neutral':
-                    user_cases[user['assigned_username']]['feedback']['neutral'] += 1
-                elif case.satisfaction_index == 'Not Satisfied':
-                    user_cases[user['assigned_username']]['feedback']['not_satisfied'] += 1
-                else:
-                    continue
-
-
-        user_cases[user['assigned_username']]['assigned'] = 0
-        user_cases[user['assigned_username']]['resolved'] = 0
-        for case in open_cases:
-            if case.assigned_username == user['assigned_username']:
-                user_cases[user['assigned_username']]['assigned'] += 1
-        for case in closed_cases:
-            if case.assigned_username == user['assigned_username']:
-                user_cases[user['assigned_username']]['resolved'] += 1
-
-        time_spent_list = [float(i) for i in user_cases[user['assigned_username']]['time_spent']]
-        open_cases_len = len(all_open_cases.filter(assigned_username=user['assigned_username']))
-        user_cases[user['assigned_username']]['assigned_all'] = open_cases_len
-        try:
-            avg_time_spent = sum(time_spent_list) / len(time_spent_list)
-            #Converts the time spent from a number of hours into something more human-readable
-            #838.928 -> 34 Days, 22 Hours, 55 Minutes
-            time_spent = float(avg_time_spent)
-            avg_time_spent = f"{int(time_spent / 24)} Days, {int(time_spent % 24)} Hours, {int(((time_spent % 24) - int(time_spent % 24)) * 60)} Minutes"
-        except ZeroDivisionError:
-            avg_time_spent = 0
-        #user_cases[user['assigned_username']]['avg_time_spent'] = round(avg_time_spent, 2)
-        user_cases[user['assigned_username']]['avg_time_spent'] = avg_time_spent
-
-    return user_cases
 
 def retrieve_dates(date_request):
     '''

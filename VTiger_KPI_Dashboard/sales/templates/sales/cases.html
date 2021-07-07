@@ -397,41 +397,6 @@
         <div id = "barchart">
             <canvas id="group_chart"></canvas>
         </div>
-
-    {% if sorted_all_groups_open %}
-        <div id = "user_case_data_div">
-            <table class = "scrollable_table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>User</th>
-                        <th>All Assigned</th>
-                        <th>Assigned</th>
-                        <th>Resolved</th>
-                        <th>Avg Time Spent</th>
-                        <th>Satisfied</th>
-                        <th>Neutral</th>
-                        <th>Not Satisfied</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for name, user in user_case_data.items %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ name }}</td>
-                            <td>{{ user.assigned_all }}</td>
-                            <td>{{ user.assigned }}</td>
-                            <td>{{ user.resolved }}</td>
-                            <td>{{ user.avg_time_spent }}</td>
-                            <td>{{ user.feedback.satisfied }}</td>
-                            <td>{{ user.feedback.neutral }}</td>
-                            <td>{{ user.feedback.not_satisfied }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
 </div>
 
 {% endblock %}
