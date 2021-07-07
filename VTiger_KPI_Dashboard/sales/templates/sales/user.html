@@ -3,7 +3,16 @@
 {% block content %}
     {% if not user_data.username %}
         <h1> Please choose a User!</h1>
-    {% else %}
+    {% endif %}
+    <label for="user_dropdown" id="user_dropdown_label">USER:</label>
+    <select name="user_dropdown" id = "user_dropdown">
+        <option selected></option>
+        {% for user in user_data.all_users %}
+            <option value="{{ user }}">{{ user }}</option>
+        {% endfor %} 
+    </select>
+    <button id="user_submit" onclick="user_submit()">Submit</button>
+    {% if user_data.username %}
         <h1>{{ user_data.username }}</h1>
     {% endif %}
 {% endblock %}

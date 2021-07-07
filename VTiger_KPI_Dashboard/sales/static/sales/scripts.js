@@ -877,3 +877,20 @@ try{
 } catch(err){
   console.log('redmine bar chart not available', err);
 }
+
+
+
+
+/**
+ * 
+ *   /USER
+ * 
+ */
+function user_submit(){
+  //find the dropdown and get the selection as the product_name
+  var item = document.getElementById('user_dropdown');
+  console.log(item);
+  var username= item.options[item.selectedIndex].text;
+  console.log(username);
+  window.location.assign(`/user/${username}`); 
+}

@@ -22,7 +22,6 @@ from ship import views as ship_views
 from dev import views as dev_views
 from user import views as user_views
 
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
