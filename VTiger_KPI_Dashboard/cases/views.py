@@ -131,7 +131,6 @@ def main(request):
         "all_open_cases":all_open_cases,
         'sorted_user_assigned_total_open':sorted_user_assigned_total_open,
 
-        'user_case_data': user_case_data,
         'historical_data': historical_data,
         'month_comparison': month_comparison,
         'month_comparison_created' : month_comparison_created,
