@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.db.models import Q
 
 
 from cases.models import Cases
@@ -22,10 +22,17 @@ def main(request, username):
 
     all_cases = Cases.objects.all()
     all_users = all_cases.values('assigned_username').distinct()
-    print(all_users)
     for user in all_users:
         if user['assigned_username'] != '':
             user_data['all_users'].append(user['assigned_username'])
+
+    assigned_cases = all_cases.filter(assigned_username = username)
+    closed_cases = assigned_cases.filter(Q(casestatus='Closed') | Q(casestatus='esolved'))
+    open_cases = assigned_cases.filter(~Q(casestatus='Closed') & ~Q(casestatus='Resolved'))
+    user_data['assigned_cases'] = len(assigned_cases)
+    user_data['closed_cases'] = len(closed_cases)
+    user_data['open_cases'] = len(open_cases)
+
 
     context = {
         'user_data': user_data,
@@ -43,7 +50,6 @@ def user_home(request):
 
     all_cases = Cases.objects.all()
     all_users = all_cases.values('assigned_username').distinct()
-    print(all_users)
     for user in all_users:
         if user['assigned_username'] != '':
             user_data['all_users'].append(user['assigned_username'])
