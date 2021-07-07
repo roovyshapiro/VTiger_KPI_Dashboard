@@ -14,8 +14,13 @@
     <button id="user_submit" onclick="user_submit()">Submit</button>
     {% if user_data.username %}
         <h1>{{ user_data.username }}</h1>
-        <p>Assigned Cases: {{ user_data.assigned_cases }}</p>
-        <p>Closed Cases: {{ user_data.closed_cases }}</p>
-        <p>Open Cases: {{ user_data.open_cases }}</p>
+        <p>Assigned Cases: {{ user_data.cases.assigned_cases }}</p>
+        <p>Closed Cases: {{ user_data.cases.closed_cases }}</p>
+        <p>Open Cases: {{ user_data.cases.open_cases }}</p>
+        <p><i class="fa fa-smile"></i>: {{ user_data.cases.feedback.satisfied }}</p>
+        <p><i class="fa fa-meh"></i>: {{ user_data.cases.feedback.neutral }}</p>
+        <p><i class="fa fa-frown"></i>: {{ user_data.cases.feedback.not_satisfied }}</p>
+        <p>Avg Time Spent: {{ user_data.cases.avg_time_spent }}</p>
+
     {% endif %}
 {% endblock %}
