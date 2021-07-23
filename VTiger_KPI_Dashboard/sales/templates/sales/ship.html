@@ -1,57 +1,136 @@
-{% extends 'sales/base.html' %}
+{% load static %} {% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="../../static/sales/css/main.css">
+    <script defer src="{% static 'sales/controller.js' %}"></script>
+    <title>Eyeride Shipping Calculator</title>
+</head>
+<body>
 
-    {% block content %}
-        <h1>Welcome to Shipping!</h1>
-
-        <form>
-            <label for="product_dropdown" id="product_dropdown_label">Product:</label>
-            <select name="product_dropdown" id = "product_dropdown">
-                <option selected></option>
-                {% for product  in products %}
-                    <option value="{{ product.name }}">{{ product.name }}</option>
-                {% endfor %} 
-            </select>
-            <div id="products_submit" onclick="print_product()">Add</div>
-        </form>
-
-        <!--With the use of JSON Script we can get 
-        data from the Django model and then access it with JS
-        https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
-        -->
-        {{ products_json|json_script:"products_json" }}
-
-        <div id = "product_table_all">
-            <table  class="scrollable_table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Link</th>
-                        <th>Price</th>
-                        <th>Weight</th>
-                        <th>Width</th>
-                        <th>Length</th>
-                        <th>Height</th>
-                        <th>Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ product.name }}</td>
-                            <td><a href='{{urls.products_url}}{{ product.url_id }}'>{{ product.number }}</a></td>
-                            <td>${{ product.price }}</td>
-                            <td>{{ product.weight }} lbs</td>
-                            <td>{{ product.width }} in</td>
-                            <td>{{ product.length }} in</td>
-                            <td>{{ product.height }} in</td>
-                            <td><img src='{{urls.image_url}}{{ product.url_id }}&fileId={{ product.image_url_id}}&type=image' width="150" alt="Product Image" onerror="this.style.display='none'"></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Nav Bar below is styled differently then main nav. leaving commented just in case. Uncomment SASS File if used -->
+    <header id="navbar">
+        <div class="nav__container">
+            <nav>
+            <h1 class="kpi__heading">kpi dashboard</h1>
+            <ul>
+                <li><a href="/" class="header_title"></a></li>
+                {% if user.is_authenticated %}
+                <li><a class="header_ship" href="/ship">SHIP</a></li>
+                <li><a href="/sales" class="header_sales">Sales</a></li>
+                <li><a href="/cases" class="header_cases">Sales</a></li>
+                <li><a id="logout_menu" href="/accounts/logout"><span id="username_button">{{ user.first_name }}</span>logout</a></li>
+            {% else %}
+                <li><a href="{% provider_login_url 'google' %}">LOGIN</a></li>
+            {% endif %}
+            </ul>
+            </nav>
         </div>
+    </header>
+    {{ products_json|json_script:"products_json" }}
+    
+    <section id="section__form">
+        <div class="container">
+            <div class="wrapper">
+                <div class="logo__div">
+                    <img class="logo__image" src="../../static/eyeridelogo1.jpg" alt="">
+                </div>
 
+                <div class="form__div">
+                        <form>
+                            <div class="form__group field" id="street__div">
+                            <input autofocus type="text" class="form__input form__field street__input" name="street" id="street" placeholder="Street Address" value="">
+                            <label for="street" class="form__label form__input">Street Address</label>
+                            </div>
 
-    {% endblock %}
+                            <div class="form__group field" id="city__div">
+                            <input type="text" class="form__input form__field city__input" name="city" id="city" placeholder="City" value="">
+                            <label for="city" class="form__label form__input">City</label>
+                            </div>
+
+                            <div class="form__group field" id="state__div">
+                            <input type="text" class="form__input form__field state__input" name="state" id="state" placeholder="State ID" value="">
+                            <label for="state" class="form__label form__input">State ID</label>
+                            </div>
+
+                            <div class="form__group field" id="zip__div">
+                            <input type="text" class="form__input form__field zip__input" name="zip" id="zip" placeholder="Zip Code" value="">
+                            <label for="zip" class="form__label form__input">Zip Code</label>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="form__btn--wrapper">
+                    <input type="submit" class="form__submit--btn btn--animated" id="submit__btn--address" value="Product Selection">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="product__form">
+        <div class="container">
+                <div class="product__div">
+                    <select id="product_dropdown" class="product__options" name="products">
+                        <option value="*" disabled selected>
+                            Select Products
+                        </option>
+                        {% for product in products %}
+                            <option data-height="{{ product.height }}" data-width="{{ product.width }}" data-length="{{ product.length }}" data-weight="{{ product.weight }}" class="product-selection" value="{{ product.name }}"> {{ product.name }} </option>
+                        {% endfor %}   
+                    </select>
+                </div>
+
+                <div id="selected_products">
+                    <table>
+                        <thead>
+                            <tr id="table__selected">
+                                <th hidden class="table__heading" colspan="4"><i class="fas fa-box-open shipping__icon"></i> Product Selection</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myTable" class="table__body">
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="address__submit--div">
+                    <input type="submit" value="Check Rates" class="address__submit--btn form__submit--btn">
+                </div>
+        </div>
+    </section>
+
+    <section id="rates__section">
+        <div class="container">
+            <i class="fab fa-ups ups__icon fa-9x"></i>
+            <div class="output__container">
+                <table id="rates__table--main">
+                    <thead>
+                        <tr>
+                            <th class="table__heading--rates">Transit Time</th>
+                            <th class="table__heading--rates">Negotitated Rates</th>
+                            <th class="table__heading--rates">Published Rates</th>
+                            <th class="table__heading--rates">EyeRide Suggested Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rates__table__body" class="table__body--rates">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <footer id="footer__id">
+        <div class="footer__container">
+            <h1 class="signature">Developed by Antonino Adornetto</h1>
+            <h2 class="ups__api"><i class="fab fa-ups ups__icon--footer"></i>API Intergration by UPS</h2>
+        </div>
+    </footer>
+</body>
+</html>
