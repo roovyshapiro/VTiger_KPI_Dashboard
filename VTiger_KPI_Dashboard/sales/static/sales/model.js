@@ -1,8 +1,12 @@
-import { UPS_URL } from "./config.js"
+import { UPS_URL } from "./config.js";
+import { CREDENTIALS } from "./config.js";
+import { ADDRESS } from "./config.js";
 
 export const state = {
     ratedShipment: {},
 };
+
+export let address = ADDRESS;
 
 export const upsRateRequest = async function(addressObject) {
     try {
@@ -11,9 +15,9 @@ export const upsRateRequest = async function(addressObject) {
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
-                AccessLicenseNumber: ``,
-                Username: ``,
-                Password: ``,
+                AccessLicenseNumber: `${CREDENTIALS.accessLicenseNumber}`,
+                Username: `${CREDENTIALS.upsUserName}`,
+                Password: `${CREDENTIALS.upsPassword}`,
             },
             body: JSON.stringify(addressObject),
         })
