@@ -16,16 +16,21 @@ class AppView {
         this.highLightProductBtnEvent(this.form_Fields);
     }
 
-    highLightProductBtnEvent(nodeList) {
-        this.form__section.addEventListener('input', function(e) {
-            const lengths = Array.from(nodeList).every(input => input.value.length);
-            e.preventDefault();
-            if (!lengths) return;
-            // Maybe build event listener in controller and update styles here. 
-            // this.product_Btn.style.opacity = '1';
-            // this.product_Form.style.display = 'flex';
-            // this.footer.hidden = false;
-        })
+    btnStyling() {
+        const lengths = Array.from(this.form_Fields).every(input => input.value.length);
+        if (!lengths) return;
+        this.product_Btn.style.opacity = '1';
+        this.product_Form.style.display = 'flex';
+        this.footer.hidden = false;
+    }
+
+    highLightProductBtnEvent() {
+        // Changes the Opactiy on the "Product Selection" button to 1 and updates the product selection section to a display of Flex once all input fields have a value greater then 0. 
+        this.form__section.addEventListener("input", this.btnStyling.bind(this))
+    }
+
+    generateMarkup(){
+        // Add Product Table As user selects products 
     }
 }
 
