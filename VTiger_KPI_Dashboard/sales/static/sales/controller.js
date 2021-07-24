@@ -8,7 +8,8 @@ const smoothScrolling = function () {
   
     newArray.map((submit) => {
       submit.addEventListener("click", function (e) {
-        e.preventDefault();
+          e.preventDefault();
+          console.log(address);
         document.getElementById("footer__id").scrollIntoView({
           behavior: "smooth",
         });
@@ -16,6 +17,36 @@ const smoothScrolling = function () {
     });
   };
 
+const renderProductData = function() {
+    const product_Selection = document.getElementById("product_dropdown");
+    // Manage State for Total Product Selection Weight, need last value as well (preWeight); 
+    let { packageWeight } = model.state;
+    let { preWeight } = model.state;
+    product_Selection.addEventListener("change", function(e) {
+        let selectedProduct = e.target.value;
+        let productWeight = +e.target.options[e.target.selectedIndex].dataset.weight;
+
+        // Generate HTML Mark Up from App View.js 
+        appView.generateMarkUp(selectedProduct, productWeight);
+
+        // Grab Each Quantity Input Field to manage State of Weight 
+        const quantityValue = document.querySelectorAll('.quantity__value--input');
+
+        // Keep Track of last weight amount before current weight 'change'
+        Array.from(quantityValue).map(input => input.addEventListener('focus', function(e) {
+            preWeight = e.target.value;
+        }))
+
+        // Updated Weight, this will subtract/add to packageWeight 
+        Array.from(quantityValue).forEach(input => {
+            input.addEventListener('change', function(e) {
+                if (selectedProduct === input.name) 
+                return packageWeight += (e.target.value - preWeight) * productWeight;
+            })
+        })
+        console.log(packageWeight);
+    })
+}
 
   const addressSubmission = async function () {
     // Function is building the UPS Address Object. This data will be used to submit API Call. 
@@ -33,7 +64,6 @@ const smoothScrolling = function () {
           : input.placeholder === "Zip Code"
           ? (Address.PostalCode = input.value)
           : null;
-          console.log(Address);
       })
     );
   };
@@ -43,6 +73,7 @@ const init = function() {
     smoothScrolling();
     // Runs Events in appViews.js
     appView.renderEvent();
+    renderProductData();
 }
 
 init();

@@ -4,6 +4,8 @@ import { ADDRESS } from "./config.js";
 
 export const state = {
     ratedShipment: {},
+    packageWeight: 0,
+    preWeight : 0,
 };
 
 export let address = ADDRESS;
