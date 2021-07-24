@@ -17,22 +17,31 @@ const smoothScrolling = function () {
     });
   };
 
+const setAddressWeight = function(totalPackageWeight) {
+    // Updates UPS Address Object
+    address.RateRequest.Shipment.Package.PackageWeight.Weight = totalPackageWeight.toString();
+    address.RateRequest.Shipment.ShipmentTotalWeight.Weight = totalPackageWeight.toString();
+}
+
 const renderProductData = function() {
+    // <select></select> Element from Product Drop down 
     const product_Selection = document.getElementById("product_dropdown");
+
     // Manage State for Total Product Selection Weight, need last value as well (preWeight); 
     let { packageWeight } = model.state;
     let { preWeight } = model.state;
     product_Selection.addEventListener("change", function(e) {
+        // On each product selection "change" event we are grabbing ahold of that element and manipulating the data. 
         let selectedProduct = e.target.value;
         let productWeight = +e.target.options[e.target.selectedIndex].dataset.weight;
 
-        // Generate HTML Mark Up from App View.js 
+        // Generate HTML Mark Up from App View.js to display the table we see pop up after a product is selected
         appView.generateMarkUp(selectedProduct, productWeight);
 
-        // Grab Each Quantity Input Field to manage State of Weight 
+        // Grab every quantity input field to calculate total weight 
         const quantityValue = document.querySelectorAll('.quantity__value--input');
 
-        // Keep Track of last weight amount before current weight 'change'
+        // Keep Track of last weight amount before current weight "change" event
         Array.from(quantityValue).map(input => input.addEventListener('focus', function(e) {
             preWeight = e.target.value;
         }))
@@ -41,10 +50,11 @@ const renderProductData = function() {
         Array.from(quantityValue).forEach(input => {
             input.addEventListener('change', function(e) {
                 if (selectedProduct === input.name) 
-                return packageWeight += (e.target.value - preWeight) * productWeight;
+                packageWeight += (e.target.value - preWeight) * productWeight;
+                // Sets Weight on UPS Object we are building
+                setAddressWeight(packageWeight);
             })
         })
-        console.log(packageWeight);
     })
 }
 
