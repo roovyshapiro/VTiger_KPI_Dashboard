@@ -9,6 +9,7 @@ const smoothScrolling = function () {
     newArray.map((submit) => {
       submit.addEventListener("click", function (e) {
           e.preventDefault();
+          setPackageDimension();
           console.log(address);
         document.getElementById("footer__id").scrollIntoView({
           behavior: "smooth",
@@ -21,6 +22,20 @@ const setAddressWeight = function(totalPackageWeight) {
     // Updates UPS Address Object
     address.RateRequest.Shipment.Package.PackageWeight.Weight = totalPackageWeight.toString();
     address.RateRequest.Shipment.ShipmentTotalWeight.Weight = totalPackageWeight.toString();
+}
+
+const checkTotalWeight = function(number) {
+    return address.RateRequest.Shipment.Package.PackageWeight.Weight && address.RateRequest.Shipment.ShipmentTotalWeight.Weight <= number
+}
+
+const collectPackageDimension = function(len, wid, height) {
+    address.RateRequest.Shipment.Package.Dimensions.Length = `${len}` ;
+    address.RateRequest.Shipment.Package.Dimensions.Width = `${wid}` ;
+    address.RateRequest.Shipment.Package.Dimensions.Height = `${height}` ;
+}
+
+const setPackageDimension = function() {
+    checkTotalWeight(5) ? collectPackageDimension(12, 9, 5) : checkTotalWeight(10) ? collectPackageDimension(14, 11, 10) : checkTotalWeight(20) ? collectPackageDimension(22,18,12) : checkTotalWeight(60) ? collectPackageDimension(30,21,16) : window.alert('Please lower the quantity of products to reduce risk of damage while in transit. The weight limit on our largest box is 60lbs');
 }
 
 const renderProductData = function() {
@@ -58,7 +73,7 @@ const renderProductData = function() {
     })
 }
 
-  const addressSubmission = async function () {
+  const addressSubmission = function () {
     // Function is building the UPS Address Object. This data will be used to submit API Call. 
     let { Address } = address.RateRequest.Shipment.ShipTo;
     const form__input = document.querySelectorAll(".form__input");
