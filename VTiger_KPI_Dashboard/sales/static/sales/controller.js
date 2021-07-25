@@ -9,8 +9,6 @@ const smoothScrolling = function () {
     newArray.map((submit) => {
       submit.addEventListener("click", function (e) {
           e.preventDefault();
-          setPackageDimension();
-          console.log(address);
         document.getElementById("footer__id").scrollIntoView({
           behavior: "smooth",
         });
@@ -25,27 +23,27 @@ const setAddressWeight = function(totalPackageWeight) {
 }
 
 const checkTotalWeight = function(number) {
+    // Logic for checking total package weight to determine box dimensions
     return address.RateRequest.Shipment.Package.PackageWeight.Weight && address.RateRequest.Shipment.ShipmentTotalWeight.Weight <= number
 }
 
 const collectPackageDimension = function(len, wid, height) {
+    // Using the helper function above, this will set the dimensions
     address.RateRequest.Shipment.Package.Dimensions.Length = `${len}` ;
     address.RateRequest.Shipment.Package.Dimensions.Width = `${wid}` ;
     address.RateRequest.Shipment.Package.Dimensions.Height = `${height}` ;
 }
 
 const setPackageDimension = function() {
+    // Finalizing dimension functions, alerts user if over 60lbs
     checkTotalWeight(5) ? collectPackageDimension(12, 9, 5) : checkTotalWeight(10) ? collectPackageDimension(14, 11, 10) : checkTotalWeight(20) ? collectPackageDimension(22,18,12) : checkTotalWeight(60) ? collectPackageDimension(30,21,16) : window.alert('Please lower the quantity of products to reduce risk of damage while in transit. The weight limit on our largest box is 60lbs');
 }
 
 const renderProductData = function() {
-    // <select></select> Element from Product Drop down 
-    const product_Selection = document.getElementById("product_dropdown");
-
     // Manage State for Total Product Selection Weight, need last value as well (preWeight); 
     let { packageWeight } = model.state;
     let { preWeight } = model.state;
-    product_Selection.addEventListener("change", function(e) {
+    appView.product_Selection.addEventListener("change", function(e) {
         // On each product selection "change" event we are grabbing ahold of that element and manipulating the data. 
         let selectedProduct = e.target.value;
         let productWeight = +e.target.options[e.target.selectedIndex].dataset.weight;
@@ -68,6 +66,8 @@ const renderProductData = function() {
                 packageWeight += (e.target.value - preWeight) * productWeight;
                 // Sets Weight on UPS Object we are building
                 setAddressWeight(packageWeight);
+                // Sets Dimensions on UPS Object
+                setPackageDimension();
             })
         })
     })
@@ -76,8 +76,7 @@ const renderProductData = function() {
   const addressSubmission = function () {
     // Function is building the UPS Address Object. This data will be used to submit API Call. 
     let { Address } = address.RateRequest.Shipment.ShipTo;
-    const form__input = document.querySelectorAll(".form__input");
-    form__input.forEach((input) =>
+    appView.form__input.forEach((input) =>
       input.addEventListener("change", (e) => {
         e.preventDefault();
         input.placeholder === "Street Address"
@@ -93,12 +92,29 @@ const renderProductData = function() {
     );
   };
 
+  const apiCall = async function() {
+      await model.upsRateRequest(address);
+      // Add Filter Function here from Model
+      console.log(model.filterRateResults('12', model.state.ratedShipment, 'eyeriderate'));
+  }
+
+  const submitUPSObject = function() {
+      appView.checkRateBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          appView.changeDisplay(appView.rates__Section, 'flex');
+          appView.smoothScrolling(appView.footer);
+            apiCall();
+      })
+  }
+
+
 const init = function() {
     addressSubmission();
     smoothScrolling();
     // Runs Events in appViews.js
     appView.renderEvent();
     renderProductData();
+    submitUPSObject();
 }
 
 init();
