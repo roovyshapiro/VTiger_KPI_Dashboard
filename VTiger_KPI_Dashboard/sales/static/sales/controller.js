@@ -125,31 +125,94 @@ const submitUPSObject = function () {
   });
 };
 
-const setRateStateObject = function() {
-    let { negotiatedRate, publishedRate, suggestedRate, ratedShipment } = model.state;
-    // Taking filtered API response and building a rate table. This does not effect UI yet
-    negotiatedRate._3day = model.filterRateResults("12", ratedShipment, 'discount');
-    negotiatedRate._ground = model.filterRateResults("03", ratedShipment, 'discount');
-    negotiatedRate._2day = model.filterRateResults("02", ratedShipment, 'discount');
-    negotiatedRate._1daypm = model.filterRateResults("01", ratedShipment, 'discount');
-    negotiatedRate._1dayam = model.filterRateResults("14", ratedShipment, 'discount');
+const setRateStateObject = function () {
+  let { negotiatedRate, publishedRate, suggestedRate, ratedShipment } =
+    model.state;
+  // Taking filtered API response and building a rate table. This does not effect UI yet
+  negotiatedRate._3day = model.filterRateResults(
+    "12",
+    ratedShipment,
+    "discount"
+  );
+  negotiatedRate._ground = model.filterRateResults(
+    "03",
+    ratedShipment,
+    "discount"
+  );
+  negotiatedRate._2day = model.filterRateResults(
+    "02",
+    ratedShipment,
+    "discount"
+  );
+  negotiatedRate._1daypm = model.filterRateResults(
+    "01",
+    ratedShipment,
+    "discount"
+  );
+  negotiatedRate._1dayam = model.filterRateResults(
+    "14",
+    ratedShipment,
+    "discount"
+  );
 
-    publishedRate._3day = model.filterRateResults("12", ratedShipment, 'published');
-    publishedRate._ground = model.filterRateResults("03", ratedShipment, 'published');
-    publishedRate._2day = model.filterRateResults("02", ratedShipment, 'published');
-    publishedRate._1daypm = model.filterRateResults("01", ratedShipment, 'published');
-    publishedRate._1dayam = model.filterRateResults("14", ratedShipment, 'published');
+  publishedRate._3day = model.filterRateResults(
+    "12",
+    ratedShipment,
+    "published"
+  );
+  publishedRate._ground = model.filterRateResults(
+    "03",
+    ratedShipment,
+    "published"
+  );
+  publishedRate._2day = model.filterRateResults(
+    "02",
+    ratedShipment,
+    "published"
+  );
+  publishedRate._1daypm = model.filterRateResults(
+    "01",
+    ratedShipment,
+    "published"
+  );
+  publishedRate._1dayam = model.filterRateResults(
+    "14",
+    ratedShipment,
+    "published"
+  );
 
-    suggestedRate._3day = model.filterRateResults("12", ratedShipment, 'eyeriderate');
-    suggestedRate._ground = model.filterRateResults("03", ratedShipment, 'eyeriderate');
-    suggestedRate._2day = model.filterRateResults("02", ratedShipment, 'eyeriderate');
-    suggestedRate._1daypm = model.filterRateResults("01", ratedShipment, 'eyeriderate');
-    suggestedRate._1dayam = model.filterRateResults("14", ratedShipment, 'eyeriderate');
+  suggestedRate._3day = model.filterRateResults(
+    "12",
+    ratedShipment,
+    "eyeriderate"
+  );
+  suggestedRate._ground = model.filterRateResults(
+    "03",
+    ratedShipment,
+    "eyeriderate"
+  );
+  suggestedRate._2day = model.filterRateResults(
+    "02",
+    ratedShipment,
+    "eyeriderate"
+  );
+  suggestedRate._1daypm = model.filterRateResults(
+    "01",
+    ratedShipment,
+    "eyeriderate"
+  );
+  suggestedRate._1dayam = model.filterRateResults(
+    "14",
+    ratedShipment,
+    "eyeriderate"
+  );
 
-    console.log(negotiatedRate);
-    console.log(publishedRate);
-    console.log(suggestedRate);
-}
+  return appView.generateRateMarkUp(
+    negotiatedRate,
+    publishedRate,
+    suggestedRate
+  );
+};
 
 const init = function () {
   addressSubmission();
