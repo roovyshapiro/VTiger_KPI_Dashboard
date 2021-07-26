@@ -6,6 +6,9 @@ export const state = {
   ratedShipment: {},
   packageWeight: 0,
   preWeight: 0,
+  publishedRate: {},
+  negotiatedRate: {},
+  suggestedRate: {},
 };
 
 export let address = ADDRESS;
@@ -37,7 +40,7 @@ export const filterRateResults = function (serviceCode, arr, method) {
   const filtered = Array.from(arr).filter(
     (rate) => rate.Service.Code === serviceCode
   );
-  const rate = +filtered[0].RatedPackage.TotalCharges.MonetaryValue;
+  const rate = +filtered[0].RatedPackage.TotalCharges.MonetaryValue.toString();
 
   // Present all 3 options of rates, Negotitated, Published, Suggested
   if (method === "discount")

@@ -1,4 +1,4 @@
-// Imports
+'use strict';
 
 class AppView {
     packageWeight = 0;
