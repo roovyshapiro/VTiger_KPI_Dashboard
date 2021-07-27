@@ -140,3 +140,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# NPM Packages
+node_modules/
+
+# JS Files
+config.js
