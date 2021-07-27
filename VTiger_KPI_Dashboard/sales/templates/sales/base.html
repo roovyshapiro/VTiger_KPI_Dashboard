@@ -3,8 +3,11 @@
 
 <HTML>
     <head>
+        <link rel="preconnect" href="https://fonts.gstatic.com">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+        <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="{% static 'sales/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'sales/css/main.css' %}">
         <!--
         https://datatables.net/
         Scrollable Tables have been replaced with Data Tables
@@ -40,5 +43,6 @@
         {% block content %}
         {% endblock %}
         <script type="text/javascript" src="{% static 'sales/scripts.js' %}"></script>
+        <script defer type="module" src="{% static 'sales/controller.js' %}"></script>
     </body>
 </HTML>
