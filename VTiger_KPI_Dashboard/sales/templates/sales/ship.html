@@ -1,57 +1,93 @@
 {% extends 'sales/base.html' %}
 
     {% block content %}
-        <h1>Welcome to Shipping!</h1>
+<body>
+    {{ products_json|json_script:"products_json" }}
+    
+    <section id="section__form">
+        <div class="container">
+                <div class="logo__div">
+                    <img class="logo__image" src="../../static/eyeridelogo1.jpg" alt="">
+                </div>
 
-        <form>
-            <label for="product_dropdown" id="product_dropdown_label">Product:</label>
-            <select name="product_dropdown" id = "product_dropdown">
-                <option selected></option>
-                {% for product  in products %}
-                    <option value="{{ product.name }}">{{ product.name }}</option>
-                {% endfor %} 
-            </select>
-            <div id="products_submit" onclick="print_product()">Add</div>
-        </form>
+                <div class="form__div">
+                        <form>
+                            <div class="form__group field" id="street__div">
+                            <input autofocus type="text" class="form__input form__field street__input" name="street" id="street" placeholder="Street Address" value="">
+                            <label for="street" class="form__label form__input">Street Address</label>
+                            </div>
 
-        <!--With the use of JSON Script we can get 
-        data from the Django model and then access it with JS
-        https://docs.djangoproject.com/en/3.2/ref/templates/builtins/#json-script
-        -->
-        {{ products_json|json_script:"products_json" }}
+                            <div class="form__group field" id="city__div">
+                            <input type="text" class="form__input form__field city__input" name="city" id="city" placeholder="City" value="">
+                            <label for="city" class="form__label form__input">City</label>
+                            </div>
 
-        <div id = "product_table_all">
-            <table  class="scrollable_table">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Link</th>
-                        <th>Price</th>
-                        <th>Weight</th>
-                        <th>Width</th>
-                        <th>Length</th>
-                        <th>Height</th>
-                        <th>Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
-                        <tr>
-                            <td>{{ forloop.counter }}</td>
-                            <td>{{ product.name }}</td>
-                            <td><a href='{{urls.products_url}}{{ product.url_id }}'>{{ product.number }}</a></td>
-                            <td>${{ product.price }}</td>
-                            <td>{{ product.weight }} lbs</td>
-                            <td>{{ product.width }} in</td>
-                            <td>{{ product.length }} in</td>
-                            <td>{{ product.height }} in</td>
-                            <td><img src='{{urls.image_url}}{{ product.url_id }}&fileId={{ product.image_url_id}}&type=image' width="150" alt="Product Image" onerror="this.style.display='none'"></td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                            <div class="form__group field" id="state__div">
+                            <input type="text" class="form__input form__field state__input" name="state" id="state" placeholder="State ID" value="" maxlength="2">
+                            <label for="state" class="form__label form__input">State ID</label>
+                            </div>
+
+                            <div class="form__group field" id="zip__div">
+                            <input type="text" class="form__input form__field zip__input" name="zip" id="zip" placeholder="Zip Code" value="">
+                            <label for="zip" class="form__label form__input">Zip Code</label>
+                            </div>
+                            <input type="submit" class="form__submit--btn btn--animated" id="submit__btn--address" value="Product Selection">
+                        </form>
+                    </div>
+                </div>
         </div>
+    </section>
 
+    <section id="product__form">
+        <div class="container">
+                <div class="product__div">
+                    <select id="product_dropdown" class="product__options" name="products">
+                        <option value="*" disabled selected>
+                            Select Products
+                        </option>
+                        {% for product in products %}
+                            <option data-height="{{ product.height }}" data-width="{{ product.width }}" data-length="{{ product.length }}" data-weight="{{ product.weight }}" class="product-selection" value="{{ product.name }}"> {{ product.name }} </option>
+                        {% endfor %}   
+                    </select>
+                </div>
 
-    {% endblock %}
+                <div id="selected_products">
+                    <table class="table__products">
+                        <thead>
+                            <tr id="table__selected">
+                                <th hidden class="table__heading" colspan="4"><i class="fas fa-box-open shipping__icon"></i> Product Selection</th>
+                            </tr>
+                        </thead>
+                        <tbody id="myTable" class="table__body">
+                        </tbody>
+                    </table>
+
+                </div>
+                <div class="address__submit--div">
+                    <input type="submit" value="Check Rates" class="address__submit--btn form__submit--btn">
+                </div>
+        </div>
+    </section>
+
+    <section id="rates__section">
+        <div class="container">
+            <i class="fab fa-ups ups__icon fa-9x"></i>
+            <div class="output__container">
+                <table class="table__rates" id="rates__table--main">
+                    <thead>
+                        <tr>
+                            <th class="table__heading--rates">Transit Time</th>
+                            <th class="table__heading--rates">Negotitated Rates</th>
+                            <th class="table__heading--rates">Published Rates</th>
+                            <th class="table__heading--rates">EyeRide Suggested Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rates__table__body" class="table__body--rates">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
+{% endblock %}
