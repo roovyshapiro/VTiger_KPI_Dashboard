@@ -2,20 +2,6 @@ import * as model from "./model.js";
 import appView from "./viewsjs/appview.js";
 import { address } from "./model.js";
 
-const smoothScrolling = function () {
-  const submits = document.querySelectorAll('input[type="submit"]');
-  const newArray = Array.from(submits);
-
-  newArray.map((submit) => {
-    submit.addEventListener("click", function (e) {
-      e.preventDefault();
-      document.getElementById("footer__id").scrollIntoView({
-        behavior: "smooth",
-      });
-    });
-  });
-};
-
 const setAddressWeight = function (totalPackageWeight) {
   // Updates UPS Address Object
   address.RateRequest.Shipment.Package.PackageWeight.Weight =
@@ -120,7 +106,7 @@ const submitUPSObject = function () {
   appView.checkRateBtn.addEventListener("click", function (e) {
     e.preventDefault();
     appView.changeDisplay(appView.rates__Section, "flex");
-    appView.smoothScrolling(appView.footer);
+    appView.rates__Section.scrollIntoView({behavior: 'smooth'});
     apiCall();
   });
 };
@@ -216,7 +202,6 @@ const setRateStateObject = function () {
 
 const init = function () {
   addressSubmission();
-  smoothScrolling();
   // Runs Events in appViews.js
   appView.renderEvent();
   renderProductData();

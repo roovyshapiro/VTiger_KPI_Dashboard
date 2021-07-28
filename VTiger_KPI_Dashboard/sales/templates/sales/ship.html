@@ -6,7 +6,6 @@
     
     <section id="section__form">
         <div class="container">
-            <div class="wrapper">
                 <div class="logo__div">
                     <img class="logo__image" src="../../static/eyeridelogo1.jpg" alt="">
                 </div>
@@ -24,7 +23,7 @@
                             </div>
 
                             <div class="form__group field" id="state__div">
-                            <input type="text" class="form__input form__field state__input" name="state" id="state" placeholder="State ID" value="">
+                            <input type="text" class="form__input form__field state__input" name="state" id="state" placeholder="State ID" value="" maxlength="2">
                             <label for="state" class="form__label form__input">State ID</label>
                             </div>
 
@@ -32,14 +31,10 @@
                             <input type="text" class="form__input form__field zip__input" name="zip" id="zip" placeholder="Zip Code" value="">
                             <label for="zip" class="form__label form__input">Zip Code</label>
                             </div>
+                            <input type="submit" class="form__submit--btn btn--animated" id="submit__btn--address" value="Product Selection">
                         </form>
                     </div>
                 </div>
-
-                <div class="form__btn--wrapper">
-                    <input type="submit" class="form__submit--btn btn--animated" id="submit__btn--address" value="Product Selection">
-                </div>
-            </div>
         </div>
     </section>
 
@@ -57,7 +52,7 @@
                 </div>
 
                 <div id="selected_products">
-                    <table>
+                    <table class="table__products">
                         <thead>
                             <tr id="table__selected">
                                 <th hidden class="table__heading" colspan="4"><i class="fas fa-box-open shipping__icon"></i> Product Selection</th>
@@ -78,7 +73,7 @@
         <div class="container">
             <i class="fab fa-ups ups__icon fa-9x"></i>
             <div class="output__container">
-                <table id="rates__table--main">
+                <table class="table__rates" id="rates__table--main">
                     <thead>
                         <tr>
                             <th class="table__heading--rates">Transit Time</th>
@@ -93,13 +88,6 @@
             </div>
         </div>
     </section>
-
-    <footer id="footer__id">
-        <div class="footer__container">
-            <h1 class="signature">Developed by Antonino Adornetto</h1>
-            <h2 class="ups__api"><i class="fab fa-ups ups__icon--footer"></i>API Intergration by UPS</h2>
-        </div>
-    </footer>
 </body>
 </html>
 {% endblock %}
