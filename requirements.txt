@@ -13,7 +13,7 @@ click-repl==0.2.0
 convertdate==2.3.2
 cryptography==3.3.1
 defusedxml==0.6.0
-Django==3.0.7
+Django==3.1.12
 django-allauth==0.44.0
 django-celery-beat==1.6.0
 django-timezone-field==3.1
