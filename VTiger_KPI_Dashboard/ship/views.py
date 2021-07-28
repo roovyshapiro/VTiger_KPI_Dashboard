@@ -13,7 +13,7 @@ def main(request):
     '''
     My Home Page.
     '''
-    all_products = Products.objects.all().order_by('name')
+    all_products = Products.objects.all().order_by('name').filter(~Q(weight=0))
 
     product_selection = request.GET.get('product_dropdown')
     selected_product = all_products.filter(name=product_selection)
@@ -49,6 +49,7 @@ def main(request):
         products_json[product.name]['length'] = product.length
         products_json[product.name]['height'] = product.height
         products_json[product.name]['weight'] = product.weight
+
 
     context = {
         "products":all_products,
