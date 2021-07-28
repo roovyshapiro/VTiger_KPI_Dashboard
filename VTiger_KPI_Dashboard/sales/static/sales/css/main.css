@@ -326,5 +326,5 @@ a {
   align-items: center;
   margin: 0 auto;
   max-width: 100%;
-  width: 20rem;
+  width: 20rem !important;
   height: 4rem; }
