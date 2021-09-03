@@ -1,9 +1,6 @@
 {% extends 'sales/base.html' %}
 
 {% block content %}
-    {% if not user_data.username %}
-        <h1> Please choose a User!</h1>
-    {% endif %}
     <label for="user_dropdown" id="user_dropdown_label">USER:</label>
     <select name="user_dropdown" id = "user_dropdown">
         <option selected></option>
@@ -12,17 +9,35 @@
         {% endfor %} 
     </select>
     <button id="user_submit" onclick="user_submit()">Submit</button>
-    {% if user_data.username %}
-        <h1>{{ user_data.username }}</h1>
-        <h3>CASES</h3>
-        <p>Assigned Cases: {{ user_data.cases.assigned_cases }}</p>
-        <p>Closed Cases: {{ user_data.cases.closed_cases }}</p>
-        <p>Open Cases: {{ user_data.cases.open_cases }}</p>
-        <p><i class="fa fa-smile"></i>: {{ user_data.cases.feedback.satisfied }}</p>
-        <p><i class="fa fa-meh"></i>: {{ user_data.cases.feedback.neutral }}</p>
-        <p><i class="fa fa-frown"></i>: {{ user_data.cases.feedback.not_satisfied }}</p>
-        <p>Avg Time Spent: {{ user_data.cases.avg_time_spent }}</p>
-        <h3>CALLS</h3>
-        <p>All Calls: {{ user_data.calls.all_calls }}</p>
+
+    {% if not user_data.username %}
+        <h1> Please choose a User!</h1>
+    {% else %}
+            <div>
+                <h1>{{ user_data.username }}</h1>
+        {% if user_data.cases.assigned_cases != 0  %}
+                <h3>CASES</h3>
+                <p>Assigned Cases: {{ user_data.cases.assigned_cases }}</p>
+                <p>Closed Cases: {{ user_data.cases.closed_cases }}</p>
+                <p>Open Cases: {{ user_data.cases.open_cases }}</p>
+                <p><i class="fa fa-smile"></i>: {{ user_data.cases.feedback.satisfied }}</p>
+                <p><i class="fa fa-meh"></i>: {{ user_data.cases.feedback.neutral }}</p>
+                <p><i class="fa fa-frown"></i>: {{ user_data.cases.feedback.not_satisfied }}</p>
+                <p>Avg Time Spent: {{ user_data.cases.avg_time_spent }}</p>
+            </div>
+        {% endif %}
+
+        {% if user_data.calls %}
+                <h3>CALLS</h3>
+                <p>All Calls: {{ user_data.calls.all_calls }}</p>
+            </div>
+        {% endif %}
+
+        {% if user_data.issues.assigned != 0 %}
+                <h3>Redmine ISSUES</h3>
+                <p>Assigned Issues: {{ user_data.issues.assigned }} </p>
+            </div>
+        {% endif %}
     {% endif %}
+
 {% endblock %}

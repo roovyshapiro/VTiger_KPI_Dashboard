@@ -8,6 +8,7 @@ from django.db.models import Q
 
 from cases.models import Cases
 from sales.models import Phone_call
+from dev.models import Redmine_issues
 
 #import datetime, json, os, calendar, holidays
 
@@ -17,21 +18,37 @@ def main(request, username):
     '''
     all_cases = Cases.objects.all()
     all_calls = Phone_call.objects.all()
+    all_issues = Redmine_issues.objects.all()
+    user_has_calls = False
+    user_has_cases = False
+    user_has_issues = False
 
     user_data = {}
     user_data['cases'] = {}
     user_data['calls'] = {}
+    user_data['issues'] = {}
     user_data['username'] = username
 
+    user_issues = all_issues.filter(assigned_to_name = username)
     user_calls = all_calls.filter(assigned_username = username)
-    user_data['calls']['all_calls'] = len(user_calls)
+    print(user_calls)
+    print(len(user_calls))
+    if len(user_calls) > 0:
+        user_has_calls = True
+        user_data['calls']['all_calls'] = len(user_calls)
+
 
     user_data['all_users'] = []
-
-    all_users = all_cases.values('assigned_username').distinct()
-    for user in all_users:
+    case_users = all_cases.values('assigned_username').distinct()
+    redmine_users = all_issues.values('assigned_to_name').distinct()
+    for user in case_users:
         if user['assigned_username'] != '':
             user_data['all_users'].append(user['assigned_username'])
+            user_has_cases = True
+    for user in redmine_users:
+        if user['assigned_to_name'] != '':
+            user_data['all_users'].append(user['assigned_to_name'])
+            user_has_issues = True
 
     assigned_cases = all_cases.filter(assigned_username = username)
     closed_cases = assigned_cases.filter(Q(casestatus='Closed') | Q(casestatus='esolved'))
@@ -71,6 +88,16 @@ def main(request, username):
         avg_time_spent = 0
     user_data['cases']['avg_time_spent'] = avg_time_spent
 
+
+    user_data['issues']['assigned'] = len(user_issues)
+
+    if not user_has_cases:
+        del user_data['cases']
+    if not user_has_issues:
+        del user_data['issues']
+    if not user_has_calls:
+        del user_data['calls']
+
     context = {
         'user_data': user_data,
     }
@@ -82,15 +109,25 @@ def user_home(request):
     '''
     user_data = {}
     user_data['username'] = False
+    all_cases = Cases.objects.all()
+    all_calls = Phone_call.objects.all()
+    all_issues = Redmine_issues.objects.all()
+    user_data = {}
+    user_data['cases'] = {}
+    user_data['calls'] = {}
+    user_data['issues'] = {}
 
     user_data['all_users'] = []
-
-    all_cases = Cases.objects.all()
-    all_users = all_cases.values('assigned_username').distinct()
-    for user in all_users:
+    case_users = all_cases.values('assigned_username').distinct()
+    redmine_users = all_issues.values('assigned_to_name').distinct()
+    for user in case_users:
         if user['assigned_username'] != '':
             user_data['all_users'].append(user['assigned_username'])
-
+            user_has_cases = True
+    for user in redmine_users:
+        if user['assigned_to_name'] != '':
+            user_data['all_users'].append(user['assigned_to_name'])
+            user_has_issues = True
     context = {
         'user_data': user_data,
     }
