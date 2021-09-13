@@ -51,7 +51,7 @@ def main(request, username):
             user_has_issues = True
 
     assigned_cases = all_cases.filter(assigned_username = username)
-    closed_cases = assigned_cases.filter(Q(casestatus='Closed') | Q(casestatus='esolved'))
+    closed_cases = assigned_cases.filter(Q(casestatus='Closed') | Q(casestatus='Resolved'))
     open_cases = assigned_cases.filter(~Q(casestatus='Closed') & ~Q(casestatus='Resolved'))
     user_data['cases']['assigned_cases'] = len(assigned_cases)
     user_data['cases']['closed_cases'] = len(closed_cases)
@@ -88,6 +88,10 @@ def main(request, username):
         avg_time_spent = 0
     user_data['cases']['avg_time_spent'] = avg_time_spent
 
+
+    user_data['issues']['open_issues'] = user_issues.filter(~Q(status_name="Done") & ~Q(status_name="Resolved") & ~Q(status_name="Rejected") & ~Q(status_name="Out of date") & ~Q(status_name="Not relevant") & ~Q(status_name="Unreproducible") & ~Q(status_name="Duplicate") & ~Q(status_name="Already fixed"))
+    user_data['issues']['closed_issues'] =user_issues.filter(Q(status_name="Done")  | Q(status_name="Resolved"))
+    user_data['issues']['rejected_issues'] = user_issues.filter(Q(status_name="Rejected") | Q(status_name="Out of date") | Q(status_name="Not relevant") | Q(status_name="Unreproducible") | Q(status_name="Duplicate") | Q(status_name="Already fixed"))
 
     user_data['issues']['assigned'] = len(user_issues)
 

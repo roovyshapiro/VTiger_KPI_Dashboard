@@ -36,6 +36,9 @@
         {% if user_data.issues.assigned != 0 %}
                 <h3>Redmine ISSUES</h3>
                 <p>Assigned Issues: {{ user_data.issues.assigned }} </p>
+                <p>Open Issues: {{ user_data.issues.open_issues | length}} </p>
+                <p>Resolved Issues: {{ user_data.issues.closed_issues | length}} </p>
+                <p>Rejected Issues: {{ user_data.issues.rejected_issues | length}} </p>
             </div>
         {% endif %}
     {% endif %}
