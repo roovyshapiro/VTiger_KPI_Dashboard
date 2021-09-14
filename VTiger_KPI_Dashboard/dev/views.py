@@ -423,6 +423,8 @@ def month_comparison_data(all_issues, issue_status):
                 for issue in all_issues.filter(closed_on__gte=comparison_data[month]['first_day'], closed_on__lte=comparison_data[month]['last_day']):
                     if issue.closed_on.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                         date_count += 1
+                if len(comparison_data[month]['resolved']) >= 1:
+                    date_count = date_count + comparison_data[month]['resolved'][-1]
                 comparison_data[month]['resolved'].append(date_count)
             elif issue_status == "created":
                 for issue in all_issues.filter(created_on__gte=comparison_data[month]['first_day'], created_on__lte=comparison_data[month]['last_day']):
