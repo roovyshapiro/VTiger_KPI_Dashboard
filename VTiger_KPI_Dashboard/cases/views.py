@@ -662,20 +662,26 @@ def month_comparison_data(supplied_group, full_cases, case_status="Resolved"):
 
     #Makes a list of all days in the range of the beginning and end of the available days in db
     for month in comparison_data:
-        date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (comparison_data[month]['last_day'] - comparison_data[month]['first_day']).days + 1)]
+        if timezone.now().strftime('%B') == month:
+            date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (timezone.now() - comparison_data[month]['first_day']).days + 1)]
+        else:
+            date_range = [comparison_data[month]['first_day'] + datetime.timedelta(days=x) for x in range(0, (comparison_data[month]['last_day'] - comparison_data[month]['first_day']).days + 1)]        
         for date in date_range:
             date_count = 0
             if case_status == "Resolved":
                 for case in full_cases.filter(case_resolved__gte=comparison_data[month]['first_day'], case_resolved__lte=comparison_data[month]['last_day']):
                     if case.case_resolved.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                         date_count += 1
-                comparison_data[month]['resolved'].append(date_count)
+                if len(comparison_data[month]['resolved']) >= 1:
+                    date_count = date_count + comparison_data[month]['resolved'][-1]
+                comparison_data[month]['resolved'].append(date_count)            
             elif case_status == "Created":
                 for case in full_cases.filter(createdtime__gte=comparison_data[month]['first_day'], createdtime__lte=comparison_data[month]['last_day']):
                     if case.createdtime.replace(hour=0, minute = 0, second=0,microsecond=0) == date:
                         date_count += 1
+                if len(comparison_data[month]['created']) >= 1:
+                    date_count = date_count + comparison_data[month]['created'][-1]
                 comparison_data[month]['created'].append(date_count)
-
     return comparison_data
 
 @login_required()
