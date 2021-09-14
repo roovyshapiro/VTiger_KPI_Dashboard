@@ -10,7 +10,7 @@ from cases.models import Cases
 from sales.models import Phone_call
 from dev.models import Redmine_issues
 
-#import datetime, json, os, calendar, holidays
+import json, os
 
 def main(request, username):
     '''
@@ -31,8 +31,6 @@ def main(request, username):
 
     user_issues = all_issues.filter(assigned_to_name = username)
     user_calls = all_calls.filter(assigned_username = username)
-    print(user_calls)
-    print(len(user_calls))
     if len(user_calls) > 0:
         user_has_calls = True
         user_data['calls']['all_calls'] = len(user_calls)
@@ -102,8 +100,16 @@ def main(request, username):
     if not user_has_calls:
         del user_data['calls']
 
+    credentials_file = 'credentials.json'
+    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+    with open(credentials_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    url = credential_dict['redmine_host']
+
     context = {
         'user_data': user_data,
+        'url':url,
     }
     return render(request, "sales/user.html", context) 
 

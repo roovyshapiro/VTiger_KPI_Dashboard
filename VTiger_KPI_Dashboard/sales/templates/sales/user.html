@@ -40,6 +40,42 @@
                 <p>Resolved Issues: {{ user_data.issues.closed_issues | length}} </p>
                 <p>Rejected Issues: {{ user_data.issues.rejected_issues | length}} </p>
             </div>
+            <input type=checkbox id="show_label_all">
+            <label for="show_label_all" class="show_label">OPEN ISSUES</label>
+            <div id = "case_table_all">
+                <table class = "scrollable_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Number</th>
+                            <th>Project</th>
+                            <th>Author</th>
+                            <th>Assigned To</th>
+                            <th>Subject</th>
+                            <th>Status</th>
+                            <th>Created (UTC)</th>
+                            <th>Modified (UTC)</th>
+                            <th>Resolved (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for issue in user_data.issues.open_issues %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href='{{url}}/issues/{{ issue.issue_id }}'>{{ issue.issue_id }}</a></td>
+                                <td>{{ issue.project_name }}</td>
+                                <td>{{ issue.author_name }}</td>
+                                <td>{{ issue.assigned_to_name }}</td>
+                                <td>{{ issue.subject }}</td>
+                                <td>{{ issue.status_name }}</td>
+                                <td>{{ issue.created_on }}</td>
+                                <td>{{ issue.updated_on }}</td>
+                                <td>{{ issue.closed_on }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% endif %}
     {% endif %}
 
