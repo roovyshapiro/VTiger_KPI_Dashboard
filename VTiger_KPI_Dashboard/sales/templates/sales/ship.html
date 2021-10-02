@@ -1,93 +1,164 @@
 {% extends 'sales/base.html' %}
+{% load static %}
 
     {% block content %}
+    <script defer type="module" src="{% static 'sales/controller.js' %}"></script>
 <body>
     {{ products_json|json_script:"products_json" }}
-    
-    <section id="section__form">
-        <div class="container">
-                <div class="logo__div">
-                    <img class="logo__image" src="../../static/eyeridelogo1.jpg" alt="">
+    <main>
+        <section id="address__form--section">
+            <div class="container">
+                <div class="text--div">
+                    <h1 class="title--heading white">Welcome</h1>
+                        {% if user.is_authenticated %}
+                        <h1 class="title--heading white">
+                            {{ user.first_name }}
+                        </h1>
+                        {% else %}
+                        <h1 class="title--heading white">
+                            User
+                        </h1>
+                        {% endif %}
                 </div>
-
-                <div class="form__div">
-                        <form>
-                            <div class="form__group field" id="street__div">
-                            <input autofocus type="text" class="form__input form__field street__input" name="street" id="street" placeholder="Street Address" value="">
-                            <label for="street" class="form__label form__input">Street Address</label>
-                            </div>
-
-                            <div class="form__group field" id="city__div">
-                            <input type="text" class="form__input form__field city__input" name="city" id="city" placeholder="City" value="">
-                            <label for="city" class="form__label form__input">City</label>
-                            </div>
-
-                            <div class="form__group field" id="state__div">
-                            <input type="text" class="form__input form__field state__input" name="state" id="state" placeholder="State ID" value="" maxlength="2">
-                            <label for="state" class="form__label form__input">State ID</label>
-                            </div>
-
-                            <div class="form__group field" id="zip__div">
-                            <input type="text" class="form__input form__field zip__input" name="zip" id="zip" placeholder="Zip Code" value="">
-                            <label for="zip" class="form__label form__input">Zip Code</label>
-                            </div>
-                            <input type="submit" class="form__submit--btn btn--animated" id="submit__btn--address" value="Product Selection">
-                        </form>
+                <div class="btn__slide--div">
+                    <div class="cog--div">
+                        <i class="fas fa-cog white"></i>
+                    </div>
+                    <div class="cog--div clickfor--products">
+                        <p class="cog--heading product--heading white">Click For Products</p>
+                        <p class="cog--heading address--heading white hide--section">Click For Address</p>
                     </div>
                 </div>
-        </div>
-    </section>
+                <!-- Address Form  -->
+                <div class="content--wrapper address--wrapper">
+                    <form id="address--form" name="addressForm">
+                        <div class="form--div">
+                            <div class="form--group">
+                                <i class="far fa-address-card address--icon white"></i>
+                                <input class="form--input" placeholder="Address" type="text" id="AddressLine" name="AddressLine" value="2520 SW 30th Ave"></div>
+                        </div>
+                        <div class="form--div">
+                            <div class="form--group">
+                                <i class="far fa-building address--icon white"></i>
+                                <input class="form--input" placeholder="City" type="text" id="City" name="City" value="Hallandale Beach"></div>
+                        </div>
+                        <div class="form--div">
+                            <div class="form--group">
+                                <i class="fas fa-flag-usa address--icon white"></i>
+                                <input class="form--input" placeholder="State ID" type="text" id="StateProvinceCode" name="StateProvinceCode" value="FL" minlength="2" maxlength="2"></div>
+                        </div>
+                        <div class="form--div">
+                            <div class="form--group">
+                                <i class="fas fa-sort-numeric-up-alt address--icon white"></i>
+                                <input class="form--input" placeholder="Zip Code" type="number" id="PostalCode" name="PostalCode" value="33009" min="5"></div>
+                        </div>
+                        <div class="form__btn--div">
+                                <input class="form--btn" type="submit" value="submit">
+                        </div>
+                    </form>
+                </div>
+                <!-- Product Selection -->
+                <div class="content--wrapper product--wrapper hide--section">
+                    <div class="output--div">
+                        <div class="product__selection--div">
+                            <select name="products" id="product--dropdown" class="product--options form-select form-select-sm" data-show-subtext="true">
+                                <option value="*" disabled selected>
+                                    Select Products
+                                </option>
+                                {% for product in products %}
+                                {% if product.weight > 0 %}
+                                <option data-height="{{ product.height }}" data-width="{{ product.width }}" data-length="{{ product.length }}" data-weight="{{ product.weight }}" class="product-selection" value="{{ product.name }}" data-subtext="{{ product.weight }}"> {{ product.name }} </option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
 
-    <section id="product__form">
-        <div class="container">
-                <div class="product__div">
-                    <select id="product_dropdown" class="product__options" name="products">
-                        <option value="*" disabled selected>
-                            Select Products
-                        </option>
-                        {% for product in products %}
-                            <option data-height="{{ product.height }}" data-width="{{ product.width }}" data-length="{{ product.length }}" data-weight="{{ product.weight }}" class="product-selection" value="{{ product.name }}"> {{ product.name }} </option>
-                        {% endfor %}   
-                    </select>
+                        <!-- Product OutPuts, JS Markup -->
+                        <!-- <div class="product__output--div">
+                                <div class="output--icon">
+                                    <i class="fas fa-bus-alt white"></i>
+                                </div>
+                                <div class="output--product white">
+                                    <p class="product--title white center">Eyenet</p>
+                                </div>
+                                <div class="output--quantity">
+                                    <p class="product--quantity white center"></p>
+                                    <a href="#"><i class="fas fa-plus white"></i></a>
+                                    <a href="#"><i class="fas fa-minus white"></i></a>
+                                </div>
+                        </div> -->
+                    </div>
+                    <div class="form__btn--div">
+                        <input class="form--btn rates--button" value="Check Rates" type="submit">
+                    </div>
                 </div>
 
-                <div id="selected_products">
-                    <table class="table__products">
-                        <thead>
-                            <tr id="table__selected">
-                                <th hidden class="table__heading" colspan="4"><i class="fas fa-box-open shipping__icon"></i> Product Selection</th>
-                            </tr>
-                        </thead>
-                        <tbody id="myTable" class="table__body">
-                        </tbody>
-                    </table>
-
+                <div class="content--wrapper spinning--wheel hide--section">
+                    <div class="loader">
+                        <!-- Loading Wheel goes here -->
+                    </div>
                 </div>
-                <div class="address__submit--div">
-                    <input type="submit" value="Check Rates" class="address__submit--btn form__submit--btn">
-                </div>
-        </div>
-    </section>
 
-    <section id="rates__section">
-        <div class="container">
-            <i class="fab fa-ups ups__icon fa-9x"></i>
-            <div class="output__container">
-                <table class="table__rates" id="rates__table--main">
-                    <thead>
-                        <tr>
-                            <th class="table__heading--rates">Transit Time</th>
-                            <th class="table__heading--rates">Negotitated Rates</th>
-                            <th class="table__heading--rates">Published Rates</th>
-                            <th class="table__heading--rates">EyeRide Suggested Rate</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rates__table__body" class="table__body--rates">
-                    </tbody>
-                </table>
+                <div class="content--wrapper rates--wrapper hide--section">
+                    <div class="rates__output--div">
+                        <div class="rates--description">
+                            <div>Service</div>
+                            <div>Negotitated</div>
+                            <div>Suggested</div>
+                            <div>Published</div>
+                        </div>
+                        <div class="rates--result ground">
+                            <div class="white">Ground</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$12.00</div>
+                            <div class="light--color">$15.00</div>
+                        </div>
+                        <div class="rates--result threeday">
+                            <div class="white">3 Day</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                        </div>
+                        <div class="rates--result twoday">
+                            <div class="white">2 Day</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                        </div>
+                        <div class="rates--result overnight">
+                            <div class="white">1 Day PM</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                        </div>
+                        <div class="rates--result overnightam">
+                            <div class="white">1 Day AM</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                            <div class="light--color">$10.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn--div">
+                    <input class="form--btn hide--section" type="submit" value="Check Rates">
+                    <input type="reset" class="form--btn reset--btn hide--section" value="Reset">
+                </div>
             </div>
+        </section>
+
+        <!-- Error & Success Message Banners -->
+        <div class="banner--div hide--section">
+            <span class="close--btn center" onclick="this.parentElement.style.display='none'">&times;</span>
         </div>
-    </section>
+    </main>
+    <footer>
+        <div class="footer--container">
+            <div class="footer--row"></div>
+            <div class="footer--row"></div>
+            <div class="footer--row"></div>
+        </div>
+    </footer>
 </body>
 </html>
 {% endblock %}
