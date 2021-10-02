@@ -1,0 +1,65 @@
+@import '../abstracts/variables';
+
+.output--div {
+  min-height: 80%;
+  width: 80%;
+  position: relative;
+  overflow: auto;
+
+  .product__selection--div {
+    width: 100%;
+    min-height: 10%;
+    @include flex--center;
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .product__output--div {
+    width: 100%;
+    min-height: 10%;
+    display: flex;
+    position: relative;
+    animation: loadProducts 1s forwards ease-out;
+
+    .output--icon {
+      @include flex--center;
+      width: 10%;
+      height: 2rem;
+      background: darken($nav-color, 5%);
+    }
+
+    .output--product {
+      @include flex--center;
+      width: 60%;
+      height: 2rem;
+      background: darken($nav-color, 5%);
+    }
+
+    .output--quantity {
+      width: 30%;
+      height: 2rem;
+      background: darken($nav-color, 5%);
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding: 0 0.5rem;
+
+      a {
+        font-size: 0.7rem;
+        margin-left: auto;
+      }
+    }
+  }
+}
+
+@keyframes loadProducts {
+  0% {
+    opacity: 0.2;
+    transform: translateX(-500px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

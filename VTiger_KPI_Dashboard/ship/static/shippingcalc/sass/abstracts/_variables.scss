@@ -1,0 +1,54 @@
+// Default Styling
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+body {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+}
+
+li,
+ul {
+  list-style: none;
+}
+
+// Color Variables
+$nav-color: #222b37;
+$nav-font-color: #9b9b9b;
+$primary: #ff7900;
+$secondary: rgba(255, 208, 0, 0.815);
+$white: #fff;
+$gray: #9b9b9b;
+$btn-color: linear-gradient(to bottom, $primary, lighten($primary, 15%));
+$ups-icon-color: #f7ae06;
+$ups-icon: linear-gradient(to bottom, $ups-icon-color, darken($ups-icon-color, 20%));
+$bg-color-1: #8453ff;
+$bg-color-2: #b74dff;
+$bg-color-3: #36367e;
+$bg-color-4: #1be5fc;
+$bg-color-5: #725fff;
+$bg-color-6: #4f4a8a;
+$button-color: #ffeba7;
+$button-font-color: #102770;
+
+// Mixins
+@mixin flex--center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin flex__center--col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}

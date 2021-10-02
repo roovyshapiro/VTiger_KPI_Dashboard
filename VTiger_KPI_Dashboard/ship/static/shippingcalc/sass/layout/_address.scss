@@ -1,0 +1,26 @@
+@import '../abstracts/variables';
+
+#address__form--section {
+  #address--form {
+    min-height: 80%;
+    width: 80%;
+    overflow: auto;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    perspective: 800px;
+
+    .form--div {
+      @include flex--center;
+      min-height: 20%;
+
+      .form--group {
+        width: 100%;
+        position: relative;
+        display: block;
+        margin: 0;
+        padding: 0;
+        background: darken($nav-color, 2%);
+      }
+    }
+  }
+}

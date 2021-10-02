@@ -1,0 +1,107 @@
+@import '../abstracts/variables';
+
+.form__btn--div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > input {
+    padding: 0.5rem;
+  }
+}
+
+.btn--div {
+  height: 3.7vh;
+  position: absolute;
+  bottom: 3.5%;
+  right: 50%;
+  transform: translate(50%, -50%);
+}
+
+.form--btn {
+  text-align: center;
+  width: 30vw;
+  height: 100%;
+  margin-top: 1.5rem;
+  margin-inline: auto;
+  background: $button-color;
+  color: $button-font-color;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background 1s;
+  border-radius: 0.3rem;
+  border: none;
+  outline: none;
+
+  &:hover {
+    background: $button-font-color;
+    color: $button-color;
+    cursor: pointer;
+    outline: none;
+    border: none;
+  }
+}
+
+.rates--button {
+  text-align: center;
+  width: 30vw;
+  height: 100%;
+  margin-inline: auto;
+  background: $button-color;
+  color: $button-font-color;
+  text-transform: uppercase;
+  font-weight: bold;
+  transition: background 1s;
+  border-radius: 0.3rem;
+  border: none;
+  outline: none;
+
+  &:hover {
+    background: $button-font-color;
+    color: $button-color;
+    cursor: pointer;
+    outline: none;
+    border: none;
+  }
+}
+
+// Cog Button
+.btn__slide--div {
+  position: absolute;
+  height: 5%;
+  width: 90%;
+  top: 20%;
+  right: 50%;
+  transform: translate(50%, -50%);
+  display: flex;
+  cursor: pointer;
+  transition: all 1s;
+
+  &:hover {
+    box-shadow: 0 1rem 3rem 0 rgba(21, 21, 21, 0.397);
+  }
+
+  .cog--div {
+    width: 50%;
+    height: 100%;
+    @include flex--center;
+  }
+}
+
+.fa-plus,
+.fa-minus {
+  padding-top: 0.2rem;
+  font-size: 0.7rem;
+  padding-left: 0.5rem;
+}
+
+// Reset Button & Div
+.reset--div {
+  position: relative;
+  top: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 3.7vh;
+}

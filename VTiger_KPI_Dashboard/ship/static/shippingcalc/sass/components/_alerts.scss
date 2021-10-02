@@ -1,0 +1,52 @@
+.close--btn {
+    margin-left: 1rem;
+    color: #fff;
+    font-weight: bold;
+    float: right;
+    font-size: 1.2rem;
+    line-height: 1.2rem;
+    cursor: pointer;
+    transition: 0.3s;
+
+    &:hover {
+        color: #000;
+    }
+}
+
+.banner--div {
+    position: absolute;
+    top: 8.5%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    padding: 1.2rem 2rem;
+    color: #fff;
+    margin-bottom: 1rem;
+    animation: messagebox 0.5s forwards ease-in;
+}
+
+.alert {
+    background-color: #f44336;
+}
+
+.sucess {
+    background-color: #2fb986;
+    animation: successBox 2s 1.5s forwards ease-out;
+}
+
+// Animation
+@keyframes messagebox {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0.9;
+    }
+}
+
+@keyframes successBox {
+    100% {
+        opacity: 0;
+    }
+}

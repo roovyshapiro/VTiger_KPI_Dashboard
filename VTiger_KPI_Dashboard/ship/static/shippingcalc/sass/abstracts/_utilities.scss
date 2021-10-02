@@ -1,0 +1,47 @@
+@import './variables';
+
+.container {
+  max-width: 70rem;
+  min-height: 80vh;
+  margin-inline: auto;
+  position: relative;
+}
+
+// Welcome Div
+.text--div {
+  position: absolute;
+  top: 0.5%;
+  left: 5%;
+  right: 5%;
+  min-height: 10%;
+  margin-inline: auto;
+  @include flex--center;
+}
+
+.content--wrapper {
+  position: absolute;
+  top: 30%;
+  left: 5%;
+  right: 5%;
+  height: 75%;
+  margin-inline: auto;
+  @include flex__center--col;
+  background: $nav-color;
+  border-radius: 0.5rem;
+  // overflow: hidden;
+  animation: opacityTransition 0.5s forwards ease-in;
+
+  @keyframes opacityTransition {
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+.hide--section {
+  display: none;
+}
