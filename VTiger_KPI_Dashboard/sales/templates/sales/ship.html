@@ -2,8 +2,8 @@
 {% load static %}
 
     {% block content %}
-    <script defer type="module" src="{% static 'sales/controller.js' %}"></script>
-<body>
+    <script defer type="module" src="{% static 'shippingcalc/js/controller.js' %}"></script>
+<body id="ratingAPI">
     {{ products_json|json_script:"products_json" }}
     <main>
         <section id="address__form--section">
@@ -20,13 +20,18 @@
                         </h1>
                         {% endif %}
                 </div>
-                <div class="btn__slide--div">
-                    <div class="cog--div">
-                        <i class="fas fa-cog white"></i>
-                    </div>
-                    <div class="cog--div clickfor--products">
-                        <p class="cog--heading product--heading white">Click For Products</p>
-                        <p class="cog--heading address--heading white hide--section">Click For Address</p>
+                <div class="reset--div">
+                        <input type="reset" class="form--btn reset--btn hide--section" value="Check Another Rate" onclick="document.location.reload()">
+                </div>
+                <div class="intro--wrapper">
+                    <div class="btn__slide--div">
+                        <div class="cog--div">
+                            <i class="fas fa-cog white"></i>
+                        </div>
+                        <div class="cog--div clickfor--products">
+                            <p class="cog--heading product--heading white">Click For Products</p>
+                            <p class="cog--heading address--heading white hide--section">Click For Address</p>
+                        </div>
                     </div>
                 </div>
                 <!-- Address Form  -->
@@ -35,22 +40,22 @@
                         <div class="form--div">
                             <div class="form--group">
                                 <i class="far fa-address-card address--icon white"></i>
-                                <input class="form--input" placeholder="Address" type="text" id="AddressLine" name="AddressLine" value="2520 SW 30th Ave"></div>
+                                <input class="form--input" placeholder="Address" type="text" id="AddressLine" name="AddressLine" value=""></div>
                         </div>
                         <div class="form--div">
                             <div class="form--group">
                                 <i class="far fa-building address--icon white"></i>
-                                <input class="form--input" placeholder="City" type="text" id="City" name="City" value="Hallandale Beach"></div>
+                                <input class="form--input" placeholder="City" type="text" id="City" name="City" value=""></div>
                         </div>
                         <div class="form--div">
                             <div class="form--group">
                                 <i class="fas fa-flag-usa address--icon white"></i>
-                                <input class="form--input" placeholder="State ID" type="text" id="StateProvinceCode" name="StateProvinceCode" value="FL" minlength="2" maxlength="2"></div>
+                                <input class="form--input" placeholder="State ID" type="text" id="StateProvinceCode" name="StateProvinceCode" value="" minlength="2" maxlength="2"></div>
                         </div>
                         <div class="form--div">
                             <div class="form--group">
                                 <i class="fas fa-sort-numeric-up-alt address--icon white"></i>
-                                <input class="form--input" placeholder="Zip Code" type="number" id="PostalCode" name="PostalCode" value="33009" min="5"></div>
+                                <input class="form--input" placeholder="Zip Code" type="number" id="PostalCode" name="PostalCode" value="" min="5"></div>
                         </div>
                         <div class="form__btn--div">
                                 <input class="form--btn" type="submit" value="submit">
@@ -72,24 +77,9 @@
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <!-- Product OutPuts, JS Markup -->
-                        <!-- <div class="product__output--div">
-                                <div class="output--icon">
-                                    <i class="fas fa-bus-alt white"></i>
-                                </div>
-                                <div class="output--product white">
-                                    <p class="product--title white center">Eyenet</p>
-                                </div>
-                                <div class="output--quantity">
-                                    <p class="product--quantity white center"></p>
-                                    <a href="#"><i class="fas fa-plus white"></i></a>
-                                    <a href="#"><i class="fas fa-minus white"></i></a>
-                                </div>
-                        </div> -->
                     </div>
                     <div class="form__btn--div">
-                        <input class="form--btn rates--button" value="Check Rates" type="submit">
+                        <input class="rates--button" value="Check Rates" type="submit">
                     </div>
                 </div>
 
@@ -101,48 +91,12 @@
 
                 <div class="content--wrapper rates--wrapper hide--section">
                     <div class="rates__output--div">
-                        <div class="rates--description">
-                            <div>Service</div>
-                            <div>Negotitated</div>
-                            <div>Suggested</div>
-                            <div>Published</div>
-                        </div>
-                        <div class="rates--result ground">
-                            <div class="white">Ground</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$12.00</div>
-                            <div class="light--color">$15.00</div>
-                        </div>
-                        <div class="rates--result threeday">
-                            <div class="white">3 Day</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                        </div>
-                        <div class="rates--result twoday">
-                            <div class="white">2 Day</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                        </div>
-                        <div class="rates--result overnight">
-                            <div class="white">1 Day PM</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                        </div>
-                        <div class="rates--result overnightam">
-                            <div class="white">1 Day AM</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                            <div class="light--color">$10.00</div>
-                        </div>
+                        <!-- JS Mark UP Function will create HTML here -->
                     </div>
                 </div>
 
                 <div class="btn--div">
                     <input class="form--btn hide--section" type="submit" value="Check Rates">
-                    <input type="reset" class="form--btn reset--btn hide--section" value="Reset">
                 </div>
             </div>
         </section>
