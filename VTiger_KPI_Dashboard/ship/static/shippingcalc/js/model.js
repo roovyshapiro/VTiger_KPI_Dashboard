@@ -115,7 +115,6 @@ export const upsApiCall = async function (ADDRESS) {
       },
       body: JSON.stringify(ADDRESS),
     });
-    console.log(response);
     if (!response.ok) throw new Error();
 
     const result = await response.json();
