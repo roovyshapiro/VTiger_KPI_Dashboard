@@ -1,0 +1,30 @@
+@import '../abstracts/variables';
+
+.form--div {
+  .form--group {
+    input[type='number'] {
+      width: 100% !important;
+    }
+  }
+}
+
+.form--input {
+  padding: 0.3rem 0.5rem;
+  padding-left: 3rem;
+  height: 2.5rem;
+  width: 100%;
+  outline: none;
+  color: #c4c3ca;
+  background: darken($nav-color, 2%);
+  border: none;
+  -webkit-transition: all 200ms linear;
+  transition: all 200ms linear;
+  box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
+
+  &:focus,
+  &:active {
+    border: none;
+    outline: none;
+    box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
+  }
+}

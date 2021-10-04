@@ -1,0 +1,73 @@
+html {
+    font-size: 1rem;
+    scroll-behavior: smooth !important;
+  }
+  
+  #ratingAPI {
+    font-family: 'Lato';
+    background: linear-gradient(to right, $nav-color, $nav-font-color);
+  }
+  
+  // Utlity Typography
+  .white {
+    color: $white;
+  }
+  
+  .light--color {
+    font-weight: bold;
+    color: $button-color;
+  }
+  
+  .center {
+    text-align: center;
+  }
+  
+  .product--title {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+  
+  .product--quantity {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 1rem;
+    margin-right: 0.5rem;
+    padding-top: 0.2rem;
+  }
+  
+  .title--heading {
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 2vh;
+    margin: 0 auto;
+  }
+  
+  .cog--heading {
+    letter-spacing: 0.2rem;
+    font-size: 1.5vh;
+    font-weight: 800;
+  }
+  
+  // Icons
+  .address--icon {
+    position: absolute;
+    top: 30%;
+    left: 1rem;
+    color: #c4c3ca;
+  }
+  
+  .fa-cog {
+    font-size: 2.5vh;
+    animation: spinningCog 5s infinite linear;
+  
+    @keyframes spinningCog {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(359deg);
+      }
+    }
+  }
+  

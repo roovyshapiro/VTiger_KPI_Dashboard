@@ -1,0 +1,62 @@
+@media (min-width: 501px) and (max-width: 700px) {
+    // Typography
+    .product--title {
+      font-size: 0.85rem;
+      overflow: hidden;
+    }
+  
+    .product--quantity {
+      font-size: 0.85rem;
+    }
+  
+    .fa-plus,
+    .fa-minus {
+      padding: 0;
+    }
+  
+    .rates__output--div {
+      .rates--description {
+        & > div {
+          font-size: 75% !important;
+        }
+      }
+  
+      .rates--result {
+        & > div {
+          font-size: 75% !important;
+        }
+      }
+    }
+  }
+  
+  @media (max-width: 500px) {
+    // Typography
+    .product--title {
+      font-size: 0.7rem;
+      overflow: hidden;
+    }
+  
+    .product--quantity {
+      font-size: 0.7rem;
+    }
+  
+    .fa-plus,
+    .fa-minus {
+      padding: 0;
+    }
+  
+    .rates__output--div {
+      .rates--description {
+        & > div {
+          font-size: 60% !important;
+        }
+      }
+  
+      .rates--result {
+        & > div {
+          font-size: 60% !important;
+        }
+      }
+    }
+  }
+  

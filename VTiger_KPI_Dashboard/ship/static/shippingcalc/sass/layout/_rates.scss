@@ -1,0 +1,38 @@
+.rates__output--div {
+    min-height: 100%;
+    width: 80%;
+    position: relative;
+  
+    .rates--description {
+      width: 100%;
+      min-height: 12%;
+      @include flex--center;
+      position: relative;
+  
+      & > div {
+        @include flex--center;
+        width: 25%;
+        height: 2rem;
+        color: $white;
+        text-transform: uppercase;
+        font-size: 100%;
+      }
+    }
+  
+    .rates--result {
+      width: 100%;
+      min-height: 12%;
+      @include flex--center;
+      position: relative;
+  
+      & > div {
+        @include flex--center;
+        width: 25%;
+        height: 3.2rem;
+        text-transform: uppercase;
+        font-size: 100%;
+        background: darken($nav-color, 5%);
+      }
+    }
+  }
+  
