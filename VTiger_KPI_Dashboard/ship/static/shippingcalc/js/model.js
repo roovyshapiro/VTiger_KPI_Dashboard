@@ -74,7 +74,7 @@ export const setPackageDimension = function (dimensions) {
     if (productVol < BOXVOLS.box4) return (state.dimensions = { length: '22', width: '18', height: '12' });
     if (productVol < BOXVOLS.box5) return (state.dimensions = { length: '30', width: '15', height: '15' });
     if (productVol < BOXVOLS.box6) return (state.dimensions = { length: '32', width: '18', height: '15' });
-    if (productVol > BOXVOLS.box6) throw new Error();
+    if (productVol > BOXVOLS.box6) throw new Error('Our largest box can handle 60lbs total, please lower your product count and click "check rates" again. Split your order into multiple shipments');
   } catch (err) {
     CLEARSTATE(state);
     throw err;
@@ -118,8 +118,10 @@ export const upsApiCall = async function (ADDRESS) {
     if (!response.ok) throw new Error();
 
     const result = await response.json();
+    console.log(result);
     return (state.rates = result.RateResponse.RatedShipment);
   } catch (err) {
+    CLEARSTATE(state);
     throw err;
   }
 };

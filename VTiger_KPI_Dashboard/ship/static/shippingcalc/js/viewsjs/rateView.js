@@ -2,7 +2,7 @@ import View from './appview.js';
 
 class RateView extends View {
   _parentElement = document.querySelector('.rates--wrapper');
-  _errorMessage = 'Check your product selection and try again';
+  _errorMessage = 'Select a product!';
   _message = '';
 
   addHandlerRender(handler) {
@@ -16,7 +16,7 @@ class RateView extends View {
     /**
      * @description - Display Error message if user does not select a product
      */
-    if ([...document.querySelectorAll('.product__output--div')].length <= 0) throw err;
+    if ([...document.querySelectorAll('.product__output--div')].length <= 0) throw this.renderError(this._errorMessage);
     return;
   }
 

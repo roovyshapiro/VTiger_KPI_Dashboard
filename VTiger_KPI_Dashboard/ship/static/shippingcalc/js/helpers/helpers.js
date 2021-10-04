@@ -11,5 +11,6 @@ export const BOXVOLS = {
     state.selectedProducts = [];
     state.packageWeight = 0;
     state.productVolume = 0;
+    state.dimensions = {}
   };
   
