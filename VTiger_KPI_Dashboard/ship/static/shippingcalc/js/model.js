@@ -97,6 +97,22 @@ export const setUPSPackageDetails = async function () {
   }
 };
 
+let csrfcookie = function() { 
+  let cookieValue = null,
+      name = "csrftoken";
+  if (document.cookie && document.cookie !== "") {
+      let cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+          let cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) == (name + "=")) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+};
+
 export const upsApiCall = async function (ADDRESS) {
   /**
    * @param {Object} - ADDRESS - The entire UPS Object we build throughout the app. Includes, weight, dims, shipTo, ShipFrom ect.
@@ -104,7 +120,7 @@ export const upsApiCall = async function (ADDRESS) {
    * @constant CREDENTIALS - Our UPS Credentials which are saved in the config.js file
    */
   try {
-    const response = await fetch(UPS_URL, {
+    const response = await fetch('ratingapi/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -112,13 +128,13 @@ export const upsApiCall = async function (ADDRESS) {
         AccessLicenseNumber: `${CREDENTIALS.accessLicenseNumber}`,
         Username: `${CREDENTIALS.upsUserName}`,
         Password: `${CREDENTIALS.upsPassword}`,
+        'X-CSRFToken': csrfcookie(),
       },
       body: JSON.stringify(ADDRESS),
     });
     if (!response.ok) throw new Error();
 
     const result = await response.json();
-    console.log(result);
     return (state.rates = result.RateResponse.RatedShipment);
   } catch (err) {
     CLEARSTATE(state);
