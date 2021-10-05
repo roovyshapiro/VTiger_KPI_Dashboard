@@ -11,8 +11,8 @@ const controlAddressSubmission = async () => {
    * @function addFormRender - Sets the Address Form results to our state variable
    */
   try {
-    addressView._toggleSections(['.address--heading', '.product--heading', '.address--wrapper', '.product--wrapper']);
     addressView.addFormRender(model.setAddressDetails);
+    addressView._toggleSections(['.address--heading', '.product--heading', '.address--wrapper', '.product--wrapper']);
   } catch (err) {
     throw err;
   }
@@ -39,9 +39,7 @@ const controlRateSubmission = async () => {
     await model.setUPSPackageDetails();
     await controlApiCall();
   } catch (err) {
-    rateView.renderError(
-      'Please ensure products are selected, if they are, adjust your product quantites. Our largest box can hold 60lbs safely. Perhaps split up your order and click "Check Rates" again'
-    );
+    rateView.renderError(err);
   }
 };
 
@@ -59,7 +57,8 @@ const controlApiCall = async () => {
     );
     rateView._displayRateSection();
   } catch (err) {
-    rateView.renderError('Please refresh the page and double check your Address');
+    rateView._hideSections('.spinning--wheel');
+    rateView.renderError('Incorrect shipping address, please check the address and try again');
   }
 };
 

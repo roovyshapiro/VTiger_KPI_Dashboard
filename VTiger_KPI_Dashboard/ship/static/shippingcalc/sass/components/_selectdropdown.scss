@@ -3,5 +3,6 @@
 .form-select {
   background-color: darken($nav-color, 5%) !important;
   color: $white !important;
-  max-width: 80% !important;
+  width: 50% !important;
+  text-align: center !important;
 }

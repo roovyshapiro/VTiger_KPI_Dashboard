@@ -49,6 +49,11 @@ export default class View {
       [...hideSection].map((element) => element.classList.add('hide--section'));
       [...showSection].map((element) => element.classList.remove('hide--section'));
     }
+
+    _unhideSections(showSection) {
+      showSection = document.querySelectorAll(showSection);
+      [...showSection].map((element) => element.classList.remove('hide--section'));
+    }
   
     _spinningWheel() {
       document.querySelector('.spinning--wheel').classList.remove('hide--section');

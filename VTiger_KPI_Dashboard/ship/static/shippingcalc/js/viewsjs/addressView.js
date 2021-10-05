@@ -22,6 +22,7 @@ class AddressView extends View {
       handler(data);
       View.prototype._hideSections('.address--wrapper', '.product--wrapper');
       View.prototype._hideSections('.product--heading', '.address--heading');
+      View.prototype._unhideSections('.intro--wrapper')
     });
   }
 }

@@ -435,7 +435,8 @@ ul {
 .form-select {
   background-color: #181f27 !important;
   color: #fff !important;
-  max-width: 80% !important;
+  width: 50% !important;
+  text-align: center !important;
 }
 
 *,

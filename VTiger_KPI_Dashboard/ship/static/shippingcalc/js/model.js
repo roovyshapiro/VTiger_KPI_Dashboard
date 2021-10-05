@@ -74,7 +74,7 @@ export const setPackageDimension = function (dimensions) {
     if (productVol < BOXVOLS.box4) return (state.dimensions = { length: '22', width: '18', height: '12' });
     if (productVol < BOXVOLS.box5) return (state.dimensions = { length: '30', width: '15', height: '15' });
     if (productVol < BOXVOLS.box6) return (state.dimensions = { length: '32', width: '18', height: '15' });
-    if (productVol > BOXVOLS.box6) throw new Error();
+    if (productVol > BOXVOLS.box6) throw new Error('Our largest box can handle 60lbs total, please lower your product count and click "check rates" again. Split your order into multiple shipments');
   } catch (err) {
     CLEARSTATE(state);
     throw err;
@@ -97,6 +97,22 @@ export const setUPSPackageDetails = async function () {
   }
 };
 
+let csrfcookie = function() { 
+  let cookieValue = null,
+      name = "csrftoken";
+  if (document.cookie && document.cookie !== "") {
+      let cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+          let cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) == (name + "=")) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+};
+
 export const upsApiCall = async function (ADDRESS) {
   /**
    * @param {Object} - ADDRESS - The entire UPS Object we build throughout the app. Includes, weight, dims, shipTo, ShipFrom ect.
@@ -104,7 +120,7 @@ export const upsApiCall = async function (ADDRESS) {
    * @constant CREDENTIALS - Our UPS Credentials which are saved in the config.js file
    */
   try {
-    const response = await fetch(UPS_URL, {
+    const response = await fetch('ratingapi/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -112,6 +128,7 @@ export const upsApiCall = async function (ADDRESS) {
         AccessLicenseNumber: `${CREDENTIALS.accessLicenseNumber}`,
         Username: `${CREDENTIALS.upsUserName}`,
         Password: `${CREDENTIALS.upsPassword}`,
+        'X-CSRFToken': csrfcookie(),
       },
       body: JSON.stringify(ADDRESS),
     });
@@ -120,6 +137,7 @@ export const upsApiCall = async function (ADDRESS) {
     const result = await response.json();
     return (state.rates = result.RateResponse.RatedShipment);
   } catch (err) {
+    CLEARSTATE(state);
     throw err;
   }
 };
