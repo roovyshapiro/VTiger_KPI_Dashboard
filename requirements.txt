@@ -11,7 +11,7 @@ click-didyoumean==0.0.3
 click-plugins==1.1.1
 click-repl==0.2.0
 convertdate==2.3.2
-cryptography==3.3.1
+cryptography==3.3.2
 defusedxml==0.6.0
 Django==3.1.13
 django-allauth==0.44.0
