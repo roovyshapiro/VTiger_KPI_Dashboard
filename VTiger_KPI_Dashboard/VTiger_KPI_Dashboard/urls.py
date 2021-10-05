@@ -42,6 +42,7 @@ urlpatterns = [
 
     path('ship/', ship_views.main, name='ship_dashboard'),
     path('populateproducts/', ship_views.populate_products, name='populate_products'),
+    path('ship/ratingapi/', ship_views.rating, name='rating'),
 
     path('dev/', dev_views.main, name='dev_dashboard'),
     path('devallissues/', dev_views.get_all_issues, name='dev_dashboard'),
