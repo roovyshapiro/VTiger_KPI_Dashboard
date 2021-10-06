@@ -126,21 +126,21 @@ def get_products():
             new_product.image_url_id = ''
 
         try:
-            new_product.width = int(product['cf_products_widthin'])
+            new_product.width = product['cf_products_widthin']
         except ValueError:
-            new_product.width = 0
+            new_product.width = 0.0
         try:
-            new_product.length = int(product['cf_products_lengthin'])
+            new_product.length = product['cf_products_lengthin']
         except ValueError:
-            new_product.length = 0
+            new_product.length = 0.0
         try:
-            new_product.height = int(product['cf_products_heightin'])
+            new_product.height = product['cf_products_heightin']
         except ValueError:
-            new_product.height = 0
+            new_product.height = 0.0
         try:
-            new_product.weight = int(product['cf_products_weightlbs'])
+            new_product.weight = product['cf_products_weightlbs']
         except ValueError:
-            new_product.weight = 0
+            new_product.weight = 0.0
 
         new_product.description = product['description']
         new_product.packing_list = product['cf_products_packinglist']

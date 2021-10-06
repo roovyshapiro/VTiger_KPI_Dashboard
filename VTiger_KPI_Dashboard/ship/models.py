@@ -75,10 +75,10 @@ class Products(models.Model):
     image_id = models.CharField(max_length=50)
     image_url_id = models.CharField(max_length=50)
     
-    width = models.IntegerField()
-    length = models.IntegerField()
-    height = models.IntegerField()
-    weight = models.IntegerField()
+    width = models.DecimalField(max_digits=4, decimal_places=2)
+    length = models.DecimalField(max_digits=4, decimal_places=2)
+    height = models.DecimalField(max_digits=4, decimal_places=2)
+    weight = models.DecimalField(max_digits=4, decimal_places=2)
 
     description = models.TextField()
     packing_list = models.TextField()
