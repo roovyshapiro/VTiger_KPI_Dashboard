@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import Docs
 
-# Register your models here.
+class Docs_admin(admin.ModelAdmin):
+    readonly_fields = ('date_created','date_modified')
+
+admin.site.register(Docs, Docs_admin)
