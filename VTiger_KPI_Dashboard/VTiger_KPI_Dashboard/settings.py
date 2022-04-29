@@ -221,46 +221,46 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     'get_cases_BH':{
         'task': 'cases.tasks.get_cases',
-        'schedule': crontab(minute='0,10,20,30,40,50', hour='13-23', day_of_week='1,2,3,4,5'),
+        'schedule': crontab(minute='0,20,40', hour='13-23', day_of_week='1,2,3,4,5'),
     },
     'get_cases_AH':{
         'task': 'cases.tasks.get_cases',
-        'schedule': crontab(minute='0', hour='0-12', day_of_week='1,2,3,4,5'),
+        'schedule': crontab(minute='0', hour='0,4,8,12', day_of_week='1,2,3,4,5'),
     },
     'get_cases_WKND':{
         'task': 'cases.tasks.get_cases',
-        'schedule': crontab(minute='0', hour='*/3', day_of_week='0,6'),
+        'schedule': crontab(minute='0', hour='*/4', day_of_week='0,6'),
     },
     'get_opportunities_BH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='3,13,23,33,43,53', hour='13-23', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='3,23,43', hour='13-23', day_of_week='1,2,3,4,5'),
     },
     'get_opportunities_AH': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='5', hour='0-12', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='5', hour='0,4,8,12', day_of_week='1,2,3,4,5'),
     },
     'get_opportunities_WKND': {
        'task': 'sales.tasks.get_opportunities',
-       'schedule': crontab(minute='5', hour='*/3', day_of_week='0,6'),
+       'schedule': crontab(minute='5', hour='*/4', day_of_week='0,6'),
     },
      'get_phonecalls_BH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='7,17,27,37,47,57', hour='13-23', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='7,27,47', hour='13-23', day_of_week='1,2,3,4,5'),
     },
      'get_phonecalls_AH': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='10', hour='0-12', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='10', hour='0,4,8,12', day_of_week='1,2,3,4,5'),
     },
      'get_phonecalls_WKND': {
        'task': 'sales.tasks.get_phonecalls',
-       'schedule': crontab(minute='10', hour='*/3', day_of_week='0,6'),
+       'schedule': crontab(minute='10', hour='*/4', day_of_week='0,6'),
     },
      'get_products': {
        'task': 'ship.tasks.get_products',
-       'schedule': crontab(minute='39', hour='*/5', day_of_week='1,2,3,4,5'),
+       'schedule': crontab(minute='39', hour='*/7', day_of_week='1,2,3,4,5'),
     },
     'get_issues': {
        'task': 'dev.tasks.get_issues',
-       'schedule': crontab(minute='39', hour='*/1', day_of_week='*'),
+       'schedule': crontab(minute='39', hour='*/3', day_of_week='*'),
     },
 }
