@@ -20,6 +20,7 @@ from cases import views as case_views
 from home import views as home_views
 from ship import views as ship_views
 from dev import views as dev_views
+from docs import views as doc_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -47,5 +48,8 @@ urlpatterns = [
     path('dev/', dev_views.main, name='dev_dashboard'),
     path('devallissues/', dev_views.get_all_issues, name='dev_dashboard'),
     path('devrecentissues/', dev_views.get_recent_issues, name='dev_dashboard'),
+
+    path('docs/', doc_views.main, name='dev_dashboard'),
+
 
 ]

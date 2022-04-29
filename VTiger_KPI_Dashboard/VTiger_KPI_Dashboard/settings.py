@@ -31,7 +31,7 @@ SECRET_KEY = credential_dict['django_secret_key']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True 
 
-ALLOWED_HOSTS = ['*', '192.168.1.19', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*', '192.168.1.19', 'localhost', '127.0.0.1',]
 
 
 # Application definition
@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'home',
     'ship',
     'dev',
+    'docs',
     'celery',
     'django_celery_beat',
 ]
