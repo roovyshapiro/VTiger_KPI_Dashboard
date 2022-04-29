@@ -7,4 +7,29 @@
         <h1>
             Welcome to the Docs Page!
         </h1>
+
+
+        <h2>Docs Today</h2>
+        {% for user, doc_amount in docs.docs_today.user_assigned_dict %}
+            <strong>{{user}} - {{doc_amount}}</strong>
+        {% endfor %}
+        {% for doc in docs.docs_today.updated_docs %}
+            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% endfor %}
+
+        <h2>Docs Week</h2>
+        {% for user, doc_amount in docs.docs_week.user_assigned_dict %}
+            {{user}} - {{doc_amount}}
+        {% endfor %}
+        {% for doc in docs.docs_week.updated_docs %}
+            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% endfor %}
+
+        <h2>Docs Month</h2>
+        {% for user, doc_amount in docs.docs_month.user_assigned_dict %}
+            {{user}} - {{doc_amount}}
+        {% endfor %}
+        {% for doc in docs.docs_month.updated_docs %}
+            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% endfor %}
     {% endblock %}
