@@ -811,6 +811,23 @@ label.show_label:active {
     display:block;
 }
 
+#docs_table_week,#show_docs_week {
+    display:none;
+}
+#show_docs_week:checked ~ #docs_table_week{
+    display:block;
+}
+
+#docs_table_month,#show_docs_month {
+    display:none;
+}
+#show_docs_month:checked ~ #docs_table_month{
+    display:block;
+}
+
+.docs_charts{
+    margin-bottom:20px;
+}
 
 /****** Mobile Friendly ******/
 

@@ -18,7 +18,7 @@
         </div>
         <div>
             <section class="points">
-                {% for user, doc in docs.docs_today.user_dict.items %}
+                {% for user, doc in docs.docs_today.user_dict.user_data.items %}
                     <div class = "score_box_and_table">
                         <div class = "score_box score_box_sales">
                             <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
@@ -64,7 +64,7 @@
         </div>
         <div>
             <section class="points">
-                {% for user, doc in docs.docs_week.user_dict.items %}
+                {% for user, doc in docs.docs_week.user_dict.user_data.items %}
                     <div class = "score_box_and_table">
                         <div class = "score_box score_box_sales">
                             <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
@@ -75,10 +75,10 @@
         </div>
             
         <div>
-            <input type=checkbox id="show_docs_day">
-            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+            <input type=checkbox id="show_docs_week">
+            <label for="show_docs_week" class="show_label">SHOW DOCS</label>
 
-            <div id = "docs_table_day">
+            <div id = "docs_table_week">
                 <table class = "scrollable_table">
                     <thead>
                         <tr>
@@ -110,7 +110,7 @@
         </div>
         <div>
             <section class="points">
-                {% for user, doc in docs.docs_month.user_dict.items %}
+                {% for user, doc in docs.docs_month.user_dict.user_data.items %}
                     <div class = "score_box_and_table">
                         <div class = "score_box score_box_sales">
                             <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
@@ -121,10 +121,10 @@
         </div>
             
         <div>
-            <input type=checkbox id="show_docs_day">
-            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+            <input type=checkbox id="show_docs_month">
+            <label for="show_docs_month" class="show_label">SHOW DOCS</label>
 
-            <div id = "docs_table_day">
+            <div id = "docs_table_month">
                 <table class = "scrollable_table">
                     <thead>
                         <tr>
@@ -148,5 +148,18 @@
             </div>
         </div>
 
-    </div>
+
+        <!-- Charts for the selected month -->
+        <div id = "charts" class="docs_charts">
+            {{ docs.docs_month.user_dict_json|json_script:"docs_month" }}
+            <div id ="user_contribution_chart_div_bar">
+                <canvas id="user_contribution_chart_bar"></canvas>
+            </div>
+            <div id ="user_contribution_chart_div_doughnut">
+                <canvas id="user_contribution_chart_doughnut"></canvas>
+            </div>
+        </div>
+
+     </div>
+
     {% endblock %}
