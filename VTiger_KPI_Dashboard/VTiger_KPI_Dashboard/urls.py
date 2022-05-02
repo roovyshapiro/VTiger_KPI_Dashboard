@@ -50,6 +50,7 @@ urlpatterns = [
     path('devrecentissues/', dev_views.get_recent_issues, name='dev_dashboard'),
 
     path('docs/', doc_views.main, name='dev_dashboard'),
+    path('getdocs/', doc_views.get_recent_docs, name='get_docs'),
 
 
 ]
