@@ -880,3 +880,120 @@ try{
 } catch(err){
   console.log('redmine bar chart not available', err);
 }
+
+
+
+/* DOCS - User Contribution Doughnut Chart   */
+
+
+//There's a variable amount of users, so depending on how many users there are
+//That's how many random colors get generated and added to the doughnut chart data set
+var dynamicColorsDocsMonth = function() {
+  var r = Math.floor(Math.random() * 255);
+  var g = Math.floor(Math.random() * 255);
+  var b = Math.floor(Math.random() * 255);
+  return "rgb(" + r + "," + g + "," + b + ")";
+};
+var backgroundColorArray = [];
+try{
+  var docs_user_month = JSON.parse(document.getElementById('docs_month').textContent);
+
+  var docs_user_name_month = [];
+  var docs_user_contribution_month = [];
+
+  var docs_month_name = docs_user_month['month']['month_name'];
+
+  for (user in docs_user_month['user_data']){
+    docs_user_name_month.push(docs_user_month['user_data'][user]['name']);
+    docs_user_contribution_month.push(docs_user_month['user_data'][user]['amount']);
+    backgroundColorArray.push(dynamicColorsDocsMonth());
+  }
+
+
+  var doc_user_data_month = {
+    labels: docs_user_name_month,
+    datasets: [{
+      label: 'Doughnut Chart',
+      data: docs_user_contribution_month,
+      backgroundColor: backgroundColorArray,
+      hoverOffset: 4
+    }]
+  };
+  
+  var docs_user_options_month = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins:{
+      title: {
+        display: true,
+        text: `${docs_month_name} - Contributions Per User`
+      },
+      legend: {
+        position: "left"
+      },  
+    },
+  };
+  
+  var docs_user_contributions_config = {
+    type: 'doughnut',
+    data: doc_user_data_month,
+    options: docs_user_options_month,
+  };
+  
+  
+  var doughnutChartDocContributionsMonth = new Chart(
+      document.getElementById('user_contribution_chart_doughnut'),
+      docs_user_contributions_config
+  );
+
+/* DOCS - User Contribution BAR Chart   */
+
+
+  var barChartUserDocsData = {
+    labels: docs_user_name_month,
+    datasets: [
+      {
+        label: "DOC Updates",
+        backgroundColor: "lightblue",
+        borderColor: "blue",
+        borderWidth: 1,
+        data: docs_user_contribution_month
+      },
+    ]
+  };
+  
+  var barChartOptionsUserDocs = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: "top"
+    },  
+    plugins:{
+      title: {
+        display: true,
+        text: `${docs_month_name} - Contributions Per User`
+      },
+    },
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  }
+
+  var barChartConfigUserDocs = {
+    type: "bar",
+    data: barChartUserDocsData,
+    options: barChartOptionsUserDocs
+  };
+
+  var barChartUserDocs = new Chart(
+    document.getElementById('user_contribution_chart_bar'),
+    barChartConfigUserDocs
+  );
+
+}catch(err){
+  console.log('user user_contribution_chart not available', err);
+}
