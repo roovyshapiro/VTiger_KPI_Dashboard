@@ -109,24 +109,36 @@ def retrieve_doc_data(docs, date_request, date_request_end):
     #We calculate how many docs were updated per user and add it to the context to be displayed
     #docs['all_users] = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
 
-    #user_dict = {'James Fulcrumstein':{'amount':0,'updated_docs':[]}, 'Mary Littlelamb':{'amount':0,'updated_docs':[]}, }
+    #user_dict = {'user_data:{'James Fulcrumstein':{'amount':0,'updated_docs':[]}, 'Mary Littlelamb':{'amount':0,'updated_docs':[]}, }}
     user_dict = {}
+    user_dict['user_data'] = {}
     for user in docs['all_users']:
-        user_dict[user['updated_by_name']] = {}
-        user_dict[user['updated_by_name']]['name'] = ''
-        user_dict[user['updated_by_name']]['amount'] = 0
-        user_dict[user['updated_by_name']]['updated_docs'] = []
+        user_dict['user_data'][user['updated_by_name']] = {}
+        user_dict['user_data'][user['updated_by_name']]['name'] = ''
+        user_dict['user_data'][user['updated_by_name']]['amount'] = 0
+        user_dict['user_data'][user['updated_by_name']]['updated_docs'] = []
 
     for doc in docs_dict['updated_docs']:
-        user_dict[doc.updated_by_name]['name'] = doc.updated_by_name
-        user_dict[doc.updated_by_name]['amount'] += 1
-        user_dict[doc.updated_by_name]['updated_docs'].append(doc)
+        user_dict['user_data'][doc.updated_by_name]['name'] = doc.updated_by_name
+        user_dict['user_data'][doc.updated_by_name]['amount'] += 1
+        user_dict['user_data'][doc.updated_by_name]['updated_docs'].append(doc)
 
     # Sort the dictionary so that the the dictionary with the highest value in the amounts is displayed first
     #https://stackoverflow.com/questions/55764880/python-sort-nested-dictionaries-by-value-descending
-    user_dict = dict(sorted(user_dict.items(), key=lambda t: t[1]['amount'], reverse=True))
+    user_dict['user_data'] = dict(sorted(user_dict['user_data'].items(), key=lambda t: t[1]['amount'], reverse=True))
     
     docs_dict['user_dict'] = user_dict
+
+    #querysets are not JSON serializable, so we need a JSON friendly version to send to the html page to make charts.
+    user_dict_json = user_dict
+    for user in user_dict_json['user_data']:
+        del user_dict_json['user_data'][user]['updated_docs']
+    user_dict_json['month'] = {}
+    #Add month and year to JSON data to use in Chart Labels
+    user_dict_json['month']['month_name'] = date_request.strftime('%B %Y')
+
+    docs_dict['user_dict_json'] = user_dict_json
+
     return docs_dict 
 
 @login_required()
