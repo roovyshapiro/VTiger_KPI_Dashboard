@@ -266,6 +266,6 @@ CELERY_BEAT_SCHEDULE = {
     },
     'get_docs':{
         'task': 'docs.tasks.get_docs',
-        'schedule': crontab(minute='9,29,49', hour='13-23', day_of_week='1,2,3,4,5'),
+        'schedule': crontab(minute='9,19,29,39,49', hour='13-23', day_of_week='1,2,3,4,5'),
     },
 }
