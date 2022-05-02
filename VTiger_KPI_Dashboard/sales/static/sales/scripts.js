@@ -70,6 +70,9 @@ function highlight_navbar(){
 
   }else if(pathname == '/cases/'){
     var active_link = document.getElementById('cases');
+
+  }else if(pathname == '/docs/'){
+    var active_link = document.getElementById('docs');
   
   }else if(pathname == '/dev/'){
   var active_link = document.getElementById('dev');

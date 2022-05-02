@@ -28,10 +28,11 @@
 		<nav class ="header">
             <a id = "home" class = "header_title" href="/">KPI DASHBOARD</a>
             {% if user.is_authenticated %}
-                <a id = "ship" class = "header_sales" href="/ship">SHIP</a>
-                <a id = "sales" class = "header_sales" href="/sales">SALES</a>
-                <a id = "cases" class = "header_cases" href="/cases">CASES</a>
-                <a id = "dev" class = "header_cases" href="/dev">DEV</a>
+                <a id = "ship" class = "page_header_select" href="/ship">SHIP</a>
+                <a id = "sales" class = "page_header_select" href="/sales">SALES</a>
+                <a id = "cases" class = "page_header_select" href="/cases">CASES</a>
+                <a id = "dev" class = "page_header_select" href="/dev">DEV</a>
+                <a id = "docs" class = "page_header_select" href="/docs">DOCS</a>
                 <a id="logout_menu" href="/accounts/logout"><span id="username_button">{{ user.first_name }}</span>logout</a>
             {% else %}
                 <a href="{% provider_login_url 'google' %}">LOGIN</a>

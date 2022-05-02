@@ -38,6 +38,10 @@ nav > a{
     box-shadow: 0 1rem 1rem rgb(0 0 0 / 20%);
 }
 
+.active_link{
+    color:white;
+}
+
 .header_title{
     margin-right:auto !important;
     font-weight:bold;
@@ -50,13 +54,7 @@ nav > a{
     -webkit-transform: translateY(-1px);
 	transform: translateY(-1px);
 }
-.header_sales:hover {
-    border-radius: 5px;
-    color:white;
-    -webkit-transform: translateY(-1px);
-	transform: translateY(-1px);
-}
-.header_cases:hover {
+.page_header_select:hover {
     border-radius: 5px;
     color:white;
     -webkit-transform: translateY(-1px);
@@ -81,9 +79,8 @@ nav > a{
     font-size:15px;
 }
 
-.active_link{
-    color:white;
-}
+
+
 /****** HOME PAGE ******/
 
 
@@ -855,11 +852,7 @@ label.show_label:active {
         font-size:10px;
     }
 
-    .header_sales:hover {
-        border-radius: 5px;
-        color:white;        
-    }
-    .header_cases:hover {
+    .page_header_select:hover {
         border-radius: 5px;
         color:white;        
     }
