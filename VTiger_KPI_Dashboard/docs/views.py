@@ -135,6 +135,13 @@ def retrieve_doc_data(docs, date_request, date_request_end):
         user_dict['user_data'][doc.updated_by_name]['amount'] += 1
         user_dict['user_data'][doc.updated_by_name]['updated_docs'].append(doc)
 
+    #Remove all the users with 0 contributions so they are not displayed for that timeframe
+    user_data_no_empty = {}
+    for user, user_data in user_dict['user_data'].items():
+        if user_data['amount'] != 0:
+            user_data_no_empty[user] = user_data
+    user_dict['user_data'] = user_data_no_empty
+
     # Sort the dictionary so that the the dictionary with the highest value in the amounts is displayed first
     #https://stackoverflow.com/questions/55764880/python-sort-nested-dictionaries-by-value-descending
     user_dict['user_data'] = dict(sorted(user_dict['user_data'].items(), key=lambda t: t[1]['amount'], reverse=True))
