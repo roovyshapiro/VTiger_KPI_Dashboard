@@ -58,49 +58,50 @@
 
         <!-- Showing all DOCs and DOC Updates for the selected week -->
 
-
-        <div class = "points_header">
-            <p><span class="bold">WEEK:</span>  {{ docs.date.first_of_week }} - {{ docs.date.end_of_week }}</p>
-        </div>
-        <div>
-            <section class="points">
-                {% for user, doc in docs.docs_week.user_dict.user_data.items %}
-                    <div class = "score_box_and_table">
-                        <div class = "score_box score_box_sales">
-                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            </section>
-        </div>
-            
-        <div>
-            <input type=checkbox id="show_docs_week">
-            <label for="show_docs_week" class="show_label">SHOW DOCS</label>
-
-            <div id = "docs_table_week">
-                <table class = "scrollable_table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Title</th>
-                            <th>Modified By</th>
-                            <th>Modified Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for doc in docs.docs_week.updated_docs %}
-                            <tr id = "updated_doc">
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
-                                <td>{{ doc.updated_by_name }}</td>
-                                <td>{{ doc.updated_at }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        {% if docs.docs_week %}
+            <div class = "points_header">
+                <p><span class="bold">WEEK:</span>  {{ docs.date.first_of_week }} - {{ docs.date.end_of_week }}</p>
             </div>
-        </div>
+            <div>
+                <section class="points">
+                    {% for user, doc in docs.docs_week.user_dict.user_data.items %}
+                        <div class = "score_box_and_table">
+                            <div class = "score_box score_box_sales">
+                                <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
+            </div>
+                
+            <div>
+                <input type=checkbox id="show_docs_week">
+                <label for="show_docs_week" class="show_label">SHOW DOCS</label>
+
+                <div id = "docs_table_week">
+                    <table class = "scrollable_table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Modified By</th>
+                                <th>Modified Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in docs.docs_week.updated_docs %}
+                                <tr id = "updated_doc">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
+                                    <td>{{ doc.updated_by_name }}</td>
+                                    <td>{{ doc.updated_at }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% endif %}
 
 
         <!-- Showing all DOCs and DOC Updates for the selected month -->

@@ -59,6 +59,18 @@ def main(request):
         'url':url,
         'date_dict':date_dict,
     }
+
+
+    #If today is monday, and the user chooses to look at today's data, then the week's data will not
+    #be shown. That is because if the current day is Monday, it will always be identical to the week's
+    #data as no other data for days beyond today exist. 
+    #However, if we look at a Monday in the past, then the data for the week will be different.
+    #In addition, the week data also won't be shown if the week and month data is the same.
+    #This occurs if the beginning of the week and the beginning of the month coincide
+    if (today.weekday() == 0 and today.strftime('%Y-%m-%d') == timezone.now().strftime('%Y-%m-%d')) or \
+        (docs['docs_month']['updated_docs_len'] == docs['docs_week']['updated_docs_len']):
+        del context['docs']['docs_week']
+
     return render(request, "sales/docs.html", context) 
 
 def retrieve_dates(date_request):
