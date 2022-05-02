@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 import os, json, datetime, calendar
 from .models import Docs
 from .tasks import get_docs
@@ -14,9 +15,12 @@ def main(request):
     '''
 
     docs = {}
-    docs['all_docs'] = Docs.objects.all().order_by('-updated_at')
+    all_docs_unordered = Docs.objects.all()
+    docs['all_docs'] = all_docs_unordered.order_by('-updated_at')
 
-    docs['all_users'] = docs['all_docs'].values('updated_by_name').distinct()
+    #Distinct doesn't play nicely with 'order_by'
+    #https://docs.djangoproject.com/en/4.0/ref/models/querysets/#distinct
+    docs['all_users'] = all_docs_unordered.values('updated_by_name').distinct()
 
     #Data according to the selected date
     date_request = request.GET.get('date_start')
@@ -105,29 +109,30 @@ def retrieve_doc_data(docs, date_request, date_request_end):
     #We calculate how many docs were updated per user and add it to the context to be displayed
     #docs['all_users] = <QuerySet [{'assigned_username': 'James Fulcrumstein'}, {'assigned_username': 'Mary Littlelamb'}]
 
-    #user_dict = {'James Fulcrumstein':0, 'Mary Littlelamb':0, 'Kent Breakfield':0}
+    #user_dict = {'James Fulcrumstein':{'amount':0,'updated_docs':[]}, 'Mary Littlelamb':{'amount':0,'updated_docs':[]}, }
     user_dict = {}
     for user in docs['all_users']:
-        if user['updated_by_name'] == "":
-            user_dict["unassigned"] = 0
-        user_dict[user['updated_by_name']] = 0
+        user_dict[user['updated_by_name']] = {}
+        user_dict[user['updated_by_name']]['name'] = ''
+        user_dict[user['updated_by_name']]['amount'] = 0
+        user_dict[user['updated_by_name']]['updated_docs'] = []
 
     for doc in docs_dict['updated_docs']:
-        if doc.updated_by_name in user_dict and doc.updated_by_name != "":
-            user_dict[doc.updated_by_name] += 1
-        if doc.updated_by_name == "":
-            user_dict["unassigned"] += 1
+        user_dict[doc.updated_by_name]['name'] = doc.updated_by_name
+        user_dict[doc.updated_by_name]['amount'] += 1
+        user_dict[doc.updated_by_name]['updated_docs'].append(doc)
+
+    # Sort the dictionary so that the the dictionary with the highest value in the amounts is displayed first
+    #https://stackoverflow.com/questions/55764880/python-sort-nested-dictionaries-by-value-descending
+    user_dict = dict(sorted(user_dict.items(), key=lambda t: t[1]['amount'], reverse=True))
+    
     print(user_dict)
-    #If a value is equal to 0, then we remove that key. 
-    #No need to see which users don't have any currently assigned isues.
-    #user_assigned_dict ={'James Fulcrumstein':3, 'Mary Littlelamb':5,}
-    user_assigned_dict = {key:value for key, value in user_dict.items() if value != 0}
 
-
-    #Sort the dictionary so that the the dictionary with the highest value is displayed first
-    #docs['user_assigned_dict'] = [('Mary Littlelamb', 5),('James Fulcrumstein', 3)]
-    docs_dict['user_assigned_dict'] = sorted(user_assigned_dict.items(), key=lambda x: x[1], reverse=True)
-
-    docs_dict['all_docs'] =  docs_dict['updated_docs']
-
+    docs_dict['user_dict'] = user_dict
     return docs_dict 
+
+@login_required()
+@staff_member_required
+def get_recent_docs(request):
+    get_docs()
+    return HttpResponseRedirect("/docs")

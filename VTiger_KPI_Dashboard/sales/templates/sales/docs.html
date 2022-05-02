@@ -10,26 +10,33 @@
 
 
         <h2>Docs Today</h2>
-        {% for user, doc_amount in docs.docs_today.user_assigned_dict %}
-            <strong>{{user}} - {{doc_amount}}</strong>
-        {% endfor %}
-        {% for doc in docs.docs_today.updated_docs %}
-            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% for user, doc in docs.docs_today.user_dict.items %}
+            <strong>{{ user }} - {{doc.amount}}</strong>
+            {% for updated_doc in doc.updated_docs %}
+                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
+            {% endfor %}
+            <br>
+            <br>
         {% endfor %}
 
+
         <h2>Docs Week</h2>
-        {% for user, doc_amount in docs.docs_week.user_assigned_dict %}
-            {{user}} - {{doc_amount}}
-        {% endfor %}
-        {% for doc in docs.docs_week.updated_docs %}
-            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% for user, doc in docs.docs_week.user_dict.items %}
+            <strong>{{ user }} - {{doc.amount}}</strong>
+            {% for updated_doc in doc.updated_docs %}
+                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
+            {% endfor %}
+            <br>
+            <br>
         {% endfor %}
 
         <h2>Docs Month</h2>
-        {% for user, doc_amount in docs.docs_month.user_assigned_dict %}
-            {{user}} - {{doc_amount}}
-        {% endfor %}
-        {% for doc in docs.docs_month.updated_docs %}
-            <a href="{{url}}{{doc.doc_url}}" target="_blank"><p>{{ doc.doc_title }}</p></a>
+        {% for user, doc in docs.docs_month.user_dict.items %}
+            <strong>{{ user }} - {{doc.amount}}</strong>
+            {% for updated_doc in doc.updated_docs %}
+                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
+            {% endfor %}
+            <br>
+            <br>
         {% endfor %}
     {% endblock %}
