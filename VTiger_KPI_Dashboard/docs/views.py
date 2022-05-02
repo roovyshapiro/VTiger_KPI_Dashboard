@@ -126,8 +126,6 @@ def retrieve_doc_data(docs, date_request, date_request_end):
     #https://stackoverflow.com/questions/55764880/python-sort-nested-dictionaries-by-value-descending
     user_dict = dict(sorted(user_dict.items(), key=lambda t: t[1]['amount'], reverse=True))
     
-    print(user_dict)
-
     docs_dict['user_dict'] = user_dict
     return docs_dict 
 

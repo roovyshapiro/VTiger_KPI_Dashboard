@@ -4,39 +4,149 @@
     </form>
 {% endblock %}
     {% block content %}
-        <h1>
-            Welcome to the Docs Page!
-        </h1>
+    <div id = "body_sizing">
+        <div>
+            <a href = "{{url}}/search" target="_blank">
+                <img src="https://i.imgur.com/7truE2U.png" alt="Get Outline Logo" id="outline_logo">
+            </a>
+        </div>
+
+        <!-- Showing all DOCs and DOC Updates for the selected day -->
+
+        <div class = "points_header">
+            <p><span class="bold">DAY:</span>  {{ docs.date.today }}</p>
+        </div>
+        <div>
+            <section class="points">
+                {% for user, doc in docs.docs_today.user_dict.items %}
+                    <div class = "score_box_and_table">
+                        <div class = "score_box score_box_sales">
+                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+        </div>
+            
+        <div>
+            <input type=checkbox id="show_docs_day">
+            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+
+            <div id = "docs_table_day">
+                <table class = "scrollable_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Modified By</th>
+                            <th>Modified Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in docs.docs_today.updated_docs %}
+                            <tr id = "updated_doc">
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
+                                <td>{{ doc.updated_by_name }}</td>
+                                <td>{{ doc.updated_at }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Showing all DOCs and DOC Updates for the selected week -->
 
 
-        <h2>Docs Today</h2>
-        {% for user, doc in docs.docs_today.user_dict.items %}
-            <strong>{{ user }} - {{doc.amount}}</strong>
-            {% for updated_doc in doc.updated_docs %}
-                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
-            {% endfor %}
-            <br>
-            <br>
-        {% endfor %}
+        <div class = "points_header">
+            <p><span class="bold">WEEK:</span>  {{ docs.date.first_of_week }} - {{ docs.date.end_of_week }}</p>
+        </div>
+        <div>
+            <section class="points">
+                {% for user, doc in docs.docs_week.user_dict.items %}
+                    <div class = "score_box_and_table">
+                        <div class = "score_box score_box_sales">
+                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+        </div>
+            
+        <div>
+            <input type=checkbox id="show_docs_day">
+            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+
+            <div id = "docs_table_day">
+                <table class = "scrollable_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Modified By</th>
+                            <th>Modified Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in docs.docs_week.updated_docs %}
+                            <tr id = "updated_doc">
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
+                                <td>{{ doc.updated_by_name }}</td>
+                                <td>{{ doc.updated_at }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
 
-        <h2>Docs Week</h2>
-        {% for user, doc in docs.docs_week.user_dict.items %}
-            <strong>{{ user }} - {{doc.amount}}</strong>
-            {% for updated_doc in doc.updated_docs %}
-                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
-            {% endfor %}
-            <br>
-            <br>
-        {% endfor %}
+        <!-- Showing all DOCs and DOC Updates for the selected month -->
 
-        <h2>Docs Month</h2>
-        {% for user, doc in docs.docs_month.user_dict.items %}
-            <strong>{{ user }} - {{doc.amount}}</strong>
-            {% for updated_doc in doc.updated_docs %}
-                <a href="{{url}}{{updated_doc.doc_url}}" target="_blank"><p>{{ updated_doc.doc_title }}</p></a> - {{updated_doc.updated_at}}
-            {% endfor %}
-            <br>
-            <br>
-        {% endfor %}
+        <div class = "points_header">
+            <p><span class="bold">MONTH:</span>  {{ docs.date.first_of_month }} - {{ docs.date.end_of_month }}</p>
+        </div>
+        <div>
+            <section class="points">
+                {% for user, doc in docs.docs_month.user_dict.items %}
+                    <div class = "score_box_and_table">
+                        <div class = "score_box score_box_sales">
+                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </section>
+        </div>
+            
+        <div>
+            <input type=checkbox id="show_docs_day">
+            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+
+            <div id = "docs_table_day">
+                <table class = "scrollable_table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Modified By</th>
+                            <th>Modified Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for doc in docs.docs_month.updated_docs %}
+                            <tr id = "updated_doc">
+                                <td>{{ forloop.counter }}</td>
+                                <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
+                                <td>{{ doc.updated_by_name }}</td>
+                                <td>{{ doc.updated_at }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
     {% endblock %}

@@ -803,6 +803,18 @@ label.show_label:active {
     height:80px;
     margin-bottom:15px;
 }
+
+
+/* DOCs Dashboard */
+
+#docs_table_day,#show_docs_day {
+    display:none;
+}
+#show_docs_day:checked ~ #docs_table_day{
+    display:block;
+}
+
+
 /****** Mobile Friendly ******/
 
 @media only screen and (max-width: 768px) {
