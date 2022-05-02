@@ -16,45 +16,50 @@
         <div class = "points_header">
             <p><span class="bold">DAY:</span>  {{ docs.date.today }}</p>
         </div>
-        <div>
-            <section class="points">
-                {% for user, doc in docs.docs_today.user_dict.user_data.items %}
-                    <div class = "score_box_and_table">
-                        <div class = "score_box score_box_sales">
-                            <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
-                        </div>
-                    </div>
-                {% endfor %}
-            </section>
-        </div>
-            
-        <div>
-            <input type=checkbox id="show_docs_day">
-            <label for="show_docs_day" class="show_label">SHOW DOCS</label>
 
-            <div id = "docs_table_day">
-                <table class = "scrollable_table">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Title</th>
-                            <th>Modified By</th>
-                            <th>Modified Time</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for doc in docs.docs_today.updated_docs %}
-                            <tr id = "updated_doc">
-                                <td>{{ forloop.counter }}</td>
-                                <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
-                                <td>{{ doc.updated_by_name }}</td>
-                                <td>{{ doc.updated_at }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        {% if docs.docs_today %}
+            <div>
+                <section class="points">
+                    {% for user, doc in docs.docs_today.user_dict.user_data.items %}
+                        <div class = "score_box_and_table">
+                            <div class = "score_box score_box_sales">
+                                <span class ="score_name">{{ user }}</span> </br> <span class="score_num">{{ doc.amount }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </section>
             </div>
-        </div>
+                
+            <div>
+                <input type=checkbox id="show_docs_day">
+                <label for="show_docs_day" class="show_label">SHOW DOCS</label>
+
+                <div id = "docs_table_day">
+                    <table class = "scrollable_table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Title</th>
+                                <th>Modified By</th>
+                                <th>Modified Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in docs.docs_today.updated_docs %}
+                                <tr id = "updated_doc">
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><a href='{{url}}{{ doc.doc_url }}' target="_blank">{{ doc.doc_title }}</a></td>
+                                    <td>{{ doc.updated_by_name }}</td>
+                                    <td>{{ doc.updated_at }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        {% else %}
+            <p id = "no_points_yet">No DOC Updates Today Yet! <i id = "sad_face" class="far fa-frown"></i></p>
+        {% endif %}
 
         <!-- Showing all DOCs and DOC Updates for the selected week -->
 

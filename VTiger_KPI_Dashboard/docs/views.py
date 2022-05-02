@@ -71,6 +71,11 @@ def main(request):
         (docs['docs_month']['updated_docs_len'] == docs['docs_week']['updated_docs_len']):
         del context['docs']['docs_week']
 
+
+    #If the contributions for the day are empty, don't display it
+    if docs['docs_today']['updated_docs_len'] == 0:
+        del context['docs']['docs_today']
+
     return render(request, "sales/docs.html", context) 
 
 def retrieve_dates(date_request):
