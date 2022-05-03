@@ -290,9 +290,8 @@ td.score_key_points {
 .points{
     display:flex;
     flex-direction:row;
+    flex-wrap:wrap;
     justify-content: space-evenly;
-    margin-bottom:5px;
-    margin-top:10px;
 }
 /*
 #sales_points{
@@ -337,6 +336,7 @@ td.score_key_points {
     border-radius: 20px;
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
     background-color: white;
+    margin-top:10px;
 }
 .score_box_sales{
     width:100%;
@@ -1051,7 +1051,7 @@ label.show_label:active {
 
     /****** SALES ******/
     .score_box_and_table{
-        margin:20px;
+        margin:5px;
     }
 
     #selected_sales_date{
