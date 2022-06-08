@@ -68,7 +68,6 @@ class Docs(models.Model):
 
     doc_title = models.CharField(max_length=75, null=True,blank=True)
     doc_text = models.TextField(null=True,blank=True)
-    doc_last_viewed_at = models.DateTimeField(null=True,blank=True)
     revision = models.IntegerField(null=True,blank=True)
 
     updated_at = models.DateTimeField(null=True,blank=True)

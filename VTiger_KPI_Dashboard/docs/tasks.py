@@ -130,13 +130,6 @@ def get_docs():
         except KeyError:
             new_doc.doc_text = ""
 
-        #"%Y-%m-%dT%H:%M:%S.%fZ"
-        #"2022-03-29T14:40:49.231Z"
-        try:
-            new_doc.doc_last_viewed_at = make_aware(datetime.datetime.strptime(doc['lastViewedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-        except KeyError:
-            new_doc.doc_last_viewed_at = ""
-
         try:
             new_doc.revision = doc['revision']
         except KeyError:
