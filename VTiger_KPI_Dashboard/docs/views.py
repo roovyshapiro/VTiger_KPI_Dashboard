@@ -15,8 +15,14 @@ def main(request):
     '''
 
     docs = {}
-    all_docs_unordered = Docs.objects.all()
-    docs['all_docs'] = all_docs_unordered.order_by('-updated_at')
+    try:
+        all_docs_unordered = Docs.objects.all()
+        docs['all_docs'] = all_docs_unordered.order_by('-updated_at')
+    except AttributeError:
+        get_docs()
+        all_docs_unordered = Docs.objects.all()
+        docs['all_docs'] = all_docs_unordered.order_by('-updated_at')
+
 
     #Distinct doesn't play nicely with 'order_by'
     #https://docs.djangoproject.com/en/4.0/ref/models/querysets/#distinct
