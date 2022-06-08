@@ -337,6 +337,8 @@ td.score_key_points {
     box-shadow: 0 1rem 2rem rgb(0 0 0 / 20%);
     background-color: white;
     margin-top:10px;
+    margin-right:10px;
+    margin-bottom:10px;
 }
 .score_box_sales{
     width:100%;
