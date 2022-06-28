@@ -30,6 +30,7 @@ def main(request):
     sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales')
 
     sales_users_opps = sales_data['all_sales_opps'].values('assigned_username').distinct()
+    sales_qualifiers = sales_data['all_sales_opps'].values('qualified_by_name').distinct()
     sales_users_calls = sales_data['all_sales_calls'].values('assigned_username').distinct()
 
     #Next we create a list with all the users
@@ -44,6 +45,8 @@ def main(request):
         sales_users_all.append(user) 
     for user in sales_users_opps:
         sales_users_all.append(user) 
+    for user in sales_qualifiers:
+        sales_users_all.append({'assigned_username':user['qualified_by_name']})
 
     #Finally we create a list with distinct usernames.
     #[{'assigned_username': 'Phillibus Pickens'}, 
@@ -155,13 +158,12 @@ def retrieve_points_data(sales_data, startdate, enddate):
     for opp in sales_data_time_frame['today_opps']:
         #if opp.assigned_username in user_total_score:
         #    user_total_score[opp.assigned_username] += 1
-
         if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > startdate and opp.demo_scheduled_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Scheduled'] += 1
-            sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
+            sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['Demo Scheduled'] += 1
+            sales_data_time_frame['user_total_score'][opp.qualified_by_name] += 5
         if opp.demo_given_changed_at != None and opp.demo_given_changed_at > startdate and opp.demo_given_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Given'] += 1
-            sales_data_time_frame['user_total_score'][opp.assigned_username] += 10
+            sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
         if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > startdate and opp.quote_sent_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Quote Sent'] += 1
         if opp.pilot_changed_at != None and opp.pilot_changed_at > startdate and opp.pilot_changed_at < enddate:
@@ -204,7 +206,9 @@ def retrieve_points_data(sales_data, startdate, enddate):
         if sales_data_time_frame['user_total_score'][user['assigned_username']] == 0:
             del(sales_data_time_frame['user_total_score'][user['assigned_username']])
             del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
-
+        if user['assigned_username'] == '':
+            del(sales_data_time_frame['user_total_score'][user['assigned_username']])
+            del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
     return sales_data_time_frame
 
 def retrieve_dates(date_request):
