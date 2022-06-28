@@ -68,6 +68,9 @@ def get_opportunities(day='Today'):
         "source": "CRM",
         "starred": "",
         "tags": ""
+        "cf_potentials_qualifiedby": "68x9346603",
+        "qualified_by_name": "Erick Amador",
+
     },
     opp_id = models.CharField(max_length=50)
     contact_id = models.CharField(max_length=50)
@@ -82,6 +85,9 @@ def get_opportunities(day='Today'):
     created_user_id = models.CharField(max_length=50)
     modifiedby = models.CharField(max_length=50)
     assigned_user_id = models.CharField(max_length=50)
+
+    qualified_by_id = models.CharField(max_length=50)
+    qualified_by_name = models.CharField(max_length=50)
 
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
@@ -133,6 +139,9 @@ def get_opportunities(day='Today'):
         new_opp.created_user_id = opp['created_user_id']
         new_opp.modifiedby = opp['modifiedby']
         new_opp.assigned_user_id = opp['assigned_user_id']
+
+        new_opp.qualified_by_id = opp['cf_potentials_qualifiedby']
+        new_opp.qualified_by_name = opp['qualified_by_name']
 
         new_opp.assigned_username = opp['assigned_username']
         new_opp.modified_username = opp['modified_username']

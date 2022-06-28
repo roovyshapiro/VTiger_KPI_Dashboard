@@ -133,6 +133,8 @@ class Opportunities(models.Model):
         "source": "CRM",
         "starred": "",
         "tags": ""
+        "cf_potentials_qualifiedby": "68x9346603",
+        "qualified_by_name": "Erick Amador",
     },
     '''
     opp_id = models.CharField(max_length=50)
@@ -149,6 +151,9 @@ class Opportunities(models.Model):
     created_user_id = models.CharField(max_length=50)
     modifiedby = models.CharField(max_length=50)
     assigned_user_id = models.CharField(max_length=50)
+
+    qualified_by_id = models.CharField(max_length=50, null=True)
+    qualified_by_name = models.CharField(max_length=50, null=True)
 
     assigned_username = models.CharField(max_length=75)
     assigned_groupname = models.CharField(max_length=75)
