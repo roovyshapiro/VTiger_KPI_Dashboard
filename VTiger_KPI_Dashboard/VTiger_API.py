@@ -53,9 +53,10 @@ class Vtiger_api:
 
     def get_users(self):    	
         '''	
-        Accepts User List and returns a dictionary of the username, first, last and id	
+        Accepts User List and returns a dictionary of the username, first, last id and ID from the employee module
         '''	
         user_list = self.api_call(f"{self.host}/query?query=Select * FROM Users;")	
+        employee_list = self.api_call(f"{self.host}/query?query=Select * FROM Employees WHERE is_user = '1';")
 
         num_of_users = len(user_list['result'])	
         username_list = []	
@@ -68,6 +69,12 @@ class Vtiger_api:
         #Assigns a list of the first name, last name and User ID to the username	
         for username in range(num_of_users): 	
             user_dict[username_list[username]] = [user_list['result'][username]['first_name'], user_list['result'][username]['last_name'], user_list['result'][username]['user_name'], user_list['result'][username]['user_primary_group']]       	
+
+        for user_id, user_list in user_dict.items():
+            for employee in employee_list['result']:
+                if user_id == employee['user_id']:
+                    user_list.append(employee['id'])
+                    continue
 
         self.full_user_dict = user_dict	
         return user_dict	
@@ -265,25 +272,53 @@ class Vtiger_api:
         if day == 'month':
             ninety_days_ago = datetime.datetime.now() + datetime.timedelta(days = -30)
             today = ninety_days_ago.strftime("%Y-%m-%d") + ' 00:00:00'
-
-        module_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE modifiedtime >= '{today}';")
-        total_count = module_count['result'][0]['count']
-        num_items = int(total_count)
-        vtiger_item_list = []
-        offset = 0
-        if num_items > 100:
-            while num_items > 100:
-                item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module} WHERE modifiedtime >= '{today}' limit {offset}, 100;")
+        if day == 'all':
+            module_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module};")
+            total_count = module_count['result'][0]['count']
+            num_items = int(total_count)
+            vtiger_item_list = []
+            offset = 0
+            if num_items > 100:
+                while num_items > 100:
+                    item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module} limit {offset}, 100;")
+                    print(f'API_call_complete. # of {module} returned: {num_items}')
+                    vtiger_item_list.append(item_batch['result'])
+                    offset += 100
+                    num_items = num_items - 100
+                    if num_items <= 100:
+                        break
+            if num_items <= 100:
+                item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module}  limit {offset}, 100;")
                 print(f'API_call_complete. # of {module} returned: {num_items}')
                 vtiger_item_list.append(item_batch['result'])
-                offset += 100
-                num_items = num_items - 100
-                if num_items <= 100:
-                    break
-        if num_items <= 100:
-            item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module} WHERE modifiedtime >= '{today}'  limit {offset}, 100;")
-            print(f'API_call_complete. # of {module} returned: {num_items}')
-            vtiger_item_list.append(item_batch['result'])
+
+            #Combine the multiple lists of dictionaries into one list
+            #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
+            #After: [{simcard1}, {simcard2}, {simcard101}, {simcard102}]
+            all_items = []
+            for item_list in vtiger_item_list:
+                all_items += item_list
+            return all_items
+
+        if day != 'all':
+            module_count = self.api_call(f"{self.host}/query?query=SELECT COUNT(*) FROM {module} WHERE modifiedtime >= '{today}' ;")
+            total_count = module_count['result'][0]['count']
+            num_items = int(total_count)
+            vtiger_item_list = []
+            offset = 0
+            if num_items > 100:
+                while num_items > 100:
+                    item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module} WHERE modifiedtime >= '{today}' limit {offset}, 100;")
+                    print(f'API_call_complete. # of {module} returned: {num_items}')
+                    vtiger_item_list.append(item_batch['result'])
+                    offset += 100
+                    num_items = num_items - 100
+                    if num_items <= 100:
+                        break
+            if num_items <= 100:
+                item_batch = self.api_call(f"{self.host}/query?query=SELECT * FROM {module} WHERE modifiedtime >= '{today}'  limit {offset}, 100;")
+                print(f'API_call_complete. # of {module} returned: {num_items}')
+                vtiger_item_list.append(item_batch['result'])
 
         #Combine the multiple lists of dictionaries into one list
         #Before: [[{simcard1}, {simcard2}], [{simcard101}, {simcard102}]]
@@ -306,9 +341,23 @@ class Vtiger_api:
                         assigned_groupname = data['groups'][users_primary_group_id]
                     else:
                         assigned_groupname = data['groups'][item['group_id']]
+                    
+                    try:
+                        qualified_by_name = ''
+                        qualified_by_employee_id = item['cf_potentials_qualifiedby']
+                        if qualified_by_employee_id != '':
+                            for user in data['users']:
+                                if qualified_by_employee_id == data['users'][user][4]:
+                                    qualified_by_name = f"{data['users'][user][0]} {data['users'][user][1]}"
+                    except:
+                        qualified_by_name = ''
+
+                    
                     item['assigned_username'] = assigned_username
                     item['assigned_groupname'] = assigned_groupname
                     item['modified_username'] = modified_username
+                    item['assigned_employee_id'] = data['users'][item['assigned_user_id']][4]
+                    item['qualified_by_name'] = qualified_by_name
                     self.today_item_list.append(item)
         except:
             self.today_item_list = []
@@ -337,11 +386,27 @@ class Vtiger_api:
                         modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
                     except:
                         modified_username = ''
+                    try:
+                        employee_id =  {data['users'][item['modifiedby']][4]}
+                    except:
+                        employee_id = ''
+                    try:
+                        qualified_by_name = ''
+                        qualified_by_employee_id = item['cf_potentials_qualifiedby']
+                        if qualified_by_employee_id != '':
+                            for user in data['users']:
+                                if qualified_by_employee_id == data['users'][user][4]:
+                                    qualified_by_name = f"{data['users'][user][0]} {data['users'][user][1]}"
+                    except:
+                        qualified_by_name = ''
 
 
+                item['qualified_by_name'] = qualified_by_name
                 item['assigned_username'] = assigned_username
                 item['assigned_groupname'] = assigned_groupname
                 item['modified_username'] = modified_username
+                item['employee_id'] = employee_id
+
                 self.today_item_list.append(item)
 
         return self.today_item_list
@@ -438,10 +503,13 @@ if __name__ == '__main__':
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    #response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls')
+    #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
+    #response = vtigerapi.get_users_and_groups_file()
     #response = vtigerapi.get_module_data("Products")
-    response = vtigerapi.retrieve_all_products()
+    response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+
+    #response = vtigerapi.get_users()
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
-    with open('all_products.json', 'w') as f:
+    with open('retrieve_todays_cases.json', 'w') as f:
         f.write(data)
