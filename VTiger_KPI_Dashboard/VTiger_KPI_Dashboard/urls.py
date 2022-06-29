@@ -34,6 +34,7 @@ urlpatterns = [
     path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),
     path('deleteallsales/', sales_views.delete_all_items, name='delete_all'),
     path('testsales/', sales_views.test_method, name='test'),
+    path('getusers/', sales_views.get_users, name='get_users'),
 
     path('cases/', case_views.main, name='case_dashboard'),
     path('populatecases/', case_views.populate_cases, name='populate_cases'),
@@ -51,6 +52,4 @@ urlpatterns = [
 
     path('docs/', doc_views.main, name='dev_dashboard'),
     path('getdocs/', doc_views.get_recent_docs, name='get_docs'),
-
-
 ]
