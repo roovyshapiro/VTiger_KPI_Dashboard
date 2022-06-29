@@ -207,8 +207,11 @@ def retrieve_points_data(sales_data, startdate, enddate):
             del(sales_data_time_frame['user_total_score'][user['assigned_username']])
             del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
         if user['assigned_username'] == '':
-            del(sales_data_time_frame['user_total_score'][user['assigned_username']])
-            del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
+            try:
+                del(sales_data_time_frame['user_total_score'][user['assigned_username']])
+                del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
+            except KeyError:
+                continue
     return sales_data_time_frame
 
 def retrieve_dates(date_request):
