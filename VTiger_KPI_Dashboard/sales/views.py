@@ -26,8 +26,8 @@ def main(request):
 
     sales_data = {}
 
-    sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales')
-    sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales')
+    sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales') | Opportunities.objects.all().filter(assigned_groupname='Sales Managers')
+    sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales') | Phone_call.objects.all().filter(assigned_groupname='Sales Managers')
 
     sales_users_opps = sales_data['all_sales_opps'].values('assigned_username').distinct()
     sales_qualifiers = sales_data['all_sales_opps'].values('qualified_by_name').distinct()
@@ -53,7 +53,7 @@ def main(request):
     # {'assigned_username': 'Frank Dinkins'}, 
     # {'assigned_username': 'Joshua Weathertree'},
     # {'assigned_username': 'Horace Builderguild'}]
-    sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all}.values())
+    sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all if v['assigned_username'] != '' and v['assigned_username'] != None}.values())
 
     today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month = retrieve_dates(date_request)
 
@@ -123,7 +123,6 @@ def main(request):
 def retrieve_points_data(sales_data, startdate, enddate):
     sales_data_time_frame = {}
 
-
     sales_data_time_frame['today_opps'] = sales_data['all_sales_opps'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
     sales_data_time_frame['today_phone_calls'] = sales_data['all_sales_calls'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
 
@@ -154,13 +153,13 @@ def retrieve_points_data(sales_data, startdate, enddate):
         #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
         #user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
 
-
     for opp in sales_data_time_frame['today_opps']:
         #if opp.assigned_username in user_total_score:
         #    user_total_score[opp.assigned_username] += 1
         if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > startdate and opp.demo_scheduled_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['Demo Scheduled'] += 1
-            sales_data_time_frame['user_total_score'][opp.qualified_by_name] += 5
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['Demo Scheduled'] += 1
+                sales_data_time_frame['user_total_score'][opp.qualified_by_name] += 5
         if opp.demo_given_changed_at != None and opp.demo_given_changed_at > startdate and opp.demo_given_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Given'] += 1
             sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
@@ -347,6 +346,17 @@ def calculate_business_days(today, startdate, enddate):
 
     return no_weekend_holiday_date_list_so_far, no_weekend_holiday_date_list, today_selected
 
+@login_required()
+@staff_member_required
+def get_users(request):
+    credentials_file = 'credentials.json'
+    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+    with open(credentials_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    vtigerapi.get_users_and_groups_file()
+    return HttpResponseRedirect('/sales')
 
 @login_required()
 @staff_member_required
