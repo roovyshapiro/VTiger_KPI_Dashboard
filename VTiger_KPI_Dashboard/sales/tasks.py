@@ -256,6 +256,10 @@ def get_phonecalls(day='Today'):
         new_phone_call.createdtime = phone_call_start
         new_phone_call.modifiedtime = make_aware(datetime.datetime.strptime(phone_call['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
 
+        #A 0 duration is retrieved as an empty string which can't be later converted to an int()
+        if phone_call['totalduration'] == '':
+            phone_call['totalduration'] = 0
+
         duration = datetime.timedelta(seconds=int(phone_call['totalduration']))
         new_phone_call.endtime = phone_call_start + duration
 
