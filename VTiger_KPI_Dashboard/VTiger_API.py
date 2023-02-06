@@ -367,6 +367,23 @@ class Vtiger_api:
                 if item['assigned_user_id'] in data['groups']:
                     assigned_groupname = data['groups'][item['assigned_user_id']]
                     assigned_username = data['groups'][item['assigned_user_id']]
+                    try:
+                        qualified_by_name = ''
+                        qualified_by_employee_id = item['cf_potentials_qualifiedby']
+                        if qualified_by_employee_id != '':
+                            for user in data['users']:
+                                if qualified_by_employee_id == data['users'][user][4]:
+                                    qualified_by_name = f"{data['users'][user][0]} {data['users'][user][1]}"
+                    except:
+                        qualified_by_name = ''
+                    try:
+                        modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    except:
+                        modified_username = ''
+                    try:
+                        employee_id =  {data['users'][item['modifiedby']][4]}
+                    except:
+                        employee_id = ''
                 else:
                     try:
                         assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
@@ -399,7 +416,6 @@ class Vtiger_api:
                                     qualified_by_name = f"{data['users'][user][0]} {data['users'][user][1]}"
                     except:
                         qualified_by_name = ''
-
 
                 item['qualified_by_name'] = qualified_by_name
                 item['assigned_username'] = assigned_username
@@ -506,7 +522,8 @@ if __name__ == '__main__':
     #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
     #response = vtigerapi.get_users_and_groups_file()
     #response = vtigerapi.get_module_data("Products")
-    response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+    #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
+    response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
 
     #response = vtigerapi.get_users()
     #response = vtigerapi.retrieve_data_id('6x424063')
