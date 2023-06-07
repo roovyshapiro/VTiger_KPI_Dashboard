@@ -4,10 +4,12 @@ from django.db.models import Q
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
+
 import os, json, datetime, calendar
 from .models import Docs
 from .tasks import get_docs
-
+from .tasks import process_outline_update
 
 @login_required()
 def main(request):
@@ -176,3 +178,31 @@ def retrieve_doc_data(docs, date_request, date_request_end):
 def get_recent_docs(request):
     get_docs()
     return HttpResponseRedirect("/docs")
+
+@csrf_exempt
+def webhook(request):
+    '''
+    Process incoming document updates from Outline's built in Webhook functionality.
+    This replaces the need for celery tasks.
+    '''
+    if request.method == 'POST':
+        #payload = json.loads(request.body)
+        #print("Data received from Webhook is: ", payload)
+        #print(request)
+        data = json.loads(request.body.decode('utf-8'))
+        #print(data)
+        process_outline_update(data)
+        #print(request.body)
+        #validation_token = request.headers.get('Validation-Token')
+
+        #send_to_vtiger(payload)
+        #response = HttpResponse(status=200)
+
+        # add the Content-type header to the response
+        #response['Content-type'] = 'application/json'
+        #response['Validation-Token'] = validation_token
+
+        # return the response
+        #return response
+        return HttpResponse(status=200)
+    return HttpResponse(status=400)

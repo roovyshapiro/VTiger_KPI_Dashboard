@@ -1,0 +1,154 @@
+[
+        {
+            "color": "#ffbe0b",
+            "createdAt": "2022-03-29T14:40:49.553Z",
+            "deletedAt": null,
+            "description": "Start here to begin your self-guided training if you\u2019re a new member of the EYERIDE team.",
+            "icon": "lightbulb",
+            "id": "f6100f77-063f-42cd-8a55-ab8a6514d2d8",
+            "index": "!",
+            "name": "Welcome New User!",
+            "permission": "read_write",
+            "sharing": true,
+            "sort": {
+                "direction": "asc",
+                "field": "index"
+            },
+            "updatedAt": "2023-06-05T14:46:22.579Z",
+            "url": "/collection/welcome-new-user-h4154pnbb7",
+            "urlId": "h4154pnbb7"
+        },
+        {
+            "color": "#ff825c",
+            "createdAt": "2022-03-31T16:04:50.515Z",
+            "deletedAt": null,
+            "description": "General Information about EYERIDE, the company.",
+            "icon": "globe",
+            "id": "a12f823a-0fb3-4d58-9d7d-afddcf3a140c",
+            "index": "\"",
+            "name": "EYERIDE",
+            "permission": "read_write",
+            "sharing": true,
+            "sort": {
+                "direction": "asc",
+                "field": "index"
+            },
+            "updatedAt": "2023-06-06T15:06:19.684Z",
+            "url": "/collection/eyeride-3dDKH1Tf8e",
+            "urlId": "3dDKH1Tf8e"
+        },
+        {
+            "color": "#9e5cf7",
+            "createdAt": "2022-03-31T16:03:25.561Z",
+            "deletedAt": null,
+            "description": "A place for processes specific to the various departments within EYERIDE.",
+            "icon": "smiley",
+            "id": "0bf661a2-a542-4990-a049-d11ea76f990e",
+            "index": "#",
+            "name": "Teams / Departments",
+            "permission": "read_write",
+            "sharing": false,
+            "sort": {
+                "direction": "asc",
+                "field": "title"
+            },
+            "updatedAt": "2023-06-07T17:44:31.155Z",
+            "url": "/collection/teams-departments-kFrpTQejke",
+            "urlId": "kFrpTQejke"
+        },
+        {
+            "color": "#0366d6",
+            "createdAt": "2022-04-04T18:41:16.584Z",
+            "deletedAt": null,
+            "description": "A place to learn about all the various products, apps & tools that we use within EYERIDE.",
+            "icon": "tools",
+            "id": "797af556-99a8-4940-8d64-4465932ffe0f",
+            "index": "$",
+            "name": "Apps & Tools",
+            "permission": "read_write",
+            "sharing": false,
+            "sort": {
+                "direction": "asc",
+                "field": "title"
+            },
+            "updatedAt": "2023-05-10T20:34:37.975Z",
+            "url": "/collection/apps-tools-GvB6WPCVQP",
+            "urlId": "GvB6WPCVQP"
+        },
+        {
+            "color": "#ff5c80",
+            "createdAt": "2022-04-04T18:42:01.633Z",
+            "deletedAt": null,
+            "description": "A place to learn about all the products & services we provide to our customers.\n\n\\*Internal Use Only.",
+            "icon": "vehicle",
+            "id": "cfd983e1-bb43-4998-acb1-2299636bf1e4",
+            "index": "$P",
+            "name": "Products & Services",
+            "permission": "read_write",
+            "sharing": true,
+            "sort": {
+                "direction": "asc",
+                "field": "title"
+            },
+            "updatedAt": "2023-05-30T13:51:15.074Z",
+            "url": "/collection/products-services-i9jjPiGfO1",
+            "urlId": "i9jjPiGfO1"
+        },
+        {
+            "color": "#2f362f",
+            "createdAt": "2022-03-29T18:28:32.785Z",
+            "deletedAt": null,
+            "description": "A public facing repository of guides & tutorials for our customers.",
+            "icon": null,
+            "id": "78e318df-536b-4159-80bc-1d181abc3423",
+            "index": "\\",
+            "name": "Public Docs",
+            "permission": "read_write",
+            "sharing": true,
+            "sort": {
+                "direction": "asc",
+                "field": "index"
+            },
+            "updatedAt": "2023-05-20T06:41:16.640Z",
+            "url": "/collection/public-docs-7y8Fwj4IkU",
+            "urlId": "7y8Fwj4IkU"
+        },
+        {
+            "color": "#4E5C6E",
+            "createdAt": "2022-05-13T16:48:11.062Z",
+            "deletedAt": null,
+            "description": "A place for our development team to share notes, guides and other important information.",
+            "icon": "code",
+            "id": "cca385a4-f229-4734-a951-5136a9e8a70e",
+            "index": "_",
+            "name": "Development",
+            "permission": "read_write",
+            "sharing": true,
+            "sort": {
+                "direction": "asc",
+                "field": "index"
+            },
+            "updatedAt": "2023-05-30T20:08:14.134Z",
+            "url": "/collection/development-hDKNggx6u7",
+            "urlId": "hDKNggx6u7"
+        },
+        {
+            "color": "#00d084",
+            "createdAt": "2022-05-09T20:55:23.978Z",
+            "deletedAt": null,
+            "description": "For one time projects and other miscellaneous documentation that doesn\u2019t quite fit anywhere else.",
+            "icon": "lightning",
+            "id": "cda50e07-a95a-4424-8657-a193d958cf18",
+            "index": "b",
+            "name": "Misc",
+            "permission": "read_write",
+            "sharing": false,
+            "sort": {
+                "direction": "asc",
+                "field": "index"
+            },
+            "updatedAt": "2023-05-18T17:14:51.119Z",
+            "url": "/collection/misc-c5rGvH8TGa",
+            "urlId": "c5rGvH8TGa"
+        }
+    ]

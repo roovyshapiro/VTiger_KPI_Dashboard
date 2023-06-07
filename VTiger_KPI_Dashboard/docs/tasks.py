@@ -224,3 +224,279 @@ def post_to_flock(doc, docs_url, flock_url):
 
     json_data = {"flockml":f"<a href='{docs_url}{doc['url']}'>{doc['title']}</a> <br><strong>{doc['updatedBy']['name']}</strong><br>{update_time} CST"}
     response = requests.post(flock_url, headers=headers, json=json_data)
+
+
+##############################
+################################
+##################################
+###################################
+#
+#
+# Process and post a single DOC based on a webhook
+#
+#
+
+@shared_task
+def process_outline_update(doc):
+    '''
+    Incoming update via Webhook
+    Data is sent to flock and saved to the DB.
+    If the collection is not one of the approved public collections,
+    then it is ignored and not sent to flock or saved.
+    '''
+    flock_url, docs_url = retrieve_docs_webhook()   
+
+    collections_file = 'public_collections.json'
+    collections_path = os.path.join(os.path.abspath('.'), collections_file)
+    with open(collections_path) as f:
+        data = f.read()
+    collections_list = json.loads(data)
+
+    public_collect = False
+    for collection in collections_list:
+        try:
+            if doc['payload']['model']['collectionId'] == collection['id']:
+                public_collect = True
+                break
+        except KeyError:
+            print(doc)
+
+    if doc['payload']['model']['publishedAt'] == None:
+        public_collect = False
+
+    if public_collect == True:
+        print('publishing to flock', doc['payload']['model']['title'])
+        post_to_flock(doc, docs_url, flock_url)
+        process_doc_webhook(doc)
+        print('saving to db', doc['payload']['model']['title'])
+
+        
+    else:
+        print('this is a private update!', doc['payload']['model']['title'])
+
+
+@shared_task
+def process_doc_webhook(doc):
+    '''
+    Example Recently Updated Doc:
+    {
+    "id": "3f3a9e00-d0fb-4673fe236075e7",
+    "actorId": "d92fdca0-7fcd1d0-b738cb8c68b2",
+    "webhookSubscriptionId": "374190c6-1f49-404d-b26e-b8f1802306fa",
+    "createdAt": "2023-06-07T22:06:25.899Z",
+    "event": "documents.update",
+    "payload": {
+        "id": "d9e5b309-a12-845c-0fdec5b5eaee",
+        "model": {
+        "id": "d9e5b309-a12e-845c-0fdec5b5eaee",
+        "url": "/doc/tech-support-AbtoVSUWZ7",
+        "urlId": "AbtoVZ7",
+        "title": "🛠️Tech Support",
+        "text": "Support Cel l Phone Number:\n\n\n\n1\n\n\\\n",
+        "tasks": {
+            "completed": 0,
+            "total": 0
+        },
+        "createdAt": "2022-04-05T17:25:21.926Z",
+        "createdBy": {
+            "id": "d92fdca0-7fcd-42738cb8c68b2",
+            "name": "Roovy Shapiro",
+            "avatarUrl": "https://outline-production-attachments.s3-accelerate.amazonaws.com/avatars/d92fdca0-7fcd-420d-c68b2/37e0130b-19a5-40af-ae8e-22998bd11f32",
+            "color": "#F5BE31",
+            "isAdmin": true,
+            "isSuspended": false,
+            "isViewer": false,
+            "createdAt": "2022-03-29T14:40:49.231Z",
+            "updatedAt": "2023-06-07T22:03:45.943Z",
+            "lastActiveAt": "2023-06-07T22:03:45.943Z"
+        },
+        "updatedAt": "2023-06-07T22:06:25.873Z",
+        "updatedBy": {
+            "id": "d92fdca0-7fcd-420db738cb8c68b2",
+            "name": "Roovy Shapiro",
+            "avatarUrl": "https://outline-production-attachments.s3-accelerate.amazonaws.com/avatars/d92fdca0-7fcd-b738cb8c68b2/37e0130b-19a5-40af-ae8e-22998bd11f32",
+            "color": "#F5BE31",
+            "isAdmin": true,
+            "isSuspended": false,
+            "isViewer": false,
+            "createdAt": "2022-03-29T14:40:49.231Z",
+            "updatedAt": "2023-06-07T22:03:45.943Z",
+            "lastActiveAt": "2023-06-07T22:03:45.943Z"
+        },
+        "publishedAt": "2022-04-05T17:25:29.145Z",
+        "archivedAt": null,
+        "deletedAt": null,
+        "teamId": "c44ccee8-c6d7-41e57ca61b5a11",
+        "template": false,
+        "templateId": null,
+        "collaboratorIds": [
+            "d92fdca0-7fcdb738cb8c68b2"
+        ],
+        "revision": 8,
+        "fullWidth": false,
+        "collectionId": "0bf661a2-a9-d11ea76f990e",
+        "parentDocumentId": null
+        }
+    }
+    }
+    '''
+
+    db_docs = Docs.objects.all()
+
+    #If the doc entry exists in the database, then the doc will be just saved
+    #If the doc doesn't exist, then the doc will be added to the db
+    #Only new doc updates will be sent to Flock
+
+    
+    doc_updated_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+
+
+    #try:
+    #    new_doc = db_docs.get(updated_at = doc_updated_at)
+    #    #new_doc.save()
+    #except:
+    #    new_doc = Docs()
+    new_doc = Docs()
+
+    try:
+        new_doc.doc_id = doc['payload']['model']['id']
+    except KeyError:
+        new_doc.doc_id = ""
+    try:
+        new_doc.parent_doc_id = doc['payload']['model']['parentDocumentId']
+    except KeyError:
+        new_doc.parent_doc_id = ""
+    try:
+        new_doc.collection_id = doc['payload']['model']['collectionId']
+    except KeyError:
+        new_doc.collection_id = ""
+
+    try:
+        new_doc.doc_url = doc['payload']['model']['url']
+    except KeyError:
+        new_doc.doc_url = ""
+
+    try:
+        new_doc.doc_url_id = doc['payload']['model']['urlId']
+    except KeyError:
+        new_doc.doc_url_id = ""
+
+    try:
+        new_doc.team_id = doc['payload']['model']['teamId']
+    except KeyError:
+        new_doc.team_id = ""
+
+    #"%Y-%m-%dT%H:%M:%S.%fZ"
+    #"2022-03-29T14:40:49.231Z"
+    try:
+        new_doc.published_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['publishedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    except KeyError:
+        new_doc.published_at = ""
+
+    try:
+        new_doc.doc_title = doc['payload']['model']['title']
+    except KeyError:
+        new_doc.doc_title = ""
+
+    try:
+        new_doc.doc_text = doc['payload']['model']['text']
+    except KeyError:
+        new_doc.doc_text = ""
+
+    try:
+        new_doc.revision = doc['payload']['model']['revision']
+    except KeyError:
+        new_doc.revision = 0
+
+    #"%Y-%m-%dT%H:%M:%S.%fZ"
+    #"2022-03-29T14:40:49.231Z"
+    try:
+        new_doc.updated_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    except KeyError:
+        new_doc.updated_at = ""
+
+    try:
+        new_doc.updated_by_name = doc['payload']['model']['updatedBy']['name']
+    except KeyError:
+        new_doc.updated_by_name = ""
+
+    try:
+        new_doc.updated_by_id = doc['payload']['model']['updatedBy']['id']
+    except KeyError:
+        new_doc.updated_by_id = ""
+
+    #"%Y-%m-%dT%H:%M:%S.%fZ"
+    #"2022-03-29T14:40:49.231Z"
+    try:
+        new_doc.updated_by_last_active_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedBy']['lastActiveAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    except KeyError:
+        new_doc.updated_by_last_active_at = ""
+
+    #"%Y-%m-%dT%H:%M:%S.%fZ"
+    #"2022-03-29T14:40:49.231Z"
+    try:
+        new_doc.created_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['createdAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    except KeyError:
+        new_doc.created_at = ""
+    try:
+        new_doc.created_by_name = doc['payload']['model']['createdBy']['name']
+    except KeyError:
+        new_doc.created_by_name = ""
+    try:
+        new_doc.created_by_id = doc['payload']['model']['createdBy']['id']
+    except KeyError:
+        new_doc.created_by_id = ""
+
+    
+    #"%Y-%m-%dT%H:%M:%S.%fZ"
+    #"2022-03-29T14:40:49.231Z"
+    try:
+        new_doc.created_by_last_active_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['createdBy']['lastActiveAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    except KeyError:
+        new_doc.created_by_last_active_at = ""
+
+    try:
+        new_doc.collaborator_ids = json.dumps(doc['payload']['model']['collaboratorIds'])
+    except:
+        new_doc.collaborator_ids = ""
+
+    new_doc.save()
+
+
+def retrieve_docs_webhook():
+    '''
+    Returns a list of all Outline docs in a list of dictionaries
+    '''
+    credentials_file = 'credentials.json'
+    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+    with open(credentials_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+
+    docs_api = docs_outline_api.Docs_outline_api(credential_dict['docs_host'], credential_dict['docs_token'], credential_dict['docs_url'], credential_dict['docs_flock_url'])
+
+
+    return credential_dict['docs_flock_url'], credential_dict['docs_url']
+
+
+def post_to_flock(doc, docs_url, flock_url):
+    '''
+    Before posting to Flock,
+    We need to check to see if its a private DOC or not
+    '''
+
+
+    headers = {
+        "Content-Type": "application/json",
+    }
+
+    #Convert timestamp to datetime object &
+    #Change the timezone to Central Time
+    update_time = doc['payload']['model']['updatedAt']
+    update_time_dt = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+    update_time_dt = update_time_dt.replace(tzinfo=pytz.utc)
+    update_time_dt_cst = update_time_dt.astimezone(pytz.timezone('US/Central'))
+    update_time = datetime.datetime.strftime(update_time_dt_cst, "%-m-%-d-%Y %I:%M%p")
+
+    json_data = {"flockml":f"<a href='{docs_url}{doc['payload']['model']['url']}'>{doc['payload']['model']['title']}</a> <br><strong>{doc['payload']['model']['updatedBy']['name']}</strong><br>{update_time} CST"}
+    response = requests.post(flock_url, headers=headers, json=json_data)
