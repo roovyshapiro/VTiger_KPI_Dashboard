@@ -484,8 +484,6 @@ def post_to_flock(doc, docs_url, flock_url):
     Before posting to Flock,
     We need to check to see if its a private DOC or not
     '''
-
-
     headers = {
         "Content-Type": "application/json",
     }
