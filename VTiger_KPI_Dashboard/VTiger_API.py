@@ -24,6 +24,24 @@ class Vtiger_api:
 
         r_text = json.loads(r.text)
         return r_text
+    
+    def api_call_params(self, url, data):
+        '''
+        Accepts a URL and returns the text
+        '''
+        r = requests.get(url, auth=(self.username, self.access_key), params=data)
+        header_dict = r.headers
+
+        #We're only allowed 60 API requests per minute. 
+        #When we are close to reaching this limit,
+        #We pause for the remaining time until it resets.
+        if int(header_dict['X-FloodControl-Remaining']) <= 5:
+            self.seconds_to_wait = abs(int(header_dict['X-FloodControl-Reset']) - int(time.time()))
+            time.sleep(self.seconds_to_wait)
+            self.seconds_to_wait = 0
+
+        r_text = json.loads(r.text)
+        return r_text
 
 
     def get_all_data(self):
@@ -102,6 +120,33 @@ class Vtiger_api:
         with open('users_and_groups.json', 'w') as f:
             f.write(data)
         return full_dict
+
+
+    def lookup_phone(self, phone):
+        '''
+        Rest API: GET endpoint/lookup?type=phone&value=2861166887&searchIn={“Contacts”:[“mobile”,”phone”]}
+        type : phone / email
+        value : search value
+        searchIn : Module and fieldname to search
+
+        Webservices:
+        webservice.php?operation=lookup&type=phone&value=343459844566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
+        '''
+        #lookup = self.api_call(f"{self.host}/lookup?type=phone&value=16198087922&searchIn={'Contacts':['mobile','phone']}")
+        
+        data = {
+            "type": "phone",
+            "value": phone,
+            "searchIn": '{"Contacts":["mobile","phone"], "Leads":["mobile","phone"]}'
+        }
+
+        lookup = self.api_call_params(f"{self.host}/lookup", data)
+
+
+        #print(lookup)
+        return lookup['result'][0]['id']
+
+
 
 
     ####################
@@ -427,6 +472,177 @@ class Vtiger_api:
 
         return self.today_item_list
 
+
+    ############################
+    ###    Phone Calls        ###
+    ############################
+
+    def create_call(self, payload):
+        '''
+        Example Phone Call from VTiger:
+        {
+            "CreatedTime": "2020-12-10 14:48:02",
+            "assigned_groupname": "",
+            "assigned_user_id": "19x27",
+            "assigned_username": "Randall Hoberman",
+            "billduration": "56",
+            "billrate": "0.0000",
+            "callid": "",
+            "callstatus": "completed",
+            "campaign_name": "",
+            "campaign_number": "",
+            "cases_id": "",
+            "created_user_id": "19x27",
+            "customer": "2x930718",
+            "customernumber": "9545556480",
+            "customertype": "Leads",
+            "direction": "outbound",
+            "disposition_name": "",
+            "endtime": "2020-12-10 09:49:21",
+            "gateway": "Asterisk",
+            "id": "43x930719",
+            "isclosed": "0",
+            "modifiedby": "19x27",
+            "modifiedtime": "2020-12-10 14:48:02",
+            "notes": "",
+            "potentials_id": "",
+            "recordingurl": "http://voipserver.com:4001/recordings/90a897aeb4e34d129749ca436728ace7",
+            "source": "CRM",
+            "sourceuuid": "90a897aeb4e34d129749ca436728ace7",
+            "starred": "",
+            "starttime": "2020-12-10 09:48:02",
+            "tags": "",
+            "ticket_id": "",
+            "totalduration": "56",
+            "transcription": "",
+            "transferred_number": "",
+            "transferred_user": "",
+            "user": "19x27"
+        },
+
+        Example call from Dialpad:
+
+        {
+            "master_call_id": null,
+            "date_ended": 168208074,
+            "voicemail_recording_id": null,
+            "internal_number": "+132154",
+            "call_recording_ids": [],
+            "duration": 11989.972,
+            "mos_score": 4.41,
+            "entry_point_target": {},
+            "proxy_target": {},
+            "entry_point_call_id": null,
+            "operator_call_id": null,
+            "call_id": 461114531840,
+            "state": "hangup",
+            "csat_score": null,
+            "date_started": 16808017,
+            "transcription_text": null,
+            "direction": "outbound",
+            "labels": [],
+            "total_duration": 20056.427,
+            "date_connected": 16826084,
+            "routing_breadcrumbs": [],
+            "voicemail_link": null,
+            "is_transferred": "FALSE",
+            "public_call_review_share_link": "https://dialpad.com/shared/call/yx91bVOx1Zf6gcbfUuxwcnjcCqz01qoUsO",
+            "was_recorded": "FALSE",
+            "date_rang": null,
+            "target": {
+            "phone": "+13213798154",
+            "type": "user",
+            "id": 6651106703015936,
+            "name": "Roovy Shapiro",
+            "email": "roovy@eyeride.io"
+            },
+            "event_timestamp": 168229176,
+            "contact": {
+            "phone": "+167922",
+            "type": "local",
+            "id": 560034183552,
+            "name": "(619922",
+            "email": ""
+            },
+            "company_call_review_share_link": "https://dialpad.com/shared/call/2jdW0pGpCtoUMHkFv5tSeGskEL1jKLpHNl",
+            "group_id": null,
+            "external_number": "+161922"
+        }
+        '''
+
+        vtiger_id = self.lookup_phone(payload['external_number'])
+        cust_type = 'no_type'
+
+        if '2x' in vtiger_id:
+            cust_type = 'Leads'
+        if '4x' in vtiger_id:
+            cust_type = 'Contacts'
+        else:
+            print('no vtiger contact found!')
+
+        dp_start = datetime.datetime.fromtimestamp(int(payload['date_started'] / 1000.0))
+        dp_start_str = dp_start.replace(tzinfo=pytz.timezone('US/Central')).strftime('%Y-%m-%d %H:%M:%S')
+
+        dp_end = datetime.datetime.fromtimestamp(int(payload['date_ended'] / 1000.0))
+        dp_end_str = dp_end.replace(tzinfo=pytz.timezone('US/Central')).strftime('%Y-%m-%d %H:%M:%S')
+ 
+        assigned_id = ''
+        assigned_name = ''
+
+        with open('users_and_groups.json') as f:
+            data = json.load(f)
+            for user in data['users']:
+                #print(f"{data['users'][user][0]} {data['users'][user][1]}")
+                if f"{data['users'][user][2]}" == payload['target']['email']:
+                    #print(user)
+                    assigned_id = user
+                    assigned_name = f"{data['users'][user][0]} {data['users'][user][1]}"
+                    #print(assigned_id)
+
+
+
+
+        vtiger_update_dict = {
+            'assigned_username': assigned_name,
+            'totalduration': int(payload['total_duration'] / 1000),
+            'callstatus': payload['state'] ,
+            'customernumber': payload['external_number'],
+            'starttime': dp_start_str,
+            'endtime': dp_end_str,
+            'recordingurl' : f"https://dialpad.com/callhistory/callreview/{payload['entry_point_call_id']}",
+            'direction': payload['direction'],
+            'assigned_user_id': assigned_id,
+            'sourceuuid':payload['call_id'],
+            "customer": vtiger_id,
+            "customertype": cust_type,
+            'user':assigned_id,
+            'gateway':'Dialpad',
+            }
+
+        jsondump =json.dumps(vtiger_update_dict)
+        url = self.host + f"/create?elementType=PhoneCalls&element={jsondump}"
+        code, reason, text = self.api_call_post(url)
+        print(code, reason)
+ 
+                
+                                
+
+    def api_call_post(self, url):
+        '''
+        Accepts a URL for POST request
+        Returns the status code and reason
+        Similar to self.api_call_get(), wait until the minute API call limit resets
+        '''
+        r = requests.post(url, auth=(self.username, self.access_key))
+        header_dict = r.headers
+        if int(header_dict['X-FloodControl-Remaining']) <= 10:
+            seconds_to_wait = abs(int(header_dict['X-FloodControl-Reset']) - int(time.time()))
+            print(f"API minute limit reached! Pausing for {seconds_to_wait} seconds!")
+            time.sleep(seconds_to_wait)
+        return r.status_code, r.reason, r.text
+        
+
+
     ############################
     ###    SHIP Dashboard    ###
     ############################
@@ -521,12 +737,16 @@ if __name__ == '__main__':
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
     #response = vtigerapi.get_users_and_groups_file()
-    #response = vtigerapi.get_module_data("Products")
+    #response = vtigerapi.get_module_data("PhoneCalls")
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
-    response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
+    #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
+    
+    response = vtigerapi.create_call()
+
+    #response = vtigerapi.lookup_test()
 
     #response = vtigerapi.get_users()
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
-    with open('retrieve_todays_cases.json', 'w') as f:
+    with open('create_call.json', 'w') as f:
         f.write(data)

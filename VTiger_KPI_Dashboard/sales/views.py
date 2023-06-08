@@ -3,7 +3,9 @@ from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-
+from django.http import HttpResponse
+from django.db.models import Q
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Phone_call, Opportunities
 import VTiger_API
@@ -80,6 +82,8 @@ def main(request):
     sales_data['business_days']['month_business_days_so_far_points'] = len(month_business_days_so_far) * 100
 
     sales_data['points_today'] = retrieve_points_data(sales_data, today, end_of_day)
+    print(sales_data['points_today'])
+
     sales_data['points_week'] = retrieve_points_data(sales_data, first_of_week, end_of_week)
     sales_data['points_month'] = retrieve_points_data(sales_data, first_of_month, end_of_month)
 
@@ -148,6 +152,7 @@ def retrieve_points_data(sales_data, startdate, enddate):
             'Closed Won':0,
             'Closed Lost':0,
             'Phone Calls':0,
+            'demos':0,
         }
         #If we want to display opp and phone call data per user
         #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
@@ -160,19 +165,41 @@ def retrieve_points_data(sales_data, startdate, enddate):
             if opp.qualified_by_name != '' and opp.qualified_by_name != None:
                 sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['Demo Scheduled'] += 1
                 sales_data_time_frame['user_total_score'][opp.qualified_by_name] += 5
+
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+
         if opp.demo_given_changed_at != None and opp.demo_given_changed_at > startdate and opp.demo_given_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Given'] += 1
             sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
         if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > startdate and opp.quote_sent_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Quote Sent'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
         if opp.pilot_changed_at != None and opp.pilot_changed_at > startdate and opp.pilot_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Pilot'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
         if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > startdate and opp.needs_analysis_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Needs Analysis'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
         if opp.closed_won_changed_at != None and opp.closed_won_changed_at > startdate and opp.closed_won_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Won'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
         if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > startdate and opp.closed_lost_changed_at < enddate:
             sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Lost'] += 1
+            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
+            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
+                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
 
 
     for call in sales_data_time_frame['today_phone_calls']:
@@ -212,6 +239,8 @@ def retrieve_points_data(sales_data, startdate, enddate):
             except KeyError:
                 continue
     return sales_data_time_frame
+
+
 
 def retrieve_dates(date_request):
     '''
@@ -423,3 +452,82 @@ def test_method(request):
     '''
     print('test!')
     return HttpResponseRedirect('/sales')
+
+
+
+@csrf_exempt
+def webhook(request):
+    '''
+      {
+    "master_call_id": null,
+    "date_ended": 16828074,
+    "voicemail_recording_id": null,
+    "internal_number": "+132154",
+    "call_recording_ids": [],
+    "duration": 11989.972,
+    "mos_score": 4.41,
+    "entry_point_target": {},
+    "proxy_target": {},
+    "entry_point_call_id": null,
+    "operator_call_id": null,
+    "call_id": 461111840,
+    "state": "hangup",
+    "csat_score": null,
+    "date_started": 168208017,
+    "transcription_text": null,
+    "direction": "outbound",
+    "labels": [],
+    "total_duration": 20056.427,
+    "date_connected": 16884,
+    "routing_breadcrumbs": [],
+    "voicemail_link": null,
+    "is_transferred": "FALSE",
+    "public_call_review_share_link": "https://dialpad.com/shared/call/yx91bVOZxwcnjcCqz01qoUsO",
+    "was_recorded": "FALSE",
+    "date_rang": null,
+    "target": {
+      "phone": "+13",
+      "type": "user",
+      "id": 665136,
+      "name": "Roovy Shapiro",
+      "email": "roio"
+    },
+    "event_timestamp": 1682084129176,
+    "contact": {
+      "phone": "+2",
+      "type": "local",
+      "id": 5600392044183552,
+      "name": "(619) 808-7922",
+      "email": ""
+    },
+    "company_call_review_share_link": "https://dialpad.com/shared/call/2jdW0pGpCtoUMH4dcNv5tSeGskEL1jKLpHNl",
+    "group_id": null,
+    "external_number": "+1619"
+  }
+    
+    '''
+    if request.method == 'POST':
+        payload = json.loads(request.body)
+        #print("Data received from Webhook is: ", payload)
+        print(request)
+        #print(request.body)
+        validation_token = request.headers.get('Validation-Token')
+
+        send_to_vtiger(payload)
+        response = HttpResponse(status=200)
+
+        # add the Content-type header to the response
+        response['Content-type'] = 'application/json'
+        response['Validation-Token'] = validation_token
+
+        # return the response
+        return response
+        #return HttpResponse(status=200)
+    return HttpResponse(status=400)
+
+def send_to_vtiger(payload):
+    with open('credentials.json') as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    vtigerapi.create_call(payload)

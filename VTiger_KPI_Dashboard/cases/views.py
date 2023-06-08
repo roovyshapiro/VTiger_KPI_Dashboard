@@ -1,8 +1,11 @@
 from django.shortcuts import render, HttpResponseRedirect
+from django.http import HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
+import VTiger_API
 
 import datetime, calendar
 from .tasks import get_cases
