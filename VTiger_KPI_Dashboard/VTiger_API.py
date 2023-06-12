@@ -124,16 +124,16 @@ class Vtiger_api:
 
     def lookup_phone(self, phone):
         '''
-        Rest API: GET endpoint/lookup?type=phone&value=2861166887&searchIn={“Contacts”:[“mobile”,”phone”]}
+        Rest API: GET endpoint/lookup?type=phone&value=286187&searchIn={“Contacts”:[“mobile”,”phone”]}
         type : phone / email
         value : search value
         searchIn : Module and fieldname to search
 
         Webservices:
-        webservice.php?operation=lookup&type=phone&value=343459844566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
+        webservice.php?operation=lookup&type=phone&value=3434566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
         '''
-        #lookup = self.api_call(f"{self.host}/lookup?type=phone&value=16198087922&searchIn={'Contacts':['mobile','phone']}")
-        
+        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
+
         data = {
             "type": "phone",
             "value": phone,
@@ -144,19 +144,16 @@ class Vtiger_api:
 
 
         phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
-        print(len(lookup['result']))
+        #print(len(lookup['result']))
         for contact in lookup['result']:
             if contact['phone'] != '':
                 contact_phone = contact['phone'].replace('-','').replace('(','').replace(')','').replace(' ','')
                 if phone in contact_phone:
-                    print('match')
-                    print(contact)
                     return contact['id']
 
             if contact['mobile'] != '':
                 contact_mobile = contact['mobile'].replace('-','').replace('(','').replace(')','').replace(' ','')
                 if phone in contact_mobile:
-                    print('match2')
                     return contact['id']
 
         return lookup['result'][0]['id']
@@ -584,6 +581,7 @@ class Vtiger_api:
             "external_number": "+161922"
         }
         '''
+
         try:
             vtiger_id = self.lookup_phone(payload['external_number'])
         except IndexError:
@@ -759,7 +757,7 @@ if __name__ == '__main__':
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    response = vtigerapi.lookup_phone('609-267-3380')
+    response = vtigerapi.lookup_phone('8175733809')
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
     with open('lookup_phone.json', 'w') as f:
