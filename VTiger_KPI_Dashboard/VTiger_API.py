@@ -144,15 +144,19 @@ class Vtiger_api:
 
 
         phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
+        print(len(lookup['result']))
         for contact in lookup['result']:
             if contact['phone'] != '':
                 contact_phone = contact['phone'].replace('-','').replace('(','').replace(')','').replace(' ','')
                 if phone in contact_phone:
+                    print('match')
+                    print(contact)
                     return contact['id']
 
             if contact['mobile'] != '':
                 contact_mobile = contact['mobile'].replace('-','').replace('(','').replace(')','').replace(' ','')
                 if phone in contact_mobile:
+                    print('match2')
                     return contact['id']
 
         return lookup['result'][0]['id']
@@ -580,8 +584,11 @@ class Vtiger_api:
             "external_number": "+161922"
         }
         '''
-
-        vtiger_id = self.lookup_phone(payload['external_number'])
+        try:
+            vtiger_id = self.lookup_phone(payload['external_number'])
+        except IndexError:
+            print('index-error: no contact found')
+            return None
         cust_type = 'no_type'
 
         if '2x' in vtiger_id:
@@ -629,7 +636,7 @@ class Vtiger_api:
             'user':assigned_id,
             'gateway':'Dialpad',
             }
-
+        print(vtiger_update_dict)
         jsondump =json.dumps(vtiger_update_dict)
         url = self.host + f"/create?elementType=PhoneCalls&element={jsondump}"
         code, reason, text = self.api_call_post(url)
@@ -752,7 +759,7 @@ if __name__ == '__main__':
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    response = vtigerapi.lookup_phone('636-225-6594')
+    response = vtigerapi.lookup_phone('609-267-3380')
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
     with open('lookup_phone.json', 'w') as f:
