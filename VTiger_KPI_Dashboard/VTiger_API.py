@@ -143,7 +143,18 @@ class Vtiger_api:
         lookup = self.api_call_params(f"{self.host}/lookup", data)
 
 
-        #print(lookup)
+        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
+        for contact in lookup['result']:
+            if contact['phone'] != '':
+                contact_phone = contact['phone'].replace('-','').replace('(','').replace(')','').replace(' ','')
+                if phone in contact_phone:
+                    return contact['id']
+
+            if contact['mobile'] != '':
+                contact_mobile = contact['mobile'].replace('-','').replace('(','').replace(')','').replace(' ','')
+                if phone in contact_mobile:
+                    return contact['id']
+
         return lookup['result'][0]['id']
 
 
@@ -741,12 +752,8 @@ if __name__ == '__main__':
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    response = vtigerapi.create_call()
-
-    #response = vtigerapi.lookup_test()
-
-    #response = vtigerapi.get_users()
+    response = vtigerapi.lookup_phone('636-225-6594')
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
-    with open('create_call.json', 'w') as f:
+    with open('lookup_phone.json', 'w') as f:
         f.write(data)
