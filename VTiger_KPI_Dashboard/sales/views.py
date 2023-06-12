@@ -82,7 +82,7 @@ def main(request):
     sales_data['business_days']['month_business_days_so_far_points'] = len(month_business_days_so_far) * 100
 
     sales_data['points_today'] = retrieve_points_data(sales_data, today, end_of_day)
-    print(sales_data['points_today'])
+    #print(sales_data['points_today'])
 
     sales_data['points_week'] = retrieve_points_data(sales_data, first_of_week, end_of_week)
     sales_data['points_month'] = retrieve_points_data(sales_data, first_of_month, end_of_month)
