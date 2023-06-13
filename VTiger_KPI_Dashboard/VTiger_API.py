@@ -132,8 +132,12 @@ class Vtiger_api:
         Webservices:
         webservice.php?operation=lookup&type=phone&value=3434566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
         '''
-        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
+        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','').replace('+','')
 
+        # Check if the phone number is 10 digits long and starts with 1
+        if len(phone) == 11 and phone.startswith("1"):
+            # Remove the initial '1' from the phone number
+            phone = phone[1:]
         data = {
             "type": "phone",
             "value": phone,
@@ -142,17 +146,15 @@ class Vtiger_api:
 
         lookup = self.api_call_params(f"{self.host}/lookup", data)
 
-
-        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','')
         #print(len(lookup['result']))
         for contact in lookup['result']:
             if contact['phone'] != '':
-                contact_phone = contact['phone'].replace('-','').replace('(','').replace(')','').replace(' ','')
+                contact_phone = contact['phone'].replace('-','').replace('(','').replace(')','').replace(' ','').replace('+','')
                 if phone in contact_phone:
                     return contact['id']
 
             if contact['mobile'] != '':
-                contact_mobile = contact['mobile'].replace('-','').replace('(','').replace(')','').replace(' ','')
+                contact_mobile = contact['mobile'].replace('-','').replace('(','').replace(')','').replace(' ','').replace('+','')
                 if phone in contact_mobile:
                     return contact['id']
 
@@ -585,7 +587,7 @@ class Vtiger_api:
         try:
             vtiger_id = self.lookup_phone(payload['external_number'])
         except IndexError:
-            print('index-error: no contact found')
+            print('index-error: no contact found', payload['external_number'])
             return None
         cust_type = 'no_type'
 
@@ -594,7 +596,7 @@ class Vtiger_api:
         if '4x' in vtiger_id:
             cust_type = 'Contacts'
         else:
-            print('no vtiger contact found!')
+            pass
 
         dp_start = datetime.datetime.fromtimestamp(int(payload['date_started'] / 1000.0))
         dp_start_str = dp_start.replace(tzinfo=pytz.timezone('US/Central')).strftime('%Y-%m-%d %H:%M:%S')
@@ -634,11 +636,11 @@ class Vtiger_api:
             'user':assigned_id,
             'gateway':'Dialpad',
             }
-        print(vtiger_update_dict)
+        #print(vtiger_update_dict)
         jsondump =json.dumps(vtiger_update_dict)
         url = self.host + f"/create?elementType=PhoneCalls&element={jsondump}"
         code, reason, text = self.api_call_post(url)
-        print(code, reason)
+        print('DIALPAD wehook success', code, reason)
  
                 
                                 
@@ -757,7 +759,7 @@ if __name__ == '__main__':
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    response = vtigerapi.lookup_phone('8175733809')
+    response = vtigerapi.lookup_phone('+17029333380')
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
     with open('lookup_phone.json', 'w') as f:
