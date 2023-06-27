@@ -20,6 +20,19 @@ class Docs_outline_api:
         response = requests.post(url, headers=headers, json=params).json()
         return response
 
+
+    def get_doc_info(self, id):
+        '''
+        Get Doc Info based on its ID
+        '''
+        url = f'{self.host}/documents.info'
+        params = {
+            "id": id,
+        }
+        response = self.api_call(url, params)
+        return response['data']
+
+
     def get_recently_updated_docs(self):
         '''
         Get all docs ordered by recently updated

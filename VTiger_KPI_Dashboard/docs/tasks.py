@@ -243,8 +243,52 @@ def process_outline_update(doc):
     Data is sent to flock and saved to the DB.
     If the collection is not one of the approved public collections,
     then it is ignored and not sent to flock or saved.
+    
+    Revisions Example:
+
+    {
+        "id": "983e0209-534c-cc1225066",
+        "actorId": "d92f38cb8c68b2",
+        "webhookSubscriptionId": "3741908f1802306fa",
+        "createdAt": "2023-06-26T15:38:12.609Z",
+        "event": "revisions.create",
+        "payload": {
+                        "id": "dee58357-f0c99034129",
+                        "model":{
+                                    "id": "dee58357-1c9034129",
+                                    "documentId": "85d778d8b1f81f",
+                                    "title": "Automation",
+                                    "text": "The scripts in\n\\\n",
+                                    "createdAt": "2023-06-26T15:33:12.462Z",
+                                    "createdBy": {
+                                                    "id": "d92fdca0-7fcd38cb8c68b2",
+                                                    "name": "Roovy Shapiro",
+                                                    "avatarUrl": "https://outline-productio/e0130b-19a5-40af-ae8e-22998bd11f32",
+                                                    "color": "#F5BE31",
+                                                    "isAdmin": true,
+                                                    "isSuspended": false,
+                                                    "isViewer": false,
+                                                    "createdAt": "2022-03-29T14:40:49.231Z",
+                                                    "updatedAt": "2023-06-26T15:32:38.545Z",
+                                                    "lastActiveAt": "2023-06-26T15:32:38.545Z"
+                                                },
+                                    "collectionId": "0bf661a211ea76f990e"
+                                }
+                    }
+    }
+    
+
+    
     '''
-    flock_url, docs_url = retrieve_docs_webhook()   
+    print('1',doc)
+    revision = False
+    try:
+        if doc['event'] == "revisions.create":
+            revision = True
+    except KeyError:
+        print('keyerror1', doc)
+
+    flock_url, docs_url, doc = retrieve_docs_webhook(revision, doc)   
 
     collections_file = 'public_collections.json'
     collections_path = os.path.join(os.path.abspath('.'), collections_file)
@@ -260,9 +304,11 @@ def process_outline_update(doc):
                 break
         except KeyError:
             print(doc)
-
-    if doc['payload']['model']['publishedAt'] == None:
-        public_collect = False
+    try:
+        if doc['payload']['model']['updatedAt'] == None:
+            public_collect = False
+    except KeyError:
+        print('keyerror2', doc)
 
     if public_collect == True:
         print('publishing to flock', doc['payload']['model']['title'])
@@ -339,8 +385,7 @@ def process_doc_webhook(doc):
         }
     }
     }
-    '''
-
+    ''' 
     db_docs = Docs.objects.all()
 
     #If the doc entry exists in the database, then the doc will be just saved
@@ -463,9 +508,11 @@ def process_doc_webhook(doc):
     new_doc.save()
 
 
-def retrieve_docs_webhook():
+def retrieve_docs_webhook(revision, doc):
     '''
     Returns a list of all Outline docs in a list of dictionaries
+    If a revision is sent to the webhook, we need to pull all the associated data
+    as revisions contain much fewer data points.
     '''
     credentials_file = 'credentials.json'
     credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
@@ -474,9 +521,17 @@ def retrieve_docs_webhook():
     credential_dict = json.loads(data)
 
     docs_api = docs_outline_api.Docs_outline_api(credential_dict['docs_host'], credential_dict['docs_token'], credential_dict['docs_url'], credential_dict['docs_flock_url'])
-
-
-    return credential_dict['docs_flock_url'], credential_dict['docs_url']
+    if revision == True:
+        full_doc_data = docs_api.get_doc_info(doc['payload']['model']['documentId'])
+        doc['payload']['model']['updatedAt'] = full_doc_data['updatedAt']
+        doc['payload']['model']['urlId'] = full_doc_data['urlId']
+        doc['payload']['model']['url'] = full_doc_data['url']
+        doc['payload']['model']['updatedBy'] = {}
+        doc['payload']['model']['updatedBy']['name'] = full_doc_data['updatedBy']['name']
+        doc['payload']['model']['publishedAt'] = full_doc_data['publishedAt']
+        doc['payload']['model']['parentDocumentId'] = full_doc_data['parentDocumentId']
+   
+    return credential_dict['docs_flock_url'], credential_dict['docs_url'], doc
 
 
 def post_to_flock(doc, docs_url, flock_url):
@@ -490,7 +545,11 @@ def post_to_flock(doc, docs_url, flock_url):
 
     #Convert timestamp to datetime object &
     #Change the timezone to Central Time
-    update_time = doc['payload']['model']['updatedAt']
+    try:
+        update_time = doc['payload']['model']['updatedAt']
+    except KeyError:
+        update_time = doc['payload']['model']['createdAt']
+
     update_time_dt = datetime.datetime.strptime(update_time, "%Y-%m-%dT%H:%M:%S.%fZ")
     update_time_dt = update_time_dt.replace(tzinfo=pytz.utc)
     update_time_dt_cst = update_time_dt.astimezone(pytz.timezone('US/Central'))

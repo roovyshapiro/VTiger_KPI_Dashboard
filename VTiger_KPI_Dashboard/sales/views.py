@@ -509,7 +509,7 @@ def webhook(request):
     if request.method == 'POST':
         payload = json.loads(request.body)
         #print("Data received from Webhook is: ", payload)
-        print(request)
+        #print(request)
         #print(request.body)
         validation_token = request.headers.get('Validation-Token')
 
