@@ -391,8 +391,14 @@ class Vtiger_api:
             with open('users_and_groups.json') as f:
                 data = json.load(f)
                 for item in all_items:
-                    assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
-                    modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    try:
+                        assigned_username = f"{data['users'][item['assigned_user_id']][0]} {data['users'][item['assigned_user_id']][1]}"
+                    except:
+                        assigned_username = ''
+                    try:
+                        modified_username = f"{data['users'][item['modifiedby']][0]} {data['users'][item['modifiedby']][1]}"
+                    except:
+                        modified_username = ''
                     if 'group_id' in item and item['group_id'] == '':
                         assigned_groupname = ''
                     if 'group_id' not in item:
@@ -754,12 +760,12 @@ if __name__ == '__main__':
     credential_dict = json.loads(data)
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
-    #response = vtigerapi.get_users_and_groups_file()
+    response = vtigerapi.get_users_and_groups_file()
     #response = vtigerapi.get_module_data("PhoneCalls")
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    response = vtigerapi.lookup_phone('+17029333380')
+    #response = vtigerapi.lookup_phone('+17029333380')
     #response = vtigerapi.retrieve_data_id('6x424063')
     data = json.dumps(response,  indent=4, sort_keys=True)
     with open('lookup_phone.json', 'w') as f:
