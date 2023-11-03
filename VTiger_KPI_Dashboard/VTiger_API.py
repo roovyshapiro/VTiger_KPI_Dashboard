@@ -402,8 +402,14 @@ class Vtiger_api:
                     if 'group_id' in item and item['group_id'] == '':
                         assigned_groupname = ''
                     if 'group_id' not in item:
-                        users_primary_group_id = data['users'][item['assigned_user_id']][3]
-                        assigned_groupname = data['groups'][users_primary_group_id]
+                        try:
+                            users_primary_group_id = data['users'][item['assigned_user_id']][3]
+                        except:
+                            users_primary_group_id = ''
+                        try:
+                            assigned_groupname = data['groups'][users_primary_group_id]
+                        except:
+                            assigned_groupname = ''
                     else:
                         assigned_groupname = data['groups'][item['group_id']]
                     
@@ -421,7 +427,10 @@ class Vtiger_api:
                     item['assigned_username'] = assigned_username
                     item['assigned_groupname'] = assigned_groupname
                     item['modified_username'] = modified_username
-                    item['assigned_employee_id'] = data['users'][item['assigned_user_id']][4]
+                    try:
+                        item['assigned_employee_id'] = data['users'][item['assigned_user_id']][4]
+                    except: 
+                        item['assigned_employee_id'] = ''
                     item['qualified_by_name'] = qualified_by_name
                     self.today_item_list.append(item)
         except:
