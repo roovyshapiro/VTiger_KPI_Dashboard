@@ -280,7 +280,6 @@ def process_outline_update(doc):
 
     
     '''
-    print('1',doc)
     revision = False
     try:
         if doc['event'] == "revisions.create":

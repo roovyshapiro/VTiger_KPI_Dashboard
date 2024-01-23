@@ -31,6 +31,10 @@ SECRET_KEY = credential_dict['django_secret_key']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True 
 
+SECURE_SSL_REDIRECT=False
+SESSION_COOKIE_SECURE=False
+CSRF_COOKIE_SECURE=False
+
 ALLOWED_HOSTS = ['*', '192.168.1.19', 'localhost', '127.0.0.1',]
 
 
@@ -59,6 +63,7 @@ INSTALLED_APPS = [
     'docs',
     'celery',
     'django_celery_beat',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -219,6 +224,7 @@ from celery.schedules import crontab
 # A (list of) integers from 0-6, where Sunday = 0 and Saturday = 6, that represent the days of a week that execution should occur.
 # hour = '*/' is equivalent to 
 # Execute every three hours: midnight, 3am, 6am, 9am, noon, 3pm, 6pm, 9pm.
+'''
 CELERY_BEAT_SCHEDULE = {
     'get_cases_BH':{
         'task': 'cases.tasks.get_cases',
@@ -264,8 +270,5 @@ CELERY_BEAT_SCHEDULE = {
        'task': 'dev.tasks.get_issues',
        'schedule': crontab(minute='39', hour='*/3', day_of_week='*'),
     },
-    'get_docs':{
-        'task': 'docs.tasks.get_docs',
-        'schedule': crontab(minute='9,19,29,39,49', hour='13-23', day_of_week='1,2,3,4,5'),
-    },
 }
+'''

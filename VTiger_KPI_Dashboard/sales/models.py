@@ -141,6 +141,8 @@ class Opportunities(models.Model):
     opp_url_id = models.CharField(max_length=50, default='')
     contact_id = models.CharField(max_length=50)
 
+    opp_amount = models.CharField(max_length=50)
+
     opp_no = models.CharField(max_length=50)
     opp_name = models.CharField(max_length=250)
     opp_stage = models.CharField(max_length=50)

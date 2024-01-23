@@ -21,21 +21,35 @@ from home import views as home_views
 from ship import views as ship_views
 from dev import views as dev_views
 from docs import views as doc_views
+from rest_framework.routers import SimpleRouter
+from sales.views import DealViewSet, OpenDealsViewSet, DateFilterDealViewSet
+
+router = SimpleRouter()
+router.register(r'sales', DealViewSet, basename='sales')
+router.register(r'sales-open-deals', OpenDealsViewSet, basename='sales-open-deals')
+router.register(r'sales-deals-date-filter', DateFilterDealViewSet, basename='sales-deals-date-filter')
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path('api/', include(router.urls)),  # <-- Include the router URLs under the 'api/' path
+    path('api-auth/', include('rest_framework.urls')),
 
     path('', home_views.home, name='home'),
+    #path('sales/filter_data/', sales_views.filter_data, name='filter_data'),
+    #path('sales/all_deals/', sales_views.all_deals, name='all_deals'),
 
     path('sales/', sales_views.main, name='sales_dashboard'),
     path('populatesales/', sales_views.populate_db, name='populate'),
-    path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
-    path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),
-    path('deleteallsales/', sales_views.delete_all_items, name='delete_all'),
-    path('testsales/', sales_views.test_method, name='test'),
-    path('getusers/', sales_views.get_users, name='get_users'),
-    path('webhook/dialpad/', sales_views.webhook, name='dialpad_webhook'),
+    path('webhook/deals/', sales_views.webhook, name='deals_webhook'),
+
+    #path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
+    #path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),
+    #path('deleteallsales/', sales_views.delete_all_items, name='delete_all'),
+    #path('testsales/', sales_views.test_method, name='test'),
+    #path('getusers/', sales_views.get_users, name='get_users'),
+    #path('webhook/dialpad/', sales_views.webhook, name='dialpad_webhook'),
 
     path('cases/', case_views.main, name='case_dashboard'),
     path('populatecases/', case_views.populate_cases, name='populate_cases'),
@@ -54,5 +68,9 @@ urlpatterns = [
     path('docs/', doc_views.main, name='dev_dashboard'),
     path('getdocs/', doc_views.get_recent_docs, name='get_docs'),
     path('webhook/outline/', doc_views.webhook, name='outline_webhook'),
+
+
+
+
 
 ]

@@ -6,386 +6,75 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.db.models import Q
 from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from rest_framework import viewsets
+from rest_framework.response import Response
+from .serializers import DealSerializer
+from rest_framework.decorators import api_view
+
+
 
 from .models import Phone_call, Opportunities
 import VTiger_API
 import datetime, json, os, calendar, holidays
 
 
-@login_required()
 def main(request):
     '''
     The primary view for the Sales Dashboard where all the calculations take place.
     Celery populates the opportunities and phone calls from today periodically.
     '''
-    date_request = request.GET.get('date_start')
-    if date_request == '' or date_request == None:
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    else:
-        today = make_aware(datetime.datetime.strptime(date_request, '%Y-%m-%d'))
-
-    end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
-
     sales_data = {}
-
     sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales') | Opportunities.objects.all().filter(assigned_groupname='Sales Managers')
-    sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales') | Phone_call.objects.all().filter(assigned_groupname='Sales Managers')
 
-    sales_users_opps = sales_data['all_sales_opps'].values('assigned_username').distinct()
-    sales_qualifiers = sales_data['all_sales_opps'].values('qualified_by_name').distinct()
-    sales_users_calls = sales_data['all_sales_calls'].values('assigned_username').distinct()
+    #print(len(sales_data['all_sales_opps']))
 
-    #Next we create a list with all the users
-    #[{'assigned_username': 'Phillibus Pickens'}, 
-    # {'assigned_username': 'Frank Dinkins'}, 
-    # {'assigned_username': 'Joshua Weathertree'}, 
-    # {'assigned_username': 'Frank Dinkins'}, 
-    # {'assigned_username': 'Joshua Weathertree'}, 
-    # {'assigned_username': 'Horace Builderguild'}]
-    sales_users_all  = []
-    for user in sales_users_calls:
-        sales_users_all.append(user) 
-    for user in sales_users_opps:
-        sales_users_all.append(user) 
-    for user in sales_qualifiers:
-        sales_users_all.append({'assigned_username':user['qualified_by_name']})
 
-    #Finally we create a list with distinct usernames.
-    #[{'assigned_username': 'Phillibus Pickens'}, 
-    # {'assigned_username': 'Frank Dinkins'}, 
-    # {'assigned_username': 'Joshua Weathertree'},
-    # {'assigned_username': 'Horace Builderguild'}]
-    sales_data['sales_users'] = list({v['assigned_username']:v for v in sales_users_all if v['assigned_username'] != '' and v['assigned_username'] != None}.values())
+    # Your data retrieval logic here (e.g., query your database)
+    data = sales_data
 
-    today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month = retrieve_dates(date_request)
-
-    sales_data['today_selected_week'] = today_selected_week
-    sales_data['today_selected_month'] = today_selected_month
-
-    sales_data['date'] = {}
-    sales_data['date']['today'] = today.strftime('%A, %B %d')
-    sales_data['date']['end_of_day'] = end_of_day.strftime('%A, %B %d')
-    sales_data['date']['first_of_week'] = first_of_week.strftime('%A, %B %d')
-    sales_data['date']['end_of_week'] = end_of_week.strftime('%A, %B %d')
-    sales_data['date']['first_of_month'] = first_of_month.strftime('%A, %B %d')
-    sales_data['date']['end_of_month'] = end_of_month.strftime('%A, %B %d')
-
-    sales_data['business_days'] = {}
-    sales_data['business_days']['week_business_days'] = week_business_days
-    sales_data['business_days']['week_business_days_points'] = len(week_business_days) * 100
-    sales_data['business_days']['week_business_days_so_far'] = week_business_days_so_far
-    sales_data['business_days']['week_business_days_so_far_points'] = len(week_business_days_so_far) * 100
-
-    sales_data['business_days']['month_business_days'] = month_business_days
-    sales_data['business_days']['month_business_days_points'] = len(month_business_days) * 100
-    sales_data['business_days']['month_business_days_so_far'] = month_business_days_so_far
-    sales_data['business_days']['month_business_days_so_far_points'] = len(month_business_days_so_far) * 100
-
-    sales_data['points_today'] = retrieve_points_data(sales_data, today, end_of_day)
-    #print(sales_data['points_today'])
-
-    sales_data['points_week'] = retrieve_points_data(sales_data, first_of_week, end_of_week)
-    sales_data['points_month'] = retrieve_points_data(sales_data, first_of_month, end_of_month)
-
-    date_dict = {}
-    #Min Max Values for Date Picker in base.html
-    try:
-        first_opp = sales_data['all_sales_opps'].order_by('modifiedtime').first().modifiedtime
-        first_opp = first_opp.strftime('%Y-%m-%d')
-        date_dict = {
-            'first_db': first_opp,
-            'last_db': timezone.now().strftime('%Y-%m-%d'),
-            'today_date':today.strftime('%A, %B %d')
-        }
-    except AttributeError:
-        #If there is nothing in the DB, because the project was run for the first time as example, we'll prompt the population of the db for today so the request doesn't fail
-        populate_db(request)
-
-    #The VTiger hostnames are stored in the 'credentials.json' file.
-    #The URLs themselves will look something like this:
-    #"host_url_calls": "https://my_vtiger_instance_name.vtiger.com/index.php?module=PhoneCalls&view=Detail&record=", 
-    #"host_url_opps": "https://my_vtiger_instance_name.vtiger.com/index.php?module=Potentials&view=Detail&record="}
-    credentials_file = 'credentials.json'
-    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
-    with open(credentials_path) as f:
-        data = f.read()
-    credential_dict = json.loads(data)
-    urls = {}
-    urls['opps_url'] = credential_dict['host_url_opps']
-    urls['calls_url'] = credential_dict['host_url_calls']
-
+    return render(request, "sales/sales2.html", {'data': data})
 
 
     context = {
-        'date_dict':date_dict,
-        'urls':urls,
-
         'sales_data': sales_data,
     }
-    return render(request, "sales/sales.html", context) 
+    return render(request, "sales/sales2.html", context) 
 
-def retrieve_points_data(sales_data, startdate, enddate):
-    sales_data_time_frame = {}
+class DealViewSet(viewsets.ModelViewSet):
+    queryset = Opportunities.objects.all()
+    serializer_class = DealSerializer
 
-    sales_data_time_frame['today_opps'] = sales_data['all_sales_opps'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
-    sales_data_time_frame['today_phone_calls'] = sales_data['all_sales_calls'].filter(modifiedtime__gte=startdate, modifiedtime__lte=enddate).order_by('-modifiedtime')
+    def list(self, request):
+        #start_date = self.request.query_params.get('start_date')
+        #end_date = self.request.query_params.get('end_date')
 
-    #user_dict is the total score for both phone calls and opportunity stage changes
-    sales_data_time_frame['user_total_score'] = {}
-    #user_opp_dict is how many times each sales stage changed in the given time frame
-    sales_data_time_frame['user_opp_dict'] = {}
-    #User specific phone calls and opportunities
-    #user_opps = {}
-    #user_calls = {}
-    #Dictionary with the users' last phone call/opportunity
-    sales_data_time_frame['user_last_cont'] = {}
+        # Your filtering logic
+        #opps = Opportunities.objects.filter(modifiedtime__date__gte=start_date, modifiedtime__date__lte=end_date).order_by('-modifiedtime')
 
-    for user in sales_data['sales_users']:
-        sales_data_time_frame['user_total_score'][user['assigned_username']] = 0
-        sales_data_time_frame['user_last_cont'][user['assigned_username']] = {'opp':'','call':''}
-        sales_data_time_frame['user_opp_dict'][user['assigned_username']] = {
-            'Demo Scheduled':0,
-            'Demo Given':0,
-            'Quote Sent':0,
-            'Pilot':0,
-            'Needs Analysis':0,
-            'Closed Won':0,
-            'Closed Lost':0,
-            'Phone Calls':0,
-            'demos':0,
-        }
-        #If we want to display opp and phone call data per user
-        #user_opps[user['assigned_username']] = today_opps.filter(assigned_username=user['assigned_username'])
-        #user_calls[user['assigned_username']] = today_phone_calls.filter(assigned_username=user['assigned_username'])
-
-    for opp in sales_data_time_frame['today_opps']:
-        #if opp.assigned_username in user_total_score:
-        #    user_total_score[opp.assigned_username] += 1
-        if opp.demo_scheduled_changed_at != None and opp.demo_scheduled_changed_at > startdate and opp.demo_scheduled_changed_at < enddate:
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['Demo Scheduled'] += 1
-                sales_data_time_frame['user_total_score'][opp.qualified_by_name] += 5
-
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-
-        if opp.demo_given_changed_at != None and opp.demo_given_changed_at > startdate and opp.demo_given_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Demo Given'] += 1
-            sales_data_time_frame['user_total_score'][opp.assigned_username] += 5
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-        if opp.quote_sent_changed_at != None and opp.quote_sent_changed_at > startdate and opp.quote_sent_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Quote Sent'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-        if opp.pilot_changed_at != None and opp.pilot_changed_at > startdate and opp.pilot_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Pilot'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-        if opp.needs_analysis_changed_at != None and opp.needs_analysis_changed_at > startdate and opp.needs_analysis_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Needs Analysis'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-        if opp.closed_won_changed_at != None and opp.closed_won_changed_at > startdate and opp.closed_won_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Won'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
-        if opp.closed_lost_changed_at != None and opp.closed_lost_changed_at > startdate and opp.closed_lost_changed_at < enddate:
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['Closed Lost'] += 1
-            sales_data_time_frame['user_opp_dict'][opp.assigned_username]['demos'] += 1
-            if opp.qualified_by_name != '' and opp.qualified_by_name != None:
-                sales_data_time_frame['user_opp_dict'][opp.qualified_by_name]['demos'] += 1
+        # Serialize the data
+        serializer = DealSerializer(self.queryset, many=True)
+        return Response(serializer.data)
 
 
-    for call in sales_data_time_frame['today_phone_calls']:
-        if call.assigned_username in sales_data_time_frame['user_total_score']:
-            sales_data_time_frame['user_total_score'][call.assigned_username] += 1
-            sales_data_time_frame['user_opp_dict'][call.assigned_username]['Phone Calls'] += 1
-    
-    #We find the most recent phone call and opportunity modified for each user
-    #If their score is zero for the day, then the time of their most recent contribution is displayed
-    #(After seven days of no contributions, we no longer display that user)
-    for k in sales_data_time_frame['user_total_score']:
-        last_opp = sales_data['all_sales_opps'].filter(assigned_username=k).order_by('modifiedtime').last()
-        last_call = sales_data['all_sales_calls'].filter(assigned_username=k).order_by('modifiedtime').last()
-        try:
-            sales_data_time_frame['user_last_cont'][k]['opp'] = last_opp.modifiedtime
-        except AttributeError:
-            #This user doesn't have any modified opportunities
-            sales_data_time_frame['user_last_cont'][k]['opp'] = 'never'
-        try:
-            sales_data_time_frame['user_last_cont'][k]['call'] = last_call.modifiedtime
-        except AttributeError:
-            #This user didn't make any phone calls
-            sales_data_time_frame['user_last_cont'][k]['call'] = 'never'
-    for k,v in sales_data_time_frame['user_total_score'].items():
-        if v != 0:
-            del(sales_data_time_frame['user_last_cont'][k])
+class OpenDealsViewSet(viewsets.ModelViewSet):
+    queryset = Opportunities.objects.exclude(opp_stage='Closed Lost').exclude(opp_stage='Closed Won').order_by('-modifiedtime')
+    serializer_class = DealSerializer
 
-    #If a user has 0 points for that given time frame, they are not displayed.
-    for user in sales_data['sales_users']:
-        if sales_data_time_frame['user_total_score'][user['assigned_username']] == 0:
-            del(sales_data_time_frame['user_total_score'][user['assigned_username']])
-            del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
-        if user['assigned_username'] == '':
-            try:
-                del(sales_data_time_frame['user_total_score'][user['assigned_username']])
-                del(sales_data_time_frame['user_opp_dict'][user['assigned_username']])
-            except KeyError:
-                continue
-    return sales_data_time_frame
+class DateFilterDealViewSet(viewsets.ModelViewSet):
+    queryset = Opportunities.objects.all()
+    serializer_class = DealSerializer
 
+    def list(self, request):
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
 
+        # Your filtering logic
+        opps = Opportunities.objects.filter(modifiedtime__date__gte=start_date, modifiedtime__date__lte=end_date).order_by('-modifiedtime')
 
-def retrieve_dates(date_request):
-    '''
-    today = (datetime.datetime(2020, 12, 4, 0, 0) 
-    end_of_day = (datetime.datetime(2020, 12, 4, 23, 59) 
-
-    first_of_week = (datetime.datetime(2020, 11, 30, 0, 0) 
-    end_of_week = (datetime.datetime(2020, 12, 6, 23, 59) 
-
-    first_of_month = (datetime.datetime(2020, 12, 1, 0, 0)
-    end_of_month = (datetime.datetime(2020, 12, 31, 23, 59)
-
-    #today_selected lets us know if the selected date is today
-    #if so we change how many possible total points are available
-    #in previous days and months, the full score for the entire month and week is shown
-    #so it doesn't make sense to show many month points are available for the selected date
-    #unless its today and the rest of the month hasn't happened yet
-    '''
-    if date_request == '' or date_request == None:
-        today = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    else:
-        today = make_aware(datetime.datetime.strptime(date_request, '%Y-%m-%d'))
-
-    end_of_day = today.replace(hour=23, minute = 59, second = 59, microsecond = 0)
-
-    #0 = monday, 5 = Saturday, 6 = Sunday 
-    day = today.weekday()
-    first_of_week = today + timezone.timedelta(days = -day)
-    end_of_week = first_of_week + timezone.timedelta(days = 6)
-    end_of_week = end_of_week.replace(hour = 23, minute = 59, second = 59)
-    week_business_days_so_far, week_business_days, today_selected_week = calculate_business_days(today, first_of_week, end_of_week)
-
-    first_of_month = today.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    year = first_of_month.year
-    month = first_of_month.month
-    last_day = calendar.monthrange(year,month)[1]
-    end_of_month = first_of_month.replace(day=last_day, hour=23, minute=59, second=59)
-    month_business_days_so_far, month_business_days, today_selected_month = calculate_business_days(today, first_of_month, end_of_month)
-
-    return today, end_of_day, first_of_week, end_of_week, week_business_days_so_far, week_business_days, first_of_month, end_of_month, month_business_days_so_far, month_business_days, today_selected_week, today_selected_month
-
-def calculate_business_days(today, startdate, enddate):
-    '''
-    In order to calculate a salesperson's average points per day in a month's timeframe,
-    We need to know how many business days are in that month.
-    You can't do 100 * 30 because months have variable days.
-    Weekends and holidays must be taken into account as well.
-    Once we know exactly how many working days are in a month (and week) we can then
-    multiply that number by 100 and set a goal for the salesperson to reach an average
-    of 100 points per day over that timeframe.
-    The Holidays packace is used to determine holidays for a given timeframe.
-    Create a new list with all the current year's holidays
-    (datetime.date(2021, 1, 1), "New Year's Day")
-    (datetime.date(2021, 12, 31), "New Year's Day (Observed)")
-    (datetime.date(2021, 1, 18), 'Martin Luther King Jr. Day')
-    (datetime.date(2021, 2, 15), "Washington's Birthday")
-    (datetime.date(2021, 5, 31), 'Memorial Day')
-    (datetime.date(2021, 7, 4), 'Independence Day')
-    (datetime.date(2021, 7, 5), 'Independence Day (Observed)')
-    (datetime.date(2021, 9, 6), 'Labor Day')
-    (datetime.date(2021, 10, 11), 'Columbus Day')
-    (datetime.date(2021, 11, 11), 'Veterans Day')
-    (datetime.date(2021, 11, 25), 'Thanksgiving')
-    (datetime.date(2021, 12, 25), 'Christmas Day')
-    (datetime.date(2021, 12, 24), 'Christmas Day (Observed)') 
-
-    Since it returns a tuple with the datetime date and the name of the holiday,
-    only the datetime is saved.
-    year = startdate.year
-    holiday_list = []
-    for holiday in holidays.UnitedStates(years=year).items():
-	    holiday_list.append(holiday[0])
-    '''
-    now = timezone.now()
-
-    #range is exclusive
-    number_of_days = (enddate - startdate).days + 1
-    #Get a list of all the dates in this timeframe
-    all_dates = [startdate + datetime.timedelta(days=x) for x in range(number_of_days)]
-
-    #We also retrieve how many total non-weekend/holiday dates have past thus far in the selected date
-    #For the entire week, the front end on the HTML would look like this regardless of how many days
-    #have passed in this time frame:
-    #DAY:
-    #Tuesday, June 29
-    #
-    #WEEK:
-    #Monday, June 28 - Sunday, July 04
-    #Business Days: 4 / 5
-    #Possible Points: 400 / 500
-    #If we change "now" to today, then the business would update
-    #For each corresponding day
-    #Its done this way because when you select a previous day from the drop down, it will show a total point calculation
-    #For the entire month and week.
-    #We don't show the total score for only the days so far in that selected timeframe
-    #If you look at Tuesday of last week, the total score will reflect, Mon-Sunday
-    #Instead of just Monday and Tuesday
-    number_of_days_so_far = (now - startdate).days + 1
-    all_dates_so_far = [startdate + datetime.timedelta(days=x) for x in range(number_of_days_so_far)]
-    
-    #Get all of the dates for the current timeframe for Today
-    #range is exclusive
-    number_of_days_now = (enddate - now).days + 1
-    #Get a list of all the dates in this timeframe
-    all_dates_now = [now + datetime.timedelta(days=x) for x in range(number_of_days_now)]
-
-
-    #Remove times with "date()"
-    all_dates = [d.date() for d in all_dates]
-    all_dates_so_far = [d.date() for d in all_dates_so_far]
-    all_dates_now = [d.date() for d in all_dates_now]
-
-    #See docstring for more info
-    year = startdate.year
-    holiday_list = []
-    for holiday in holidays.UnitedStates(years=year).items():
-	    holiday_list.append(holiday[0])
-    #Creates new list which excludes all dates if the date falls on a holiday
-    dates_no_holiday = [d for d in all_dates if d not in holiday_list]
-    dates_no_holiday_so_far = [d for d in all_dates_so_far if d not in holiday_list]
-    dates_no_holiday_now = [d for d in all_dates_now if d not in holiday_list]
-
-    #create a new list which excludes all dates if the date falls on a weekend
-    no_weekend_holiday_date_list = [d for d in dates_no_holiday if not d.isoweekday() in [6,7]]
-    no_weekend_holiday_date_list_so_far = [d for d in dates_no_holiday_so_far if not d.isoweekday() in [6,7]]
-    no_weekend_holiday_date_list_now = [d for d in dates_no_holiday_now if not d.isoweekday() in [6,7]]
-
-    if now.date() in no_weekend_holiday_date_list_now:
-        today_selected = True
-    else:
-        today_selected = False
-
-    return no_weekend_holiday_date_list_so_far, no_weekend_holiday_date_list, today_selected
-
-@login_required()
-@staff_member_required
-def get_users(request):
-    credentials_file = 'credentials.json'
-    credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
-    with open(credentials_path) as f:
-        data = f.read()
-    credential_dict = json.loads(data)
-    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    vtigerapi.get_users_and_groups_file()
-    return HttpResponseRedirect('/sales')
+        # Serialize the data
+        serializer = DealSerializer(opps, many=True)
+        return Response(serializer.data)
 
 @login_required()
 @staff_member_required
@@ -396,138 +85,38 @@ def populate_db(request):
     from sales.tasks import get_opportunities
     get_opportunities()
 
-    from sales.tasks import get_phonecalls
-    get_phonecalls()
-
     return HttpResponseRedirect('/sales')
-
-@login_required()
-@staff_member_required
-def populate_opp_month(request):
-    '''
-    Populates the opportunities and phone calls databases from the past 3 months.
-    '''
-    from sales.tasks import get_opportunities
-    get_opportunities(day='month')
-
-    return HttpResponseRedirect('/sales')
-
-@login_required()
-@staff_member_required
-def populate_call_month(request):
-    '''
-    Populates the opportunities and phone calls databases from the past 3 months.
-    '''
-    from sales.tasks import get_phonecalls
-    get_phonecalls(day='month')
-
-    return HttpResponseRedirect('/sales')
-
-@login_required()
-@staff_member_required
-def delete_all_items(request):
-    '''
-    Delete all the items in the database from today only.
-    Convenient to reset the day's data without deleting previous days' data.
-    '''
-    today_start = timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    today_end = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0)
-    today_opps = Opportunities.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
-    today_calls = Phone_call.objects.all().filter(date_modified__gte=today_start, date_modified__lte=today_end)
-
-    today_opps.delete()
-    today_calls.delete()
-
-    #This deletes all items:
-    #today_opps.objects.all().delete()
-    #today_calls.objects.all().delete()
-    return HttpResponseRedirect('/sales')
-
-@login_required()
-@staff_member_required
-def test_method(request):
-    '''
-    localhost:8000/test
-    Useful for testing functionality
-    '''
-    print('test!')
-    return HttpResponseRedirect('/sales')
-
-
 
 @csrf_exempt
 def webhook(request):
     '''
-      {
-    "master_call_id": null,
-    "date_ended": 16828074,
-    "voicemail_recording_id": null,
-    "internal_number": "+132154",
-    "call_recording_ids": [],
-    "duration": 11989.972,
-    "mos_score": 4.41,
-    "entry_point_target": {},
-    "proxy_target": {},
-    "entry_point_call_id": null,
-    "operator_call_id": null,
-    "call_id": 461111840,
-    "state": "hangup",
-    "csat_score": null,
-    "date_started": 168208017,
-    "transcription_text": null,
-    "direction": "outbound",
-    "labels": [],
-    "total_duration": 20056.427,
-    "date_connected": 16884,
-    "routing_breadcrumbs": [],
-    "voicemail_link": null,
-    "is_transferred": "FALSE",
-    "public_call_review_share_link": "https://dialpad.com/shared/call/yx91bVOZxwcnjcCqz01qoUsO",
-    "was_recorded": "FALSE",
-    "date_rang": null,
-    "target": {
-      "phone": "+13",
-      "type": "user",
-      "id": 665136,
-      "name": "Roovy Shapiro",
-      "email": "roio"
-    },
-    "event_timestamp": 1682084129176,
-    "contact": {
-      "phone": "+2",
-      "type": "local",
-      "id": 5600392044183552,
-      "name": "(619) 808-7922",
-      "email": ""
-    },
-    "company_call_review_share_link": "https://dialpad.com/shared/call/2jdW0pGpCtoUMH4dcNv5tSeGskEL1jKLpHNl",
-    "group_id": null,
-    "external_number": "+1619"
-  }
-    
+    Process incoming document updates from Outline's built in Webhook functionality.
+    This replaces the need for celery tasks.
     '''
     if request.method == 'POST':
-        payload = json.loads(request.body)
+        #print(request.body)
+        #print('\n')
+        print(json.loads(request.body))
+        data = json.loads(request.body)
+        from .tasks import save_webhook_deal
+        save_webhook_deal(data)
+        #payload = json.loads(request.body)
         #print("Data received from Webhook is: ", payload)
         #print(request)
+        #data = json.loads(request.body.decode('utf-8'))
+        #print(data)
+        #print(data)
         #print(request.body)
-        validation_token = request.headers.get('Validation-Token')
+        #validation_token = request.headers.get('Validation-Token')
 
-        send_to_vtiger(payload)
-        response = HttpResponse(status=200)
+        #send_to_vtiger(payload)
+        #response = HttpResponse(status=200)
 
         # add the Content-type header to the response
-        response['Content-type'] = 'application/json'
-        response['Validation-Token'] = validation_token
+        #response['Content-type'] = 'application/json'
+        #response['Validation-Token'] = validation_token
 
         # return the response
-        return response
-        #return HttpResponse(status=200)
+        #return response
+        return HttpResponse(status=200)
     return HttpResponse(status=400)
-
-def send_to_vtiger(payload):
-    with open('credentials.json') as f:
-        data = f.read()
-    credential_dict = json.loads(data)
-    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    vtigerapi.create_call(payload)

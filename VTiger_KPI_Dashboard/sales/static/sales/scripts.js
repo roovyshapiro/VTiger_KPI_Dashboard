@@ -997,3 +997,498 @@ try{
 }catch(err){
   console.log('user user_contribution_chart not available', err);
 }
+
+
+/* 
+
+
+
+
+
+
+
+
+Asynchronous Test for new sales dashboard page
+
+
+
+
+
+
+
+
+
+
+*/
+
+
+/*
+This function is used to submit the timeframe to the view to retrieve deals that were modified
+between the start date and end date
+*/
+$(function() {
+
+  var start = moment().subtract(29, 'days');
+  var end = moment();
+
+  function cb(start, end) {
+      $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+  }
+
+  $('#reportrange').daterangepicker({
+      startDate: start,
+      endDate: end,
+      ranges: {
+         'Today': [moment(), moment()],
+         'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+         'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+         'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+         'This Week': [moment().startOf('week'), moment().endOf('week')],
+         'This Month': [moment().startOf('month'), moment().endOf('month')],
+         'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+      }
+  }, cb);
+
+  cb(start, end);
+
+});
+
+
+
+// Define a global variable to store the API response data
+var startDate = '';
+var endDate = '';
+var startDateFormatted = '';
+var endDateFormatted = '';
+let apiData = null;
+document.addEventListener("DOMContentLoaded", function() {
+  const fetchDataButton = document.getElementById("fetch-data");
+  const dataContainer = document.getElementById("data-container");
+
+  // Function to fetch data and render charts
+  function fetchDataAndRenderCharts(startDate, endDate) {
+    // Make an API request to your DRF endpoint with the selected date range
+    fetch(`/api/sales-deals-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        // Store the API response data in the global variable
+        apiData = data;
+
+        // Call separate functions to render charts
+        renderChart1();
+        renderChart2();
+        renderChart3();
+        renderChart4();
+
+        // Add more chart rendering functions as needed
+      })
+      .catch(error => {
+        console.error("Error fetching data from the API:", error);
+      });
+  }
+
+  // Function to handle automatic data refresh
+  function autoRefreshData() {
+    // Get the selected start and end dates from the DateRangePicker
+    const selectedDateRange = $('#reportrange').data('daterangepicker');
+    const startDate = selectedDateRange.startDate.format('YYYY-MM-DD');
+    const endDate = selectedDateRange.endDate.format('YYYY-MM-DD');
+
+    // Call the function to fetch and render data
+    fetchDataAndRenderCharts(startDate, endDate);
+  }
+
+  // Set the initial date range for the DateRangePicker
+  const initialStartDate = moment().startOf('month');
+  const initialEndDate = moment().endOf('month');
+
+  $('#reportrange').daterangepicker({
+    startDate: initialStartDate,
+    endDate: initialEndDate,
+    ranges: {
+      'Today': [moment(), moment()],
+      'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+      'This Week': [moment().startOf('week'), moment().endOf('week')],
+      'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+      'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+      'This Month': [moment().startOf('month'), moment().endOf('month')],
+      'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    }
+  });
+
+  // Set the initial date range in the picker
+  $('#reportrange').data('daterangepicker').setStartDate(initialStartDate);
+  $('#reportrange').data('daterangepicker').setEndDate(initialEndDate);
+
+  // Update the displayed date range
+  $('#reportrange span').html(initialStartDate.format('MMMM D, YYYY') + ' - ' + initialEndDate.format('MMMM D, YYYY'));
+
+  // Call the function with the initial date range on page load
+  fetchDataAndRenderCharts(initialStartDate.format('YYYY-MM-DD'), initialEndDate.format('YYYY-MM-DD'));
+
+  // Add a click event listener to the button
+  fetchDataButton.addEventListener("click", function(event) {
+    // Prevent the default form submission behavior
+    event.preventDefault();
+
+    // Get the selected start and end dates from the DateRangePicker
+    const selectedDateRange = $('#reportrange').data('daterangepicker');
+    startDate = selectedDateRange.startDate.format('YYYY-MM-DD');
+    endDate = selectedDateRange.endDate.format('YYYY-MM-DD');
+    startDateFormatted = selectedDateRange.startDate.format('MM-DD');
+    endDateFormatted = selectedDateRange.endDate.format('MM-DD');
+
+    // Call the function when the button is clicked
+    fetchDataAndRenderCharts(startDate, endDate);
+  });
+
+  // Set up automatic data refresh every 5 minutes (300,000 milliseconds)
+  // 1 Minutes is 60,000, 3 minutes is 180,000, 10 minutes is 600,000
+  // setInterval(autoRefreshData, 60000);
+
+
+
+  // Function to render Chart 1
+  function renderChart1() {
+    // this chart shows all the demos modified in the time frame
+    // that are summed by the qualified by
+    sales_dash_qualifiedby_barchart(apiData);
+  }
+
+  // Function to render Chart 2
+  function renderChart2() {
+    // this chart shows all the demos modified in the time frame
+    // that are summed by the assigned to
+    sales_dash_assignedto_barchart(apiData);
+  }
+
+  // Function to render Chart 3
+  function renderChart3() {
+    // This chart shows the open Deals with the sum of all
+    // Amounts per qualified by
+    sales_dash_amount_barchart(apiData);
+  }
+
+  // Function to render Chart 4
+  function renderChart4() {
+    // This chart shows the open Deals with the sum of all
+    // Amounts per qualified by
+    sales_dash_amount_barchart_assigned(apiData);
+  }
+});
+
+// this chart shows all the demos modified in the time frame
+// that are summed by the qualified by
+// Define a variable to store the chart instance
+let qualifiedOpportunitiesChart = null;
+
+
+function sales_dash_qualifiedby_barchart(apiData) {
+  if (qualifiedOpportunitiesChart) {
+    // Destroy the existing chart if it exists
+    qualifiedOpportunitiesChart.destroy();
+  }
+
+  // Step 1: Group Opportunities by 'qualified_by_name' and count the opportunities for each user
+  const qualifiedByCounts = {};
+  apiData.forEach(opportunity => {
+    const qualifiedByName = opportunity.qualified_by_name;
+    if (!qualifiedByCounts[qualifiedByName]) {
+      qualifiedByCounts[qualifiedByName] = 1;
+    } else {
+      qualifiedByCounts[qualifiedByName]++;
+    }
+  });
+
+  // Step 2: Create a bar chart using Chart.js
+  const qualifiedByNames = Object.keys(qualifiedByCounts);
+  const opportunitiesCount = qualifiedByNames.map(name => qualifiedByCounts[name]);
+
+  // Sort the opportunitiesCount array in descending order
+  opportunitiesCount.sort((a, b) => b - a);
+
+  // Chart data
+  const barChartDataSalesDash = {
+    labels: qualifiedByNames,
+    datasets: [
+      {
+        label: 'Qualified Demos',
+        data: opportunitiesCount,
+        backgroundColor: 'lightblue',
+      },
+    ],
+  };
+
+  // Chart options
+  const barChartOptionsSalesDash = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: `Demos Qualified by User ${startDateFormatted} - ${endDateFormatted}`,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+
+  // Create the bar chart
+  const barChartContextSalesDash = document.getElementById('qualified_opportunities_chart').getContext('2d');
+  qualifiedOpportunitiesChart = new Chart(barChartContextSalesDash, {
+    type: 'bar',
+    data: barChartDataSalesDash,
+    options: barChartOptionsSalesDash,
+  });
+};
+
+
+
+// this chart shows all the demos modified in the time frame
+// that are summed by the assigned to
+// Define a variable to store the chart instance
+let assignedOpportunitiesChart = null;
+
+
+function sales_dash_assignedto_barchart(apiData) {
+  if (assignedOpportunitiesChart) {
+    // Destroy the existing chart if it exists
+    assignedOpportunitiesChart.destroy();
+  }
+
+  // Step 1: Group Opportunities by 'assigned_username' and count the opportunities for each user
+  const assignedToCounts = {};
+  apiData.forEach(opportunity => {
+    const assignedToName = opportunity.assigned_username;
+    if (!assignedToCounts[assignedToName]) {
+      assignedToCounts[assignedToName] = 1;
+    } else {
+      assignedToCounts[assignedToName]++;
+    }
+  });
+
+  // Step 2: Create a bar chart using Chart.js
+  const assignedToNames = Object.keys(assignedToCounts);
+  const opportunitiesCount = assignedToNames.map(name => assignedToCounts[name]);
+
+  // Sort the opportunitiesCount array in descending order
+  opportunitiesCount.sort((a, b) => b - a);
+
+  // Chart data
+  const barChartDataSalesDashAssigned = {
+    labels: assignedToNames,
+    datasets: [
+      {
+        label: 'All Deals',
+        data: opportunitiesCount,
+        backgroundColor: 'magenta',
+      },
+    ],
+  };
+
+  // Chart options
+  const barChartOptionsSalesDashAssigned = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: `Demos Assigned to ${startDateFormatted} - ${endDateFormatted}`,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+
+  // Create the bar chart
+  const barChartContextSalesDashAssigned = document.getElementById('assigned_opportunities_chart').getContext('2d');
+  assignedOpportunitiesChart = new Chart(barChartContextSalesDashAssigned, {
+    type: 'bar',
+    data: barChartDataSalesDashAssigned,
+    options: barChartOptionsSalesDashAssigned,
+  });
+};
+
+
+
+// This chart shows the open Deals with the sum of all
+// Amounts per qualified by
+// Define a variable to store the chart instance
+let qualifiedByAmountChart = null;
+
+function sales_dash_amount_barchart(apiData) {
+  if (qualifiedByAmountChart) {
+    // Destroy the existing chart if it exists
+    qualifiedByAmountChart.destroy();
+  }
+
+  // Step 1: Group Opportunities by 'qualified_by_name' and calculate the total 'opp_amount'
+  const qualifiedByAmounts = {};
+  
+  apiData.forEach(opportunity => {
+    const qualifiedByName = opportunity.qualified_by_name;
+    const oppAmount = parseFloat(opportunity.opp_amount || 0); // Convert 'opp_amount' to a number, default to 0
+    const oppStage = opportunity.opp_stage;
+    
+    if (oppStage !== "closed won" && oppStage !== "closed lost") {
+      if (!qualifiedByAmounts[qualifiedByName]) {
+        qualifiedByAmounts[qualifiedByName] = oppAmount;
+      } else {
+        qualifiedByAmounts[qualifiedByName] += oppAmount;
+      }
+    }
+  });
+
+  // Convert the calculated values to an array for the chart
+  const qualifiedByNames = Object.keys(qualifiedByAmounts);
+  const totalAmounts = qualifiedByNames.map(name => qualifiedByAmounts[name]);
+
+  // Sort the opportunitiesCount array in descending order
+  totalAmounts.sort((a, b) => b - a);
+
+  // Chart data
+  const barChartDataSalesDashAmount = {
+    labels: qualifiedByNames,
+    datasets: [
+      {
+        label: 'Total Deal Amount ($)',
+        data: totalAmounts,
+        backgroundColor: 'lightblue',
+      },
+    ],
+  };
+
+  // Chart options
+  const barChartOptionsSalesDashAmount = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: `Total Amount of Open Deals by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+
+  // Create the bar chart
+  const barChartContextSalesDash = document.getElementById('amount_opportunities_chart').getContext('2d');
+  qualifiedByAmountChart = new Chart(barChartContextSalesDash, {
+    type: 'bar',
+    data: barChartDataSalesDashAmount,
+    options: barChartOptionsSalesDashAmount,
+  });
+};
+
+
+// This chart shows the open Deals with the sum of all
+// Amounts per assigned by
+// Define a variable to store the chart instance
+let qualifiedByAmountChartAssigned = null;
+
+function sales_dash_amount_barchart_assigned(apiData) {
+  if (qualifiedByAmountChartAssigned) {
+    // Destroy the existing chart if it exists
+    qualifiedByAmountChartAssigned.destroy();
+  }
+
+  // Step 1: Group Opportunities by 'assigned_to' and calculate the total 'opp_amount'
+  const assignedToAmounts = {};
+  
+  apiData.forEach(opportunity => {
+    const assignedToName = opportunity.assigned_username;
+    const oppAmount = parseFloat(opportunity.opp_amount || 0); // Convert 'opp_amount' to a number, default to 0
+    const oppStage = opportunity.opp_stage;
+    
+    if (oppStage !== "closed won" && oppStage !== "closed lost") {
+      if (!assignedToAmounts[assignedToName]) {
+        assignedToAmounts[assignedToName] = oppAmount;
+      } else {
+        assignedToAmounts[assignedToName] += oppAmount;
+      }
+    }
+  });
+
+  // Convert the calculated values to an array for the chart
+  const assignedToNames = Object.keys(assignedToAmounts);
+  const totalAmountsAssigned = assignedToNames.map(name => assignedToAmounts[name]);
+
+  // Sort the opportunitiesCount array in descending order
+  totalAmountsAssigned.sort((a, b) => b - a);
+
+  // Chart data
+  const barChartDataSalesDashAmountAssigned = {
+    labels: assignedToNames,
+    datasets: [
+      {
+        label: 'Total Deal Amount ($)',
+        data: totalAmountsAssigned,
+        backgroundColor: 'magenta',
+      },
+    ],
+  };
+
+  // Chart options
+  const barChartOptionsSalesDashAmountAssigned = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: `Total Amount of Open Deals by Assigned To ${startDateFormatted} - ${endDateFormatted}`,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+
+  // Create the bar chart
+  const barChartContextSalesDashAssigned = document.getElementById('amount_opportunities_chart_assigned').getContext('2d');
+  qualifiedByAmountChartAssigned = new Chart(barChartContextSalesDashAssigned, {
+    type: 'bar',
+    data: barChartDataSalesDashAmountAssigned,
+    options: barChartOptionsSalesDashAmountAssigned,
+  });
+};

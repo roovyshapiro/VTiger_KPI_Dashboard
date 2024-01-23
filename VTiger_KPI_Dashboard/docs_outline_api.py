@@ -30,6 +30,7 @@ class Docs_outline_api:
             "id": id,
         }
         response = self.api_call(url, params)
+        print('api.py - get_doc_info', '\n', response)
         return response['data']
 
 

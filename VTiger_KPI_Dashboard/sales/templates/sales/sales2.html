@@ -1,0 +1,36 @@
+{% extends 'sales/refresh_date_picker.html' %}
+
+
+{% block content %}
+
+
+<div>
+    <h1>Sales Deals</h1>
+        <div id="reportrange" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="fa fa-calendar"></i>&nbsp;
+            <span></span> <i class="fa fa-caret-down"></i>
+                <button type="button" id="fetch-data">Fetch Data</button>
+        </div>    
+    
+    <div id="data-container"></div>
+</div>
+
+<!-- Charts for the selected month -->
+<div id = "charts" class="docs_charts">
+    <div id ="qualified_opportunities_chart_div">
+        <canvas id="qualified_opportunities_chart"></canvas>
+    </div>
+    <div id ="assigned_opportunities_chart_div">
+        <canvas id="assigned_opportunities_chart"></canvas>
+    </div>
+</div>
+<div id = "charts" class="docs_charts">
+    <div id ="amount_opportunities_chart_div">
+        <canvas id="amount_opportunities_chart"></canvas>
+    </div>
+    <div id ="amount_opportunities_chart_assigned_div">
+        <canvas id="amount_opportunities_chart_assigned"></canvas>
+    </div>
+</div>
+
+{% endblock %}

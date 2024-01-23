@@ -11,7 +11,7 @@ import VTiger_API
 import json, os, datetime
 
 @shared_task
-def get_opportunities(day='Today'):
+def get_opportunities(day='month'):
     '''
     {
         "adjusted_amount": "999.00000000",
@@ -74,6 +74,7 @@ def get_opportunities(day='Today'):
     },
     opp_id = models.CharField(max_length=50)
     contact_id = models.CharField(max_length=50)
+    opp_amount = models.CharField(max_length=50)
 
     opp_no = models.CharField(max_length=50)
     opp_name = models.CharField(max_length=250)
@@ -129,6 +130,7 @@ def get_opportunities(day='Today'):
         new_opp.opp_url_id = opp['id'].replace('5x','')
 
         new_opp.contact_id = opp['contact_id']
+        new_opp.opp_amount = opp['amount']
         new_opp.opp_no = opp['potential_no']
         new_opp.opp_name = opp['potentialname']
         new_opp.opp_stage = opp['sales_stage']
@@ -188,6 +190,115 @@ def get_opportunities(day='Today'):
             new_opp.closed_won_changed_at = None
 
         new_opp.save()
+
+
+def save_webhook_deal(webhook_data):
+    '''
+    {
+        "opp_no": "POT4016",
+        "opp_name": "test deal",
+        "opp_amount": "150.00000000",
+        "opp_stage": "Needs Analysis",
+        "createdtime": "2024-01-05 20:44:40",
+        "modifiedtime": "2024-01-05 21:37:59",
+        "created_user": "Ryan Shanks",
+        "modifiedby": "Ryan Shanks",
+        "assigned_to": "65",
+        "assigned_to_username": "rshanks@testbiz.io",
+        "qualified_by": "Alejandro Folgers",
+        "current_stage_entry_time": "2024-01-05 21:37:58",
+        "demo_scheduled_changed_at": "01-05-2024 03:45 PM",
+        "demo_given_changed_at": "01-05-2024 04:32 PM",
+        "quote_sent_changed_at": "",
+        "pilot_changed_at": "01-05-2024 04:35 PM",
+        "needs_analysis_changed_at": "01-05-2024 04:37 PM",
+        "closed_lost_changed_at": "",
+        "closed_won_changed_at": "",
+        "contact_name": "Christina Collander",
+        "org_name": "BIZ - HQ",
+        "assigned_groupname": "82",
+        "cf_potentials_qualifiedby": "EMP87",
+        "created_user2": "Ryan Shanks",
+        "id": "5x2179843"
+    }
+    '''
+    opp_id = webhook_data['id']
+
+    # Check if the opportunity with given ID already exists
+    try:
+        existing_opp = Opportunities.objects.get(opp_id=opp_id)
+    except Opportunities.DoesNotExist:
+        # If the opportunity doesn't exist, create a new one
+        existing_opp = Opportunities(opp_id=opp_id)
+
+    # Update fields with new data
+    existing_opp.opp_url_id = webhook_data['id'].replace('5x', '')
+    existing_opp.contact_id = webhook_data['contact_name']
+    existing_opp.opp_amount = webhook_data['opp_amount']
+
+    existing_opp.opp_id = webhook_data['id']
+    existing_opp.opp_no = webhook_data['opp_no']
+    existing_opp.opp_name = webhook_data['opp_name']
+    existing_opp.opp_stage = webhook_data['opp_stage']
+
+    existing_opp.createdtime = make_aware(datetime.datetime.strptime(webhook_data['createdtime'],'%Y-%m-%d %H:%M:%S'))
+    existing_opp.modifiedtime = make_aware(datetime.datetime.strptime(webhook_data['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
+
+    existing_opp.created_user_id = webhook_data['created_user2']
+    existing_opp.modifiedby = webhook_data['modifiedby']
+    existing_opp.assigned_user_id = webhook_data['assigned_to']
+
+    existing_opp.qualified_by_id = webhook_data['cf_potentials_qualifiedby']
+    existing_opp.qualified_by_name = webhook_data['qualified_by']
+
+    existing_opp.assigned_username = webhook_data['assigned_to_username']
+    existing_opp.modified_username = webhook_data['modifiedby']
+    existing_opp.assigned_groupname = webhook_data['assigned_groupname']
+
+    if webhook_data['current_stage_entry_time'] != '':
+        existing_opp.current_stage_entry_time = make_aware(datetime.datetime.strptime(webhook_data['current_stage_entry_time'],'%Y-%m-%d %H:%M:%S'))
+    else:
+        existing_opp.current_stage_entry_time = None
+
+    if webhook_data['demo_scheduled_changed_at'] != '':
+        existing_opp.demo_scheduled_changed_at = make_aware(datetime.datetime.strptime(webhook_data['demo_scheduled_changed_at'],'%m-%d-%Y %H:%M %p'))
+    else:
+        existing_opp.demo_scheduled_changed_at = None
+
+    if webhook_data['demo_given_changed_at'] != '':
+        existing_opp.demo_given_changed_at = make_aware(datetime.datetime.strptime(webhook_data['demo_given_changed_at'],'%m-%d-%Y %H:%M %p'))
+    else:
+        existing_opp.demo_given_changed_at = None
+
+    if webhook_data['quote_sent_changed_at'] != '':
+        existing_opp.quote_sent_changed_at = make_aware(datetime.datetime.strptime(webhook_data['quote_sent_changed_at'],'%m-%d-%Y %H:%M %p')) 
+    else:
+        existing_opp.quote_sent_changed_at = None
+
+    if webhook_data['pilot_changed_at'] != '':
+        existing_opp.pilot_changed_at = make_aware(datetime.datetime.strptime(webhook_data['pilot_changed_at'],'%m-%d-%Y %H:%M %p'))
+    else:
+        existing_opp.pilot_changed_at = None
+
+    if webhook_data['needs_analysis_changed_at'] != '':
+        existing_opp.needs_analysis_changed_at = make_aware(datetime.datetime.strptime(webhook_data['needs_analysis_changed_at'],'%m-%d-%Y %H:%M %p'))
+    else:
+        existing_opp.needs_analysis_changed_at = None
+
+    if webhook_data['closed_lost_changed_at'] != '':
+        existing_opp.closed_lost_changed_at = make_aware(datetime.datetime.strptime(webhook_data['closed_lost_changed_at'],'%m-%d-%Y %H:%M %p'))
+    else:
+        existing_opp.closed_lost_changed_at = None
+
+    if webhook_data['closed_won_changed_at'] != '':
+        existing_opp.closed_won_changed_at = make_aware(datetime.datetime.strptime(webhook_data['closed_won_changed_at'], '%m-%d-%Y %H:%M %p'))
+    else: 
+        existing_opp.closed_won_changed_at = None
+
+    # Save the opportunity
+    existing_opp.save()
+
+
 
 @shared_task
 def get_phonecalls(day='Today'):
