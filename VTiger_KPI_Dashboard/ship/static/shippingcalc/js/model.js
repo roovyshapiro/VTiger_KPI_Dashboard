@@ -1,7 +1,6 @@
-import { UPS_URL } from './config.js';
-import { CREDENTIALS } from './config.js';
-import { ADDRESS } from './config.js';
-import { BOXVOLS, CLEARSTATE } from './helpers/helpers.js';
+import { CREDENTIALS } from "./config.js";
+import { ADDRESS } from "./config.js";
+import { BOXVOLS, CLEARSTATE } from "./helpers/helpers.js";
 
 export const state = {
   /**
@@ -62,19 +61,33 @@ export const setPackageDimension = function (dimensions) {
   try {
     const productVol = dimensions
       .map((prod) => {
-        return +prod.dataset.length * +prod.dataset.width * +prod.dataset.height * +prod.textContent;
+        return (
+          +prod.dataset.length *
+          +prod.dataset.width *
+          +prod.dataset.height *
+          +prod.textContent
+        );
       })
       .reduce((acc, cur) => acc + cur, 0);
 
     state.productVolume = productVol;
 
-    if (state.packageWeight <= 1) return (state.dimensions = { length: '9', width: '5', height: '5' });
-    if (productVol < BOXVOLS.box2) return (state.dimensions = { length: '12', width: '9', height: '5' });
-    if (productVol < BOXVOLS.box3) return (state.dimensions = { length: '14', width: '10', height: '10' });
-    if (productVol < BOXVOLS.box4) return (state.dimensions = { length: '22', width: '18', height: '12' });
-    if (productVol < BOXVOLS.box5) return (state.dimensions = { length: '30', width: '15', height: '15' });
-    if (productVol < BOXVOLS.box6) return (state.dimensions = { length: '32', width: '18', height: '15' });
-    if (productVol > BOXVOLS.box6) throw new Error('Our largest box can handle 60lbs total, please lower your product count and click "check rates" again. Split your order into multiple shipments');
+    if (state.packageWeight <= 1)
+      return (state.dimensions = { length: "9", width: "5", height: "5" });
+    if (productVol < BOXVOLS.box2)
+      return (state.dimensions = { length: "12", width: "9", height: "5" });
+    if (productVol < BOXVOLS.box3)
+      return (state.dimensions = { length: "14", width: "10", height: "10" });
+    if (productVol < BOXVOLS.box4)
+      return (state.dimensions = { length: "22", width: "18", height: "12" });
+    if (productVol < BOXVOLS.box5)
+      return (state.dimensions = { length: "30", width: "15", height: "15" });
+    if (productVol < BOXVOLS.box6)
+      return (state.dimensions = { length: "32", width: "18", height: "15" });
+    if (productVol > BOXVOLS.box6)
+      throw new Error(
+        'Our largest box can handle 60lbs total, please lower your product count and click "check rates" again. Split your order into multiple shipments'
+      );
   } catch (err) {
     CLEARSTATE(state);
     throw err;
@@ -87,84 +100,127 @@ export const setUPSPackageDetails = async function () {
    */
   try {
     ADDRESS.RateRequest.Shipment.ShipTo.Address = state.address;
-    ADDRESS.RateRequest.Shipment.Package.PackageWeight.Weight = state.packageWeight.toString();
-    ADDRESS.RateRequest.Shipment.ShipmentTotalWeight.Weight = state.packageWeight.toString();
-    ADDRESS.RateRequest.Shipment.Package.Dimensions.Length = state.dimensions.length;
-    ADDRESS.RateRequest.Shipment.Package.Dimensions.Width = state.dimensions.width;
-    ADDRESS.RateRequest.Shipment.Package.Dimensions.Height = state.dimensions.height;
+    ADDRESS.RateRequest.Shipment.Package.PackageWeight.Weight =
+      state.packageWeight.toString();
+    ADDRESS.RateRequest.Shipment.ShipmentTotalWeight.Weight =
+      state.packageWeight.toString();
+    ADDRESS.RateRequest.Shipment.Package.Dimensions.Length =
+      state.dimensions.length;
+    ADDRESS.RateRequest.Shipment.Package.Dimensions.Width =
+      state.dimensions.width;
+    ADDRESS.RateRequest.Shipment.Package.Dimensions.Height =
+      state.dimensions.height;
   } catch (err) {
     throw err;
   }
 };
 
-let csrfcookie = function() { 
+let csrfcookie = function () {
   let cookieValue = null,
-      name = "csrftoken";
+    name = "csrftoken";
   if (document.cookie && document.cookie !== "") {
-      let cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-          let cookie = cookies[i].trim();
-          if (cookie.substring(0, name.length + 1) == (name + "=")) {
-              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-              break;
-          }
+    let cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      let cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) == name + "=") {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
       }
+    }
   }
   return cookieValue;
 };
 
-export const upsApiCall = async function (ADDRESS) {
+export const upsApiCall = async function (payload) {
   /**
    * @param {Object} - ADDRESS - The entire UPS Object we build throughout the app. Includes, weight, dims, shipTo, ShipFrom ect.
    * @param {String} - UPS_URL - This is the URL we are making the "POST" http request to
    * @constant CREDENTIALS - Our UPS Credentials which are saved in the config.js file
    */
-  try {
-    const response = await fetch('ratingapi/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        AccessLicenseNumber: `${CREDENTIALS.accessLicenseNumber}`,
-        Username: `${CREDENTIALS.upsUserName}`,
-        Password: `${CREDENTIALS.upsPassword}`,
-        'X-CSRFToken': csrfcookie(),
-      },
-      body: JSON.stringify(ADDRESS),
-    });
-    if (!response.ok) throw new Error();
 
-    const result = await response.json();
-    return (state.rates = result.RateResponse.RatedShipment);
+  try {
+    const query = new URLSearchParams({
+      additionalinfo: "",
+    }).toString();
+
+    const token = await getToken();
+    const version = "v2403";
+    const requestoption = "Shop";
+    const resp = await fetch(
+      `https://wwwcie.ups.com/api/rating/${version}/${requestoption}?${query}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // transId: "1",
+          transactionSrc: "testing",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await resp.json();
+    state.rates = data.RateResponse.RatedShipment;
   } catch (err) {
     CLEARSTATE(state);
     throw err;
   }
 };
 
-export const filterRateResults = async function (obj, serviceType) {
+/**
+ *
+ * @returns {Promise<string> | null } returns an access token to access the rest of the api, it only has a 14-15 seconds shelf life.
+ */
+export async function getToken() {
+  try {
+    const resp = await fetch(`https://wwwcie.ups.com/security/v1/oauth/token`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "x-merchant-id": CREDENTIALS.ShipperNumber,
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            `${CREDENTIALS.client_id}:${CREDENTIALS.client_secret}`
+          ).toString("base64"),
+      },
+      body: new URLSearchParams({
+        grant_type: "client_credentials",
+      }).toString(),
+    });
+    const data = await resp.json();
+    return data?.access_token;
+  } catch (err) {
+    throw err;
+    return null;
+  }
+}
+
+export function filterRateResults(obj, serviceType) {
   /**
    * @param {Object} - obj - This is the returned rates object from the UPS API call that we are filtering through
    * @param {Object} - serviceType - Object of all the service codes and what those codes equate to. example ("03" = "Ground")
    * @returns - A new Array into our state variable for Published, Negotiated and Suggested Rates.
    * @description - Manages our state variable for rates, this is important for our Rate Page HTML Mark up since we will be using the state values.
    */
-  try {
-    for (const [key, val] of Object.entries(serviceType)) {
-      [...obj].map((rate) => {
-        if (key != rate.Service.Code) return;
-        state.filteredRates.push({ Service: val, Price: +rate.RatedPackage.TotalCharges.MonetaryValue });
-        state.negotiatedRates.push({ Service: val, Price: +rate.NegotiatedRateCharges.TotalCharge.MonetaryValue });
-        state.suggestedRate.push({
-          Service: val,
-          Price: Math.ceil(+rate.RatedPackage.TotalCharges.MonetaryValue * 1.3),
-        });
-      });
-    }
-  } catch (err) {
-    throw err;
+
+  for (const rate of [...obj]) {
+    state.filteredRates.push({
+      Service: serviceType[rate.Service.Code],
+      Price: +rate.TotalCharges.MonetaryValue,
+    });
+    state.negotiatedRates.push({
+      Service: serviceType[rate.Service.Code],
+      Price: +rate?.NegotiatedRateCharges?.TotalCharge?.MonetaryValue,
+    });
+    state.suggestedRate.push({
+      Service: serviceType[rate.Service.Code],
+      Price: Math.ceil(+rate.TotalCharges.MonetaryValue * 1.3),
+    });
   }
-};
+  console.log(state);
+}
 
 export const searchKey = function (nameKey, rateArray) {
   /**
