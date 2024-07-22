@@ -102,8 +102,8 @@ export const setUPSPackageDetails = async function () {
     ADDRESS.RateRequest.Shipment.ShipTo.Address = state.address;
     ADDRESS.RateRequest.Shipment.Package.PackageWeight.Weight =
       state.packageWeight.toString();
-    ADDRESS.RateRequest.Shipment.ShipmentTotalWeight.Weight =
-      state.packageWeight.toString();
+    // ADDRESS.RateRequest.Shipment.ShipmentTotalWeight.Weight =
+    //   state.packageWeight.toString();
     ADDRESS.RateRequest.Shipment.Package.Dimensions.Length =
       state.dimensions.length;
     ADDRESS.RateRequest.Shipment.Package.Dimensions.Width =
@@ -115,21 +115,21 @@ export const setUPSPackageDetails = async function () {
   }
 };
 
-let csrfcookie = function () {
-  let cookieValue = null,
-    name = "csrftoken";
-  if (document.cookie && document.cookie !== "") {
-    let cookies = document.cookie.split(";");
-    for (let i = 0; i < cookies.length; i++) {
-      let cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) == name + "=") {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-};
+// let csrfcookie = function () {
+//   let cookieValue = null,
+//     name = "csrftoken";
+//   if (document.cookie && document.cookie !== "") {
+//     let cookies = document.cookie.split(";");
+//     for (let i = 0; i < cookies.length; i++) {
+//       let cookie = cookies[i].trim();
+//       if (cookie.substring(0, name.length + 1) == name + "=") {
+//         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//         break;
+//       }
+//     }
+//   }
+//   return cookieValue;
+// };
 
 export const upsApiCall = async function (payload) {
   /**
@@ -181,9 +181,7 @@ export async function getToken() {
         "x-merchant-id": CREDENTIALS.ShipperNumber,
         Authorization:
           "Basic " +
-          Buffer.from(
-            `${CREDENTIALS.client_id}:${CREDENTIALS.client_secret}`
-          ).toString("base64"),
+          btoa(`${CREDENTIALS.client_id}:${CREDENTIALS.client_secret}`),
       },
       body: new URLSearchParams({
         grant_type: "client_credentials",
