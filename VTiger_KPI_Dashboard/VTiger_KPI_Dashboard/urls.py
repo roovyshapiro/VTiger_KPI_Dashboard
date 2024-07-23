@@ -42,14 +42,14 @@ urlpatterns = [
 
     path('sales/', sales_views.main, name='sales_dashboard'),
     path('populatesales/', sales_views.populate_db, name='populate'),
-    path('webhook/deals/', sales_views.webhook, name='deals_webhook'),
+    path('webhook/deals/', sales_views.deal_webhook, name='deals_webhook'),
+    path('webhook/dialpad/', sales_views.call_webhook, name='dialpad_webhook'),
 
     #path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
     #path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),
     #path('deleteallsales/', sales_views.delete_all_items, name='delete_all'),
     #path('testsales/', sales_views.test_method, name='test'),
     #path('getusers/', sales_views.get_users, name='get_users'),
-    #path('webhook/dialpad/', sales_views.webhook, name='dialpad_webhook'),
 
     path('cases/', case_views.main, name='case_dashboard'),
     path('populatecases/', case_views.populate_cases, name='populate_cases'),

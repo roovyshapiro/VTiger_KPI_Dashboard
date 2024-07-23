@@ -88,7 +88,7 @@ def populate_db(request):
     return HttpResponseRedirect('/sales')
 
 @csrf_exempt
-def webhook(request):
+def deal_webhook(request):
     '''
     Process incoming document updates from Outline's built in Webhook functionality.
     This replaces the need for celery tasks.
@@ -120,3 +120,77 @@ def webhook(request):
         #return response
         return HttpResponse(status=200)
     return HttpResponse(status=400)
+
+@csrf_exempt
+def call_webhook(request):
+    '''
+      {
+    "master_call_id": null,
+    "date_ended": 16828074,
+    "voicemail_recording_id": null,
+    "internal_number": "+132154",
+    "call_recording_ids": [],
+    "duration": 11989.972,
+    "mos_score": 4.41,
+    "entry_point_target": {},
+    "proxy_target": {},
+    "entry_point_call_id": null,
+    "operator_call_id": null,
+    "call_id": 461111840,
+    "state": "hangup",
+    "csat_score": null,
+    "date_started": 168208017,
+    "transcription_text": null,
+    "direction": "outbound",
+    "labels": [],
+    "total_duration": 20056.427,
+    "date_connected": 16884,
+    "routing_breadcrumbs": [],
+    "voicemail_link": null,
+    "is_transferred": "FALSE",
+    "public_call_review_share_link": "https://dialpad.com/shared/call/yx91bVOZxwcnjcCqz01qoUsO",
+    "was_recorded": "FALSE",
+    "date_rang": null,
+    "target": {
+      "phone": "+13",
+      "type": "user",
+      "id": 665136,
+      "name": "Roovy Shapiro",
+      "email": "roio"
+    },
+    "event_timestamp": 1682084129176,
+    "contact": {
+      "phone": "+2",
+      "type": "local",
+      "id": 5600392044183552,
+      "name": "(619) 808-7922",
+      "email": ""
+    },
+    "company_call_review_share_link": "https://dialpad.com/shared/call/2jdW0pGpCtoUMH4dcNv5tSeGskEL1jKLpHNl",
+    "group_id": null,
+    "external_number": "+1619"
+  }
+    
+    '''
+    if request.method == 'POST':
+        payload = json.loads(request.body)
+        #print("Data received from Webhook is: ", payload)
+        #print(request)
+        #print(request.body)
+        validation_token = request.headers.get('Validation-Token')
+        send_to_vtiger(payload)
+        response = HttpResponse(status=200)
+        # add the Content-type header to the response
+        response['Content-type'] = 'application/json'
+        response['Validation-Token'] = validation_token
+        # return the response
+        return response
+        #return HttpResponse(status=200)
+    return HttpResponse(status=400)
+
+def send_to_vtiger(payload):
+    with open('credentials.json') as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    vtigerapi.create_call(payload)
