@@ -131,69 +131,86 @@ export const setUPSPackageDetails = async function () {
 //   return cookieValue;
 // };
 
-export const upsApiCall = async function (payload) {
-  /**
-   * @param {Object} - ADDRESS - The entire UPS Object we build throughout the app. Includes, weight, dims, shipTo, ShipFrom ect.
-   * @param {String} - UPS_URL - This is the URL we are making the "POST" http request to
-   * @constant CREDENTIALS - Our UPS Credentials which are saved in the config.js file
-   */
+// export const upsApiCall = async function (payload) {
+//   /**
+//    * @param {Object} - ADDRESS - The entire UPS Object we build throughout the app. Includes, weight, dims, shipTo, ShipFrom ect.
+//    * @param {String} - UPS_URL - This is the URL we are making the "POST" http request to
+//    * @constant CREDENTIALS - Our UPS Credentials which are saved in the config.js file
+//    */
 
+//   try {
+//     const query = new URLSearchParams({
+//       additionalinfo: "",
+//     }).toString();
+
+//     const token = await getToken();
+//     const version = "v2403";
+//     const requestoption = "Shop";
+//     const resp = await fetch(
+//       `https://wwwcie.ups.com/api/rating/${version}/${requestoption}?${query}`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//           // transId: "1",
+//           transactionSrc: "testing",
+//           Authorization: `Bearer ${token}`,
+//         },
+//         body: JSON.stringify(payload),
+//       }
+//     );
+
+//     const data = await resp.json();
+//     state.rates = data.RateResponse.RatedShipment;
+//   } catch (err) {
+//     CLEARSTATE(state);
+//     throw err;
+//   }
+// };
+
+export async function upsApiCall(payload) {
   try {
-    const query = new URLSearchParams({
-      additionalinfo: "",
-    }).toString();
-
-    const token = await getToken();
-    const version = "v2403";
-    const requestoption = "Shop";
-    const resp = await fetch(
-      `https://wwwcie.ups.com/api/rating/${version}/${requestoption}?${query}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // transId: "1",
-          transactionSrc: "testing",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const data = await resp.json();
+    const response = await fetch("https://fota-dev.eyeride.io/proxy", {
+      method: "GET",
+      headers: {
+        Authorization: "Basic" + btoa("gmail:eyeride"),
+      },
+      body: JSON.stringify(payload),
+    });
+    const data = await response.json();
     state.rates = data.RateResponse.RatedShipment;
   } catch (err) {
     CLEARSTATE(state);
+    console.log(err);
     throw err;
   }
-};
-
+}
 /**
  *
  * @returns {Promise<string> | null } returns an access token to access the rest of the api, it only has a 14-15 seconds shelf life.
  */
-export async function getToken() {
-  try {
-    const resp = await fetch(`https://wwwcie.ups.com/security/v1/oauth/token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "x-merchant-id": CREDENTIALS.ShipperNumber,
-        Authorization:
-          "Basic " +
-          btoa(`${CREDENTIALS.client_id}:${CREDENTIALS.client_secret}`),
-      },
-      body: new URLSearchParams({
-        grant_type: "client_credentials",
-      }).toString(),
-    });
-    const data = await resp.json();
-    return data?.access_token;
-  } catch (err) {
-    throw err;
-    return null;
-  }
-}
+// export async function getToken() {
+//   try {
+//     const resp = await fetch(`https://wwwcie.ups.com/security/v1/oauth/token`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/x-www-form-urlencoded",
+//         "x-merchant-id": CREDENTIALS.ShipperNumber,
+//         Authorization:
+//           "Basic " +
+//           btoa(`${CREDENTIALS.client_id}:${CREDENTIALS.client_secret}`),
+//       },
+//       body: new URLSearchParams({
+//         grant_type: "client_credentials",
+//       }).toString(),
+//     });
+//     const data = await resp.json();
+//     return data?.access_token;
+//   } catch (err) {
+//     throw err;
+//     return null;
+//   }
+// }
 
 export function filterRateResults(obj, serviceType) {
   /**
