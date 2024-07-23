@@ -171,9 +171,12 @@ export const setUPSPackageDetails = async function () {
 export async function upsApiCall(payload) {
   try {
     const response = await fetch("https://fota-dev.eyeride.io/proxy", {
-      method: "GET",
+      method: "POST",
       headers: {
-        Authorization: "Basic" + btoa("gmail:eyeride"),
+        Authorization: "Basic " + btoa("gmail:eyeride"),
+        accept: "*/*",
+        "content-type": "application/json",
+        "accept-encoding": "gzip, deflate, br",
       },
       body: JSON.stringify(payload),
     });
