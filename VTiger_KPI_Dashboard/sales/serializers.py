@@ -2,7 +2,7 @@
 from rest_framework import serializers
  
 # import model from models.py
-from .models import Opportunities
+from .models import Opportunities, Phone_call
  
 # Create a model serializer
 class DealSerializer(serializers.ModelSerializer):
@@ -38,3 +38,8 @@ class DealSerializer(serializers.ModelSerializer):
                     'date_created',
                     'date_modified',
                     )
+        
+class PhoneCallSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Phone_call
+        fields = '__all__'

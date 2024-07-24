@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import DealSerializer
+from .serializers import DealSerializer, PhoneCallSerializer
 from rest_framework.decorators import api_view
 
 
@@ -26,6 +26,7 @@ def main(request):
     '''
     sales_data = {}
     sales_data['all_sales_opps'] = Opportunities.objects.all().filter(assigned_groupname='Sales') | Opportunities.objects.all().filter(assigned_groupname='Sales Managers')
+    sales_data['all_sales_calls'] = Phone_call.objects.all().filter(assigned_groupname='Sales') | Phone_call.objects.all().filter(assigned_groupname='Sales Managers')
 
     #print(len(sales_data['all_sales_opps']))
 
@@ -74,6 +75,17 @@ class DateFilterDealViewSet(viewsets.ModelViewSet):
 
         # Serialize the data
         serializer = DealSerializer(opps, many=True)
+        return Response(serializer.data)
+
+class PhoneCallViewSet(viewsets.ModelViewSet):
+    queryset = Phone_call.objects.all()
+    serializer_class = PhoneCallSerializer
+
+    def list(self, request):
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+        calls = Phone_call.objects.filter(modifiedtime__date__gte=start_date, modifiedtime__date__lte=end_date).order_by('-modifiedtime')
+        serializer = PhoneCallSerializer(calls, many=True)
         return Response(serializer.data)
 
 @login_required()

@@ -28,6 +28,7 @@ router = SimpleRouter()
 router.register(r'sales', DealViewSet, basename='sales')
 router.register(r'sales-open-deals', OpenDealsViewSet, basename='sales-open-deals')
 router.register(r'sales-deals-date-filter', DateFilterDealViewSet, basename='sales-deals-date-filter')
+router.register(r'sales-calls-date-filter', sales_views.PhoneCallViewSet, basename='sales-calls-date-filter')
 
 
 urlpatterns = [
@@ -44,6 +45,7 @@ urlpatterns = [
     path('populatesales/', sales_views.populate_db, name='populate'),
     path('webhook/deals/', sales_views.deal_webhook, name='deals_webhook'),
     path('webhook/dialpad/', sales_views.call_webhook, name='dialpad_webhook'),
+
 
     #path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
     #path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),

@@ -726,6 +726,7 @@ label.show_label:active {
 
 
 
+
 #charts{
     display:flex;
     justify-content: space-between;
@@ -750,6 +751,11 @@ label.show_label:active {
     margin-bottom:20px;
     padding:10px;
 }
+
+#phone_calls_chart_div{
+    height:100% !important;
+}
+
 
 /****** Dev/Redmine  ******/
 #logo_and_issues_total{

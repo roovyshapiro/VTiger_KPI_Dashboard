@@ -1060,6 +1060,8 @@ var startDate = '';
 var endDate = '';
 var startDateFormatted = '';
 var endDateFormatted = '';
+let dealsData = null;
+let callsData = null;
 let apiData = null;
 document.addEventListener("DOMContentLoaded", function() {
   const fetchDataButton = document.getElementById("fetch-data");
@@ -1071,7 +1073,7 @@ document.addEventListener("DOMContentLoaded", function() {
     fetch(`/api/sales-deals-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
       .then(response => response.json())
       .then(data => {
-        console.log(data);
+        console.log("Opp Data:", data);
         // Store the API response data in the global variable
         apiData = data;
 
@@ -1085,6 +1087,21 @@ document.addEventListener("DOMContentLoaded", function() {
       })
       .catch(error => {
         console.error("Error fetching data from the API:", error);
+      });
+
+      fetch(`/api/sales-calls-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Calls Data:", data);
+        // Store the API response data in the global variable
+        callsData = data;
+
+        // Call separate functions to render charts
+        renderChartCalls();
+        // Add more chart rendering functions as needed
+      })
+      .catch(error => {
+        console.error("Error fetching calls data from the API:", error);
       });
   }
 
@@ -1148,6 +1165,12 @@ document.addEventListener("DOMContentLoaded", function() {
   // setInterval(autoRefreshData, 60000);
 
 
+  // Function to render Phone Calls Chart 
+  function renderChartCalls() {
+    // this chart shows all the demos modified in the time frame
+    // that are summed by the qualified by
+    f_sales_dash_phonecall_barchart(callsData);
+  }
 
   // Function to render Chart 1
   function renderChart1() {
@@ -1492,3 +1515,89 @@ function sales_dash_amount_barchart_assigned(apiData) {
     options: barChartOptionsSalesDashAmountAssigned,
   });
 };
+
+// This chart shows the number of phone calls per user
+// Define a variable to store the chart instance
+let sales_dash_phonecall_barchart = null;
+
+function f_sales_dash_phonecall_barchart(apiData) {
+  if (sales_dash_phonecall_barchart) {
+    // Destroy the existing chart if it exists
+    sales_dash_phonecall_barchart.destroy();
+  }
+
+  // Step 1: Group Calls by 'assigned_username' and count the phone calls for each user
+  const phoneCallCounts = {};
+  
+  apiData.forEach(call => {
+    const assignedToName = call.assigned_username;
+
+    if (assignedToName) {
+      if (!phoneCallCounts[assignedToName]) {
+        phoneCallCounts[assignedToName] = 1;
+      } else {
+        phoneCallCounts[assignedToName]++;
+      }
+    }
+  });
+
+  // Convert the calculated values to an array for the chart
+  const assignedToNames = Object.keys(phoneCallCounts);
+  const totalPhoneCalls = assignedToNames.map(name => phoneCallCounts[name]);
+
+  // Sort the totalPhoneCalls array in descending order
+  const sortedData = assignedToNames.map((name, index) => ({
+    name,
+    count: totalPhoneCalls[index]
+  })).sort((a, b) => b.count - a.count);
+
+  const sortedNames = sortedData.map(item => item.name);
+  const sortedCounts = sortedData.map(item => item.count);
+
+  // Chart data
+  const barChartDataPhoneCalls = {
+    labels: sortedNames,
+    datasets: [
+      {
+        label: 'Number of Phone Calls',
+        data: sortedCounts,
+        backgroundColor: 'cyan',
+      },
+    ],
+  };
+
+  // Chart options
+  const barChartOptionsPhoneCalls = {
+    responsive: true,
+    maintainAspectRatio: false,
+    legend: {
+      position: 'top',
+    },
+    plugins: {
+      title: {
+        display: true,
+        text: `Number of Phone Calls by User`,
+      },
+    },
+    scales: {
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+  };
+
+  // Create the bar chart
+  const barChartContextPhoneCalls = document.getElementById('phone_calls_chart').getContext('2d');
+  sales_dash_phonecall_barchart = new Chart(barChartContextPhoneCalls, {
+    type: 'bar',
+    data: barChartDataPhoneCalls,
+    options: {
+      barChartOptionsPhoneCalls,
+       indexAxis: 'y'
+    }
+  });
+}
