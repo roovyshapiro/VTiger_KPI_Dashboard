@@ -1093,7 +1093,9 @@ document.addEventListener("DOMContentLoaded", function() {
       .then(response => response.json())
       .then(data => {
         console.log("Calls Data:", data);
-        // Store the API response data in the global variable
+        console.log("Start Date", startDate);
+        console.log("End DAte", endDate);
+        // Store the API respons, e data in the global variable
         callsData = data;
 
         // Call separate functions to render charts

@@ -85,14 +85,7 @@ class PhoneCallDateFilterViewSet(viewsets.ModelViewSet):
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
 
-        # Your filtering logic
-        if start_date and end_date:
-            calls = Phone_call.objects.filter(
-                modifiedtime__date__gte=start_date,
-                modifiedtime__date__lte=end_date
-            ).order_by('-modifiedtime')
-        else:
-            calls = Phone_call.objects.none()  # Return an empty queryset if no dates are provided
+        calls = Phone_call.objects.filter(createdtime__date__gte=start_date, createdtime__date__lte=end_date).order_by('-modifiedtime')
 
         # Serialize the data
         serializer = PhoneCallSerializer(calls, many=True)
