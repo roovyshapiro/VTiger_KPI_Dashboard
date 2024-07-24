@@ -1576,7 +1576,7 @@ function f_sales_dash_phonecall_barchart(apiData) {
     plugins: {
       title: {
         display: true,
-        text: `Number of Phone Calls by User`,
+        text: `Number of Phone Calls by User ${startDateFormatted} - ${endDateFormatted}`,
       },
     },
     scales: {

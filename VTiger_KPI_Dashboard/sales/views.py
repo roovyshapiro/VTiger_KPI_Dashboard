@@ -77,14 +77,24 @@ class DateFilterDealViewSet(viewsets.ModelViewSet):
         serializer = DealSerializer(opps, many=True)
         return Response(serializer.data)
 
-class PhoneCallViewSet(viewsets.ModelViewSet):
+class PhoneCallDateFilterViewSet(viewsets.ModelViewSet):
     queryset = Phone_call.objects.all()
     serializer_class = PhoneCallSerializer
 
     def list(self, request):
         start_date = self.request.query_params.get('start_date')
         end_date = self.request.query_params.get('end_date')
-        calls = Phone_call.objects.filter(modifiedtime__date__gte=start_date, modifiedtime__date__lte=end_date).order_by('-modifiedtime')
+
+        # Your filtering logic
+        if start_date and end_date:
+            calls = Phone_call.objects.filter(
+                modifiedtime__date__gte=start_date,
+                modifiedtime__date__lte=end_date
+            ).order_by('-modifiedtime')
+        else:
+            calls = Phone_call.objects.none()  # Return an empty queryset if no dates are provided
+
+        # Serialize the data
         serializer = PhoneCallSerializer(calls, many=True)
         return Response(serializer.data)
 
