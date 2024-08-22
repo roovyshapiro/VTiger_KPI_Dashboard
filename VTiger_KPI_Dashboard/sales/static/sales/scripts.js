@@ -1238,7 +1238,7 @@ function sales_dash_qualifiedby_barchart(apiData) {
     labels: qualifiedByNames,
     datasets: [
       {
-        label: 'Qualified Demos',
+        label: 'Qualified Deals',
         data: opportunitiesCount,
         backgroundColor: 'lightblue',
       },
@@ -1255,7 +1255,7 @@ function sales_dash_qualifiedby_barchart(apiData) {
     plugins: {
       title: {
         display: true,
-        text: `Demos Qualified by User ${startDateFormatted} - ${endDateFormatted}`,
+        text: `Modified Deals Qualified by User ${startDateFormatted} - ${endDateFormatted}`,
       },
     },
     scales: {
@@ -1332,7 +1332,7 @@ function sales_dash_assignedto_barchart(apiData) {
     plugins: {
       title: {
         display: true,
-        text: `Demos Assigned to ${startDateFormatted} - ${endDateFormatted}`,
+        text: `Modified Deals Assigned to ${startDateFormatted} - ${endDateFormatted}`,
       },
     },
     scales: {
