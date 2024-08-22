@@ -1673,7 +1673,7 @@ function sales_dash_scheduledDemos_barchart(apiData) {
       plugins: {
         title: {
           display: true,
-          text: `Demos Scheduled by User ${startDateFormatted} - ${endDateFormatted}`,
+          text: `Demos Scheduled by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
         },
         legend: {
           position: 'top',
