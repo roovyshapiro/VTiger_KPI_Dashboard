@@ -1082,6 +1082,7 @@ document.addEventListener("DOMContentLoaded", function() {
         renderChart2();
         renderChart3();
         renderChart4();
+        renderChartScheduledDemos();
 
         // Add more chart rendering functions as needed
       })
@@ -1172,6 +1173,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // this chart shows all the demos modified in the time frame
     // that are summed by the qualified by
     f_sales_dash_phonecall_barchart(callsData);
+  }
+
+  // Function to render Scheduled Demos Chart 
+  function renderChartScheduledDemos() {
+    // this chart shows all the demos modified in the time frame
+    // that are summed by the qualified by
+    sales_dash_scheduledDemos_barchart(apiData);
   }
 
   // Function to render Chart 1
@@ -1603,3 +1611,86 @@ function f_sales_dash_phonecall_barchart(apiData) {
     }
   });
 }
+
+
+// This chart shows all the demos that were scheduled in the time frame
+// Define a variable to store the chart instance
+let scheduledDemosChart = null;
+
+function sales_dash_scheduledDemos_barchart(apiData) {
+    if (scheduledDemosChart) {
+        // Destroy the existing chart if it exists
+        scheduledDemosChart.destroy();
+    }
+
+  // Step 1: Filter opportunities by `demo_scheduled_changed_at` within the selected time frame
+  const filteredOpportunities = apiData.filter(opportunity => {
+    const demoScheduledChangedAt = new Date(opportunity.demo_scheduled_changed_at);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    end.setHours(23, 59, 59, 999); // Include the full end day
+
+    // Check if the demo_scheduled_changed_at is within the selected time range
+    return demoScheduledChangedAt >= start && demoScheduledChangedAt <= end;
+  });
+  console.log("Filtered Opportunities:", filteredOpportunities);
+
+    // Step 2: Group filtered Opportunities by 'qualified_by_name' and count the opportunities for each user
+    const qualifiedByCounts = {};
+    filteredOpportunities.forEach(opportunity => {
+        const qualifiedByName = opportunity.qualified_by_name;
+        if (!qualifiedByCounts[qualifiedByName]) {
+            qualifiedByCounts[qualifiedByName] = 1;
+        } else {
+            qualifiedByCounts[qualifiedByName]++;
+        }
+    });
+
+    // Step 3: Prepare the data for the chart
+    const qualifiedByNames = Object.keys(qualifiedByCounts);
+    const opportunitiesCount = qualifiedByNames.map(name => qualifiedByCounts[name]);
+
+    // Sort the opportunitiesCount array in descending order
+    opportunitiesCount.sort((a, b) => b - a);
+
+    // Chart data
+    const barChartDataSalesDash = {
+        labels: qualifiedByNames,
+        datasets: [
+            {
+                label: 'Scheduled Demos',
+                data: opportunitiesCount,
+                backgroundColor: 'lightblue',
+            },
+        ],
+    };
+
+      //chart Options
+    const barChartOptionsSalesDash = {
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y', // This makes the bar chart horizontal
+      plugins: {
+        title: {
+          display: true,
+          text: `Demos Scheduled by User ${startDateFormatted} - ${endDateFormatted}`,
+        },
+        legend: {
+          position: 'top',
+        },
+      },
+      scales: {
+        x: {
+          beginAtZero: true,
+        },
+      },
+    };
+
+    // Create the bar chart
+    const barChartContextSalesDash = document.getElementById('scheduled_demos_chart').getContext('2d');
+    scheduledDemosChart = new Chart(barChartContextSalesDash, {
+        type: 'bar',
+        data: barChartDataSalesDash,
+        options: barChartOptionsSalesDash,
+    });
+};
