@@ -1223,9 +1223,12 @@ function sales_dash_qualifiedby_barchart(apiData) {
     qualifiedOpportunitiesChart.destroy();
   }
 
+ //Filter out opportunities where 'opp_stage' is 'Recycled'
+ const filteredData = apiData.filter(opportunity => opportunity.opp_stage !== 'Recycled');
+
   // Step 1: Group Opportunities by 'qualified_by_name' and count the opportunities for each user
   const qualifiedByCounts = {};
-  apiData.forEach(opportunity => {
+  filteredData.forEach(opportunity => {
     const qualifiedByName = opportunity.qualified_by_name;
     if (!qualifiedByCounts[qualifiedByName]) {
       qualifiedByCounts[qualifiedByName] = 1;
@@ -1300,9 +1303,12 @@ function sales_dash_assignedto_barchart(apiData) {
     assignedOpportunitiesChart.destroy();
   }
 
+ //Filter out opportunities where 'opp_stage' is 'Recycled'
+ const filteredData = apiData.filter(opportunity => opportunity.opp_stage !== 'Recycled');
+
   // Step 1: Group Opportunities by 'assigned_username' and count the opportunities for each user
   const assignedToCounts = {};
-  apiData.forEach(opportunity => {
+  filteredData.forEach(opportunity => {
     const assignedToName = opportunity.assigned_username;
     if (!assignedToCounts[assignedToName]) {
       assignedToCounts[assignedToName] = 1;
@@ -1376,10 +1382,13 @@ function sales_dash_amount_barchart(apiData) {
     qualifiedByAmountChart.destroy();
   }
 
+ //Filter out opportunities where 'opp_stage' is 'Recycled'
+ const filteredData = apiData.filter(opportunity => opportunity.opp_stage !== 'Recycled');
+
   // Step 1: Group Opportunities by 'qualified_by_name' and calculate the total 'opp_amount'
   const qualifiedByAmounts = {};
   
-  apiData.forEach(opportunity => {
+  filteredData.forEach(opportunity => {
     const qualifiedByName = opportunity.qualified_by_name;
     const oppAmount = parseFloat(opportunity.opp_amount || 0); // Convert 'opp_amount' to a number, default to 0
     const oppStage = opportunity.opp_stage;
@@ -1457,10 +1466,13 @@ function sales_dash_amount_barchart_assigned(apiData) {
     qualifiedByAmountChartAssigned.destroy();
   }
 
+ //Filter out opportunities where 'opp_stage' is 'Recycled'
+ const filteredData = apiData.filter(opportunity => opportunity.opp_stage !== 'Recycled');
+
   // Step 1: Group Opportunities by 'assigned_to' and calculate the total 'opp_amount'
   const assignedToAmounts = {};
   
-  apiData.forEach(opportunity => {
+  filteredData.forEach(opportunity => {
     const assignedToName = opportunity.assigned_username;
     const oppAmount = parseFloat(opportunity.opp_amount || 0); // Convert 'opp_amount' to a number, default to 0
     const oppStage = opportunity.opp_stage;
@@ -1576,27 +1588,23 @@ function f_sales_dash_phonecall_barchart(apiData) {
     ],
   };
 
-  // Chart options
   const barChartOptionsPhoneCalls = {
     responsive: true,
     maintainAspectRatio: false,
-    legend: {
-      position: 'top',
-    },
+    indexAxis: 'y',  // Makes the bar chart horizontal
     plugins: {
       title: {
         display: true,
         text: `Number of Phone Calls by User ${startDateFormatted} - ${endDateFormatted}`,
       },
+      legend: {
+        position: 'top',
+      },
     },
     scales: {
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
+      x: {
+        beginAtZero: true,
+      },
     },
   };
 
