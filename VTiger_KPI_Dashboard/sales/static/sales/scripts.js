@@ -1600,10 +1600,16 @@ function f_sales_dash_phonecall_barchart(apiData) {
       },
     },
     scales: {
-      x: {
-        beginAtZero: true,
+      x: { // Assuming the count is on the x-axis (horizontal bars)
+          beginAtZero: true,
+          ticks: {
+              stepSize: 1, // Ensure it increments by whole numbers
+              callback: function(value) { // Ensure no decimal places are shown
+                 return Number.isInteger(value) ? value : null;
+              },
+          },
       },
-    },
+  },
   };
 
   // Create the bar chart
@@ -1685,26 +1691,32 @@ function sales_dash_scheduledDemos_barchart(apiData) {
         ],
     };
 
-    // Chart options
     const barChartOptionsSalesDash = {
-        responsive: true,
-        maintainAspectRatio: false,
-        indexAxis: 'y', // This makes the bar chart horizontal
-        plugins: {
-            title: {
-                display: true,
-                text: `Demos Scheduled by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
-            },
-            legend: {
-                position: 'top',
-            },
-        },
-        scales: {
-            x: {
-                beginAtZero: true,
-            },
-        },
-    };
+      responsive: true,
+      maintainAspectRatio: false,
+      indexAxis: 'y', // This makes the bar chart horizontal
+      plugins: {
+          title: {
+              display: true,
+              text: `Demos Scheduled by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
+          },
+          legend: {
+              position: 'top',
+          },
+      },
+      scales: {
+          x: { // Assuming the count is on the x-axis (horizontal bars)
+              beginAtZero: true,
+              ticks: {
+                  stepSize: 1, // Ensure it increments by whole numbers
+                  callback: function(value) { // Ensure no decimal places are shown
+                     return Number.isInteger(value) ? value : null;
+                  },
+              },
+          },
+      },
+  };
+    
 
     // Create the bar chart
     const barChartContextSalesDash = document.getElementById('scheduled_demos_chart').getContext('2d');
