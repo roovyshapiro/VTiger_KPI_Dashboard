@@ -1619,8 +1619,6 @@ function f_sales_dash_phonecall_barchart(apiData) {
 }
 
 
-// This chart shows all the demos that were scheduled in the time frame
-// Define a variable to store the chart instance
 let scheduledDemosChart = null;
 
 function sales_dash_scheduledDemos_barchart(apiData) {
@@ -1629,23 +1627,32 @@ function sales_dash_scheduledDemos_barchart(apiData) {
         scheduledDemosChart.destroy();
     }
 
-  // Step 1: Filter opportunities by `demo_scheduled_changed_at` within the selected time frame
-  const filteredOpportunities = apiData.filter(opportunity => {
-    const demoScheduledChangedAt = new Date(opportunity.demo_scheduled_changed_at);
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    end.setDate(end.getDate() + 1);
-    end.setHours(23, 59, 59, 999); // Include the full end day
+    // Step 1: Filter opportunities by `demo_scheduled_changed_at` within the selected time frame
+    const filteredOpportunities = apiData.filter(opportunity => {
+        const demoScheduledChangedAt = new Date(opportunity.demo_scheduled_changed_at);
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        end.setDate(end.getDate() + 1);
+        end.setHours(23, 59, 59, 999); // Include the full end day
 
-    // Check if the demo_scheduled_changed_at is within the selected time range
-    return demoScheduledChangedAt >= start && demoScheduledChangedAt <= end;
-  });
-  console.log("Filtered Opportunities:", filteredOpportunities);
+        // Check if the demo_scheduled_changed_at is within the selected time range
+        return demoScheduledChangedAt >= start && demoScheduledChangedAt <= end;
+    });
+    
+    console.log("Filtered Opportunities:", filteredOpportunities);
 
-    // Step 2: Group filtered Opportunities by 'qualified_by_name' and count the opportunities for each user
+    // Step 2: Group filtered opportunities by 'qualified_by_name' and count the opportunities for each user
     const qualifiedByCounts = {};
+
     filteredOpportunities.forEach(opportunity => {
-        const qualifiedByName = opportunity.qualified_by_name;
+        let qualifiedByName = opportunity.qualified_by_name;
+
+        // Assign placeholder for blank or missing values
+        if (!qualifiedByName) {
+            qualifiedByName = "No Qualified By"; // You can change this label if you prefer
+        }
+
+        // Count occurrences of each qualifiedByName
         if (!qualifiedByCounts[qualifiedByName]) {
             qualifiedByCounts[qualifiedByName] = 1;
         } else {
@@ -1657,40 +1664,46 @@ function sales_dash_scheduledDemos_barchart(apiData) {
     const qualifiedByNames = Object.keys(qualifiedByCounts);
     const opportunitiesCount = qualifiedByNames.map(name => qualifiedByCounts[name]);
 
-    // Sort the opportunitiesCount array in descending order
-    opportunitiesCount.sort((a, b) => b - a);
+    // Sort the data by opportunities count in descending order
+    const sortedData = qualifiedByNames
+        .map((name, index) => ({ name, count: opportunitiesCount[index] }))
+        .sort((a, b) => b.count - a.count);
+
+    // Extract the sorted names and counts
+    const sortedNames = sortedData.map(item => item.name);
+    const sortedCounts = sortedData.map(item => item.count);
 
     // Chart data
     const barChartDataSalesDash = {
-        labels: qualifiedByNames,
+        labels: sortedNames,
         datasets: [
             {
                 label: 'Scheduled Demos',
-                data: opportunitiesCount,
+                data: sortedCounts,
                 backgroundColor: 'lightblue',
             },
         ],
     };
 
-      //chart Options
+    // Chart options
     const barChartOptionsSalesDash = {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y', // This makes the bar chart horizontal
-      plugins: {
-        title: {
-          display: true,
-          text: `Demos Scheduled by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y', // This makes the bar chart horizontal
+        plugins: {
+            title: {
+                display: true,
+                text: `Demos Scheduled by Qualified By ${startDateFormatted} - ${endDateFormatted}`,
+            },
+            legend: {
+                position: 'top',
+            },
         },
-        legend: {
-          position: 'top',
+        scales: {
+            x: {
+                beginAtZero: true,
+            },
         },
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-        },
-      },
     };
 
     // Create the bar chart
@@ -1700,4 +1713,4 @@ function sales_dash_scheduledDemos_barchart(apiData) {
         data: barChartDataSalesDash,
         options: barChartOptionsSalesDash,
     });
-};
+}
