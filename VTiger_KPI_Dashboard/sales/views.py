@@ -209,3 +209,9 @@ def send_to_vtiger(payload):
     credential_dict = json.loads(data)
     vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     vtigerapi.create_call(payload)
+
+def test_method(request):
+    print('test! Sales Views!')
+    from .tasks import get_users_and_groups
+    get_users_and_groups()
+    return HttpResponseRedirect('/sales')

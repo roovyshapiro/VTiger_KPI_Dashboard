@@ -7,8 +7,25 @@ from django.db.models import Q
 
 
 from .models import Phone_call, Opportunities
-import VTiger_API
+from VTiger_API import Vtiger_api
 import json, os, datetime
+
+def get_users_and_groups():
+    # Get the directory of the current script
+    current_dir = os.path.dirname(__file__)
+    # Move up to the parent directory
+    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+    # Construct the full path to the file in the parent directory
+    file_path = os.path.join(parent_dir, 'credentials.json')
+
+    with open(file_path) as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
+    response = vtigerapi.get_users_and_groups_file()
+    print(response)
+
 
 @shared_task
 def get_opportunities(day='month'):
@@ -111,6 +128,18 @@ def get_opportunities(day='month'):
     def modifiedtime_date(self):
         return self.modifiedtime.strftime('%Y-%m-%d')
     '''
+    # Get the directory of the current script
+    current_dir = os.path.dirname(__file__)
+    # Move up to the parent directory
+    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+    # Construct the full path to the file in the parent directory
+    file_path = os.path.join(parent_dir, 'users_and_groups.json')
+
+    with open(file_path) as f:
+        data = f.read()
+    users_and_groups = json.loads(data)
+
+
     if day == 'Today':
         today_opp_list = retrieve_stats(module = 'Potentials')
     elif day == 'month':
@@ -138,16 +167,54 @@ def get_opportunities(day='month'):
         new_opp.createdtime = make_aware(datetime.datetime.strptime(opp['createdtime'],'%Y-%m-%d %H:%M:%S'))
         new_opp.modifiedtime = make_aware(datetime.datetime.strptime(opp['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
 
-        new_opp.created_user_id = opp['created_user_id']
-        new_opp.modifiedby = opp['modifiedby']
-        new_opp.assigned_user_id = opp['assigned_user_id']
+        #Webhook Data being sent to the server is very different than data that's pulled
+        #from the celery tasks via API. So we need to accomodate all the changes for
+        #both methods. That's why there's a lot of if/else statements for this next section
+        #
+        #GET ID from Created User ID Email Address
+        if '@' in opp['created_user_id']:
+            for user_id, user_info in users_and_groups['users'].items():
+                if user_info[2] == opp['created_user_id']:
+                    new_opp.created_user_id = user_id
+        else:
+            new_opp.created_user_id = opp['created_user_id']
+
+        #GET ID from Modified By Email Address
+        if '@' in opp['modifiedby']:
+            for user_id, user_info in users_and_groups['users'].items():
+                if user_info[2] == opp['modifiedby']:
+                    new_opp.modifiedby = user_id
+        else:
+            new_opp.modifiedby = opp['modifiedby']
+
+        #Add the 19x in front of the user id.
+        if '19x' not in opp['assigned_user_id']:
+            new_opp.assigned_user_id = f"19x{opp['assigned_user_id']}"
+        else:
+            new_opp.assigned_user_id = opp['assigned_user_id']
+
 
         new_opp.qualified_by_id = opp['cf_potentials_qualifiedby']
+
         new_opp.qualified_by_name = opp['qualified_by_name']
 
-        new_opp.assigned_username = opp['assigned_username']
+        #Change email/username to first/last
+        if '@' in opp['assigned_username']:
+            for user_id, user_info in users_and_groups['users'].items():
+                if user_info[2] == opp['assigned_username']:
+                    new_opp.assigned_username = f"{user_info[0]} {user_info[1]}"
+        else:
+            new_opp.assigned_username = opp['assigned_username']
+
         new_opp.modified_username = opp['modified_username']
-        new_opp.assigned_groupname = opp['assigned_groupname']
+        
+        #Change Group number into Group Name
+        if opp['assigned_groupname'].isnumeric():
+            group_num = f"20x{opp['assigned_groupname']}"
+            group_name = users_and_groups['groups'][group_num]
+            new_opp.assigned_groupname = group_name
+        else:
+            new_opp.assigned_groupname = opp['assigned_groupname']
 
         if opp['current_stage_entry_time'] != '':
             new_opp.current_stage_entry_time = make_aware(datetime.datetime.strptime(opp['current_stage_entry_time'],'%Y-%m-%d %H:%M:%S'))
@@ -222,6 +289,16 @@ def save_webhook_deal(webhook_data):
         "id": "5x2179843"
     }
     '''
+    # Get the directory of the current script
+    current_dir = os.path.dirname(__file__)
+    # Move up to the parent directory
+    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+    # Construct the full path to the file in the parent directory
+    file_path = os.path.join(parent_dir, 'users_and_groups.json')
+
+    with open(file_path) as f:
+        data = f.read()
+    users_and_groups = json.loads(data)
     opp_id = webhook_data['id']
 
     # Check if the opportunity with given ID already exists
@@ -233,8 +310,14 @@ def save_webhook_deal(webhook_data):
 
     # Update fields with new data
     existing_opp.opp_url_id = webhook_data['id'].replace('5x', '')
-    existing_opp.contact_id = webhook_data['contact_name']
-    existing_opp.opp_amount = webhook_data['opp_amount']
+    try:
+        existing_opp.contact_id = webhook_data['contact_name']
+    except KeyError:
+        existing_opp.contact_id = ''
+    try:
+        existing_opp.opp_amount = webhook_data['opp_amount']
+    except KeyError:
+        existing_opp.opp_amount = "0.00"
 
     existing_opp.opp_id = webhook_data['id']
     existing_opp.opp_no = webhook_data['opp_no']
@@ -244,16 +327,63 @@ def save_webhook_deal(webhook_data):
     existing_opp.createdtime = make_aware(datetime.datetime.strptime(webhook_data['createdtime'],'%Y-%m-%d %H:%M:%S'))
     existing_opp.modifiedtime = make_aware(datetime.datetime.strptime(webhook_data['modifiedtime'] ,'%Y-%m-%d %H:%M:%S'))
 
-    existing_opp.created_user_id = webhook_data['created_user2']
-    existing_opp.modifiedby = webhook_data['modifiedby']
-    existing_opp.assigned_user_id = webhook_data['assigned_to']
+    #Webhook Data being sent to the server is very different than data that's pulled
+    #from the celery tasks via API. So we need to accomodate all the changes for
+    #both methods. That's why there's a lot of if/else statements for this next section
+    #
+    #GET ID from Created User ID Email Address
+    if '@' in webhook_data['created_user2']:
+        for user_id, user_info in users_and_groups['users'].items():
+            if user_info[2] == webhook_data['created_user2']:
+                existing_opp.created_user_id = user_id
+                print('This if statement worked')
+    else:
+        existing_opp.created_user_id = webhook_data['created_user2']
 
-    existing_opp.qualified_by_id = webhook_data['cf_potentials_qualifiedby']
-    existing_opp.qualified_by_name = webhook_data['qualified_by']
+    #Get Modified By ID from Full Name
+    if '19x' not in webhook_data['modifiedby']:
+        for user_id, user_info in users_and_groups['users'].items():
+            if f"{user_info[0]} {user_info[1]}" == webhook_data['modifiedby']:
+                existing_opp.modifiedby = user_id
+    else:
+        existing_opp.modifiedby = webhook_data['modifiedby']
 
-    existing_opp.assigned_username = webhook_data['assigned_to_username']
+    #Add the 19x in front of the user id.
+    if '19x' not in webhook_data['assigned_to']:
+        existing_opp.assigned_user_id = f"19x{webhook_data['assigned_to']}"
+    else:
+        existing_opp.assigned_user_id = webhook_data['assigned_to']
+
+    #TODO this may need to be revisited as the webhook pulls the 
+    #qualified by ID as EMP108 instead of 68x1840260
+    #I'm saving this for later as I don't believe we use this field
+    #for anything.
+    try:
+        existing_opp.qualified_by_id = webhook_data['cf_potentials_qualifiedby']
+    except KeyError:
+        existing_opp.qualified_by_id = ''
+    try:
+        existing_opp.qualified_by_name = webhook_data['qualified_by']
+    except KeyError:
+        existing_opp.qualified_by_name = ''
+
+    #Change email/username to first/last
+    if '@' in webhook_data['assigned_to_username']:
+        for user_id, user_info in users_and_groups['users'].items():
+            if user_info[2] == webhook_data['assigned_to_username']:
+                existing_opp.assigned_username = f"{user_info[0]} {user_info[1]}"
+    else:
+        existing_opp.assigned_username = webhook_data['assigned_to_username']
+
     existing_opp.modified_username = webhook_data['modifiedby']
-    existing_opp.assigned_groupname = webhook_data['assigned_groupname']
+
+    #Change Group number into Group Name
+    if webhook_data['assigned_groupname'].isnumeric():
+        group_num = f"20x{webhook_data['assigned_groupname']}"
+        group_name = users_and_groups['groups'][group_num]
+        existing_opp.assigned_groupname = group_name
+    else:
+        existing_opp.assigned_groupname = webhook_data['assigned_groupname']
 
     if webhook_data['current_stage_entry_time'] != '':
         existing_opp.current_stage_entry_time = make_aware(datetime.datetime.strptime(webhook_data['current_stage_entry_time'],'%Y-%m-%d %H:%M:%S'))
@@ -403,6 +533,7 @@ def retrieve_stats(module = 'Potentials', day='Today'):
     with open(credentials_path) as f:
         data = f.read()
     credential_dict = json.loads(data)
+    import VTiger_API
     vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
 
     if module == 'Potentials':

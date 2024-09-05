@@ -1094,8 +1094,6 @@ document.addEventListener("DOMContentLoaded", function() {
       .then(response => response.json())
       .then(data => {
         console.log("Calls Data:", data);
-        console.log("Start Date", startDate);
-        console.log("End DAte", endDate);
         // Store the API respons, e data in the global variable
         callsData = data;
 
@@ -1636,6 +1634,7 @@ function sales_dash_scheduledDemos_barchart(apiData) {
     const demoScheduledChangedAt = new Date(opportunity.demo_scheduled_changed_at);
     const start = new Date(startDate);
     const end = new Date(endDate);
+    end.setDate(end.getDate() + 1);
     end.setHours(23, 59, 59, 999); // Include the full end day
 
     // Check if the demo_scheduled_changed_at is within the selected time range
