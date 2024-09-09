@@ -45,6 +45,7 @@ urlpatterns = [
     path('populatesales/', sales_views.populate_db, name='populate'),
     path('webhook/deals/', sales_views.deal_webhook, name='deals_webhook'),
     path('webhook/dialpad/', sales_views.call_webhook, name='dialpad_webhook'),
+    path('webhook/dialpad/sms/', sales_views.sms_webhook, name='dialpad_sms_webhook'),
 
 
     #path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),

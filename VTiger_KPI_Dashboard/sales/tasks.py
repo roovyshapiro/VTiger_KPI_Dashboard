@@ -6,7 +6,7 @@ from django.utils.timezone import make_aware
 from django.db.models import Q
 
 
-from .models import Phone_call, Opportunities
+from .models import Phone_call, Opportunities, SMS
 from VTiger_API import Vtiger_api
 import json, os, datetime
 
@@ -548,3 +548,88 @@ def retrieve_stats(module = 'Potentials', day='Today'):
             response = vtigerapi.retrieve_todays_cases(module = 'PhoneCalls', day='month')
 
     return response
+
+def save_dialpad_sms(webhook_data):
+    '''
+        Outbound SMS from Dialpad:
+    {
+        "id": 5417785884491776,
+        "created_date": 1725563750776,
+        "direction": "outbound",
+        "event_timestamp": 1725563751909,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": 6755239348502528,
+        "from_number": "+15125555555",
+        "to_number": [
+            "+15555551234"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is an SMS sent from Dialpad",
+        "text_content": "This is an SMS sent from Dialpad",
+        "mms_url": "NULL"
+    }
+
+    Inbound SMS to Dialpad
+    {
+        "id": 5571516353560576,
+        "created_date": 1725564299047,
+        "direction": "inbound",
+        "event_timestamp": 1725564299471,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": "NULL",
+        "from_number": "+15555551234",
+        "to_number": [
+            "+15125555555"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is a response text back to dialpad",
+        "text_content": "This is a response text back to dialpad",
+        "mms_url": "NULL"
+    }
+    '''
+    sms_id = webhook_data['id']
+
+    # Check if the opportunity with given ID already exists
+    try:
+        sms = SMS.objects.get(sms_id=sms_id)
+    except SMS.DoesNotExist:
+        # If the opportunity doesn't exist, create a new one
+        sms = SMS(sms_id=sms_id)
+
+    sms.createdtime_epoch = webhook_data['created_date']
+    epoch_time_seconds = int(webhook_data['created_date']) / 1000
+    sms.createdtime = datetime.datetime.fromtimestamp(epoch_time_seconds, tz=datetime.timezone.utc)
+    sms.direction = webhook_data['direction']
+    sms.target_name = webhook_data['target']['name']
+    sms.target_number = webhook_data['target']['phone_number'].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
+    sms.from_number = webhook_data['from_number'].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
+    sms.to_number = webhook_data['to_number'][0].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
+    sms.text = webhook_data['text']
+
+    sms.save()

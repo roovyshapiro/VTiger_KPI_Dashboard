@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 import VTiger_API
-import json, os
+import json, os, datetime
 
 class Phone_call(models.Model):
     '''
@@ -178,3 +178,85 @@ class Opportunities(models.Model):
 
     def modifiedtime_date(self):
         return self.modifiedtime.strftime('%Y-%m-%d')
+    
+
+
+class SMS(models.Model):
+    '''
+    Outbound SMS from Dialpad:
+    {
+        "id": 5417785884491776,
+        "created_date": 1725563750776,
+        "direction": "outbound",
+        "event_timestamp": 1725563751909,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": 6755239348502528,
+        "from_number": "+15125555555",
+        "to_number": [
+            "+15555551234"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is an SMS sent from Dialpad",
+        "text_content": "This is an SMS sent from Dialpad",
+        "mms_url": "NULL"
+    }
+
+    Inbound SMS to Dialpad
+    {
+        "id": 5571516353560576,
+        "created_date": 1725564299047,
+        "direction": "inbound",
+        "event_timestamp": 1725564299471,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": "NULL",
+        "from_number": "+15555551234",
+        "to_number": [
+            "+15125555555"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is a response text back to dialpad",
+        "text_content": "This is a response text back to dialpad",
+        "mms_url": "NULL"
+    }
+    '''
+    sms_id = models.CharField(max_length=50)
+    createdtime_epoch = models.CharField(max_length=50)
+    createdtime = models.DateTimeField(null=True)
+    direction = models.CharField(max_length=15)
+    target_name = models.CharField(max_length=50)
+    target_number = models.CharField(max_length=50)
+    from_number = models.CharField(max_length=50)
+    to_number = models.CharField(max_length=50)
+    text = models.TextField()
+
+    date_created = models.DateTimeField(auto_now_add=True)
+    date_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.target_name} {self.createdtime.strftime("%Y-%m-%d %H:%M:%S")}: {self.to_number} - {self.text}'

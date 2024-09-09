@@ -203,6 +203,93 @@ def call_webhook(request):
         #return HttpResponse(status=200)
     return HttpResponse(status=400)
 
+@csrf_exempt
+def sms_webhook(request):
+    '''
+    Outbound SMS from Dialpad:
+    {
+        "id": 5417785884491776,
+        "created_date": 1725563750776,
+        "direction": "outbound",
+        "event_timestamp": 1725563751909,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": 6755239348502528,
+        "from_number": "+15125555555",
+        "to_number": [
+            "+15555551234"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is an SMS sent from Dialpad",
+        "text_content": "This is an SMS sent from Dialpad",
+        "mms_url": "NULL"
+    }
+
+    Inbound SMS to Dialpad
+    {
+        "id": 5571516353560576,
+        "created_date": 1725564299047,
+        "direction": "inbound",
+        "event_timestamp": 1725564299471,
+        "target": {
+            "id": 6755239348502528,
+            "type": "user",
+            "name": "Jimbo Lowfer",
+            "phone_number": "(512) 555-5555"
+        },
+        "contact": {
+            "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+            "name": "Jember Shender",
+            "phone_number": "+15555551234"
+        },
+        "sender_id": "NULL",
+        "from_number": "+15555551234",
+        "to_number": [
+            "+15125555555"
+        ],
+        "mms": "FALSE",
+        "is_internal": "FALSE",
+        "message_status": "pending",
+        "message_delivery_result": "NULL",
+        "text": "This is a response text back to dialpad",
+        "text_content": "This is a response text back to dialpad",
+        "mms_url": "NULL"
+    }
+    '''
+    print('SMS from Dialpad!')
+    if request.method == 'POST':
+        payload = json.loads(request.body)
+        #print("Data received from Webhook is: ", payload)
+        #print(request)
+        #print(request.body)
+
+        #Save the SMS to the DB
+        from .tasks import save_dialpad_sms
+        save_dialpad_sms(payload)
+
+        validation_token = request.headers.get('Validation-Token')
+        #send_to_vtiger(payload)
+        response = HttpResponse(status=200)
+        # add the Content-type header to the response
+        response['Content-type'] = 'application/json'
+        response['Validation-Token'] = validation_token
+        # return the response
+        return response
+        #return HttpResponse(status=200)
+    return HttpResponse(status=400)
+
 def send_to_vtiger(payload):
     with open('credentials.json') as f:
         data = f.read()
