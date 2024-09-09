@@ -1027,8 +1027,8 @@ This function is used to submit the timeframe to the view to retrieve deals that
 between the start date and end date
 */
 $(function() {
-
-  var start = moment().subtract(29, 'days');
+//  var start = moment().subtract(29, 'days'); -> Sets the default to be past 30 days
+  var start = moment();
   var end = moment();
 
   function cb(start, end) {
