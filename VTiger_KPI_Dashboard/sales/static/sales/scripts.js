@@ -1029,7 +1029,7 @@ between the start date and end date
 $(function() {
 //  var start = moment().subtract(29, 'days'); -> Sets the default to be past 30 days
   var start = moment();
-  var end = moment();
+  var end = moment().add(1,'days');
 
   function cb(start, end) {
       $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
@@ -1082,7 +1082,7 @@ document.addEventListener("DOMContentLoaded", function() {
         renderChart2();
         renderChart3();
         renderChart4();
-        renderChartScheduledDemos();
+        renderChartScheduledDemos(startDate, endDate);
 
         // Add more chart rendering functions as needed
       })
@@ -1118,8 +1118,11 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Set the initial date range for the DateRangePicker
-  const initialStartDate = moment().startOf('month');
-  const initialEndDate = moment().endOf('month');
+  // This sets it to be start and end of month by default:
+  // const initialStartDate = moment().startOf('month');
+  // const initialEndDate = moment().endOf('month');
+  const initialStartDate = moment();
+  const initialEndDate = moment().add(1,'days');
 
   $('#reportrange').daterangepicker({
     startDate: initialStartDate,
@@ -1174,10 +1177,10 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Function to render Scheduled Demos Chart 
-  function renderChartScheduledDemos() {
+  function renderChartScheduledDemos(startDate, endDate) {
     // this chart shows all the demos modified in the time frame
     // that are summed by the qualified by
-    sales_dash_scheduledDemos_barchart(apiData);
+    sales_dash_scheduledDemos_barchart(startDate, endDate, apiData);
   }
 
   // Function to render Chart 1
@@ -1627,12 +1630,11 @@ function f_sales_dash_phonecall_barchart(apiData) {
 
 let scheduledDemosChart = null;
 
-function sales_dash_scheduledDemos_barchart(apiData) {
+function sales_dash_scheduledDemos_barchart(startDate, endDate, apiData) {
     if (scheduledDemosChart) {
         // Destroy the existing chart if it exists
         scheduledDemosChart.destroy();
     }
-
     // Step 1: Filter opportunities by `demo_scheduled_changed_at` within the selected time frame
     const filteredOpportunities = apiData.filter(opportunity => {
         const demoScheduledChangedAt = new Date(opportunity.demo_scheduled_changed_at);
