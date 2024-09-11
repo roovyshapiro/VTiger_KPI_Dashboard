@@ -12,6 +12,7 @@ class Vtiger_api:
         Accepts a URL and returns the text
         '''
         r = requests.get(url, auth=(self.username, self.access_key))
+        print('URL',url)
         header_dict = r.headers
 
         #We're only allowed 60 API requests per minute. 
@@ -132,7 +133,7 @@ class Vtiger_api:
         Webservices:
         webservice.php?operation=lookup&type=phone&value=3434566&sessionName={session_name}&searchIn={“module_name”:[“field_names”]}
         '''
-        phone = phone.replace('-','').replace('(','').replace(')','').replace(' ','').replace('+','')
+        phone = str(phone).replace('-','').replace('(','').replace(')','').replace(' ','').replace('+','')
 
         # Check if the phone number is 10 digits long and starts with 1
         if len(phone) == 11 and phone.startswith("1"):
@@ -145,7 +146,6 @@ class Vtiger_api:
         }
 
         lookup = self.api_call_params(f"{self.host}/lookup", data)
-
         #print(len(lookup['result']))
         for contact in lookup['result']:
             if contact['phone'] != '':
@@ -674,8 +674,133 @@ class Vtiger_api:
             time.sleep(seconds_to_wait)
         return r.status_code, r.reason, r.text
         
+    ############################
+    ###    SMS Messages      ###
+    ############################
 
+    def create_sms(self, payload):
+        '''
 
+        Inbound SMS to Dialpad
+        {
+            "id": 5571516353560576,
+            "created_date": 1725564299047,
+            "direction": "inbound",
+            "event_timestamp": 1725564299471,
+            "target": {
+                "id": 6755239348502528,
+                "type": "user",
+                "name": "Jimbo Lowfer",
+                "phone_number": "(512) 555-5555"
+            },
+            "contact": {
+                "id": "http://www.google.com/m8/feeds/contacts/email/base/2688a7ca0e67324d",
+                "name": "Jember Shender",
+                "phone_number": "+15555551234"
+            },
+            "sender_id": "NULL",
+            "from_number": "+15555551234",
+            "to_number": [
+                "+15125555555"
+            ],
+            "mms": "FALSE",
+            "is_internal": "FALSE",
+            "message_status": "pending",
+            "message_delivery_result": "NULL",
+            "text": "This is a response text back to dialpad",
+            "text_content": "This is a response text back to dialpad",
+            "mms_url": "NULL"
+        }
+
+        Add Related: Establish a relationship between the two records.   
+
+        POST endpoint/add_related?sourceRecordId=record_id&relatedRecordId=target_record_id&relationIdLabel=target_relation_label
+        '''
+        print(payload)
+        vtiger_id = ''
+        user_full_name = ''
+        assigned_id = ''
+
+        if payload['direction'] == 'outbound':
+            direction = 'Outbound'
+            cust_phone_numbers = payload['to_number']
+        else:
+            direction = 'Inbound'
+            cust_phone_numbers = [payload['from_number']]
+
+        # Loop through each recipient phone number
+        for cust_phone in cust_phone_numbers:
+            try:
+                # Perform phone lookup for each recipient
+                vtiger_id = self.lookup_phone(cust_phone)
+            except IndexError:
+                print('index-error: no contact found', cust_phone)
+                vtiger_id = None  # Reset for each phone lookup if no contact is found
+                continue
+
+            if not vtiger_id:
+                print(f"No VTiger ID found for {cust_phone}. Skipping SMS creation.")
+                continue
+
+            if payload['target']['type'] != 'user':
+                with open('credentials.json') as f:
+                    data = f.read()
+                credential_dict = json.loads(data)
+                dialpad_key = credential_dict['dialpad_key']
+                url = f"https://dialpad.com/api/v2/users?apikey={dialpad_key}"
+                headers = {
+                    'accept': 'application/json'
+                }
+                response = requests.get(url, headers=headers)
+                if response.status_code == 200:
+                    data = response.json()
+                    for user in data['items']:
+                        if user['id'] == str(payload['sender_id']):
+                            user_full_name = f"{user['first_name']} {user['last_name']}"
+            else:
+                user_full_name = payload['target']['name']
+
+            # Prepare assigned user ID
+            with open('users_and_groups.json') as f:
+                data = json.load(f)
+                for user in data['users']:
+                    if f"{data['users'][user][0]} {data['users'][user][1]}" == user_full_name:
+                        assigned_id = user
+            # Prepare the data for each recipient
+            vtiger_update_dict = {
+                'assigned_user_id': assigned_id,
+                'statusmessage': 'Delivered',
+                'smsstatus': 'Delivered',
+                'direction': direction,
+                'phonenumber': cust_phone.replace('-', '').replace('(', '').replace(')', '').replace(' ', '').replace('+', ''),
+                'message': payload['text'],
+                'label': payload['text'],
+            }
+
+            # Encode and send the SMS data
+            jsondump = json.dumps(vtiger_update_dict)
+            import urllib.parse
+            encoded_jsondump = urllib.parse.quote(jsondump)
+            url = self.host + f"/create?elementType=SMSNotifier&element={encoded_jsondump}"
+
+            code, reason, text = self.api_call_post(url)
+            print('SMS webhook result', code, reason, text)
+
+            # Process the response and relate the SMS to the lead/contact
+            if code == 200 and vtiger_id:
+                try:
+                    response_data = json.loads(text)
+                    sms_crm_id = response_data['result']['id']
+
+                    # Now relate the SMS to the appropriate lead/contact
+                    url = f"/add_related?sourceRecordId={sms_crm_id}&relatedRecordId={vtiger_id}"
+                    url = self.host + url
+                    code, reason, text = self.api_call_post(url)
+                    print(code, reason, text)
+                except json.JSONDecodeError:
+                    print("Error decoding JSON response:", text)
+            else:
+                print(f"Failed to create SMS. Status: {code}, Reason: {reason}, Response: {text}")
     ############################
     ###    SHIP Dashboard    ###
     ############################
@@ -769,13 +894,15 @@ if __name__ == '__main__':
     credential_dict = json.loads(data)
     vtigerapi = Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     #response = vtigerapi.retrieve_todays_cases(module = 'Employees', day='all')
-    response = vtigerapi.get_users_and_groups_file()
-    #response = vtigerapi.get_module_data("PhoneCalls")
+    #response = vtigerapi.get_users_and_groups_file()
+    #response = vtigerapi.get_all_data()
+    #response = vtigerapi.get_module_data("SMSNotifier")
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials')
     #response = vtigerapi.retrieve_todays_cases(module = 'Potentials', day='month')
     
-    #response = vtigerapi.lookup_phone('+17029333380')
-    #response = vtigerapi.retrieve_data_id('6x424063')
+    response = vtigerapi.lookup_phone('404 454 5460')
+    #response = vtigerapi.retrieve_data_id('44x2623256')
+    #vtigerapi.create_sms()
     data = json.dumps(response,  indent=4, sort_keys=True)
     with open('lookup_phone.json', 'w') as f:
         f.write(data)
