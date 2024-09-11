@@ -752,10 +752,10 @@ label.show_label:active {
     padding:10px;
 }
 
-#phone_calls_chart_div{
+/*#phone_calls_chart_div{
     height:100% !important;
 }
-
+*/
 
 /****** Dev/Redmine  ******/
 #logo_and_issues_total{

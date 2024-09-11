@@ -1062,6 +1062,7 @@ var startDateFormatted = '';
 var endDateFormatted = '';
 let dealsData = null;
 let callsData = null;
+let smsData = null;
 let apiData = null;
 document.addEventListener("DOMContentLoaded", function() {
   const fetchDataButton = document.getElementById("fetch-data");
@@ -1096,13 +1097,23 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Calls Data:", data);
         // Store the API respons, e data in the global variable
         callsData = data;
-
-        // Call separate functions to render charts
-        renderChartCalls();
-        // Add more chart rendering functions as needed
       })
       .catch(error => {
         console.error("Error fetching calls data from the API:", error);
+      });
+
+      fetch(`/api/sales-sms-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("SMS Data:", data);
+        // Store the API respons, e data in the global variable
+       smsData = data;
+      // Call separate functions to render charts
+      renderChartCalls();
+      // Add more chart rendering functions as needed
+      })
+      .catch(error => {
+        console.error("Error fetching sms data from the API:", error);
       });
   }
 
@@ -1173,7 +1184,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function renderChartCalls() {
     // this chart shows all the demos modified in the time frame
     // that are summed by the qualified by
-    f_sales_dash_phonecall_barchart(callsData);
+    f_sales_dash_phonecall_barchart(callsData, smsData);
   }
 
   // Function to render Scheduled Demos Chart 
@@ -1539,11 +1550,14 @@ function sales_dash_amount_barchart_assigned(apiData) {
   });
 };
 
-// This chart shows the number of phone calls per user
+
+
+// This chart shows the number of phone calls and SMS per user
+// Define a variable to store the chart instance
 // Define a variable to store the chart instance
 let sales_dash_phonecall_barchart = null;
 
-function f_sales_dash_phonecall_barchart(apiData) {
+function f_sales_dash_phonecall_barchart(apiData, smsData) {
   if (sales_dash_phonecall_barchart) {
     // Destroy the existing chart if it exists
     sales_dash_phonecall_barchart.destroy();
@@ -1564,69 +1578,102 @@ function f_sales_dash_phonecall_barchart(apiData) {
     }
   });
 
-  // Convert the calculated values to an array for the chart
-  const assignedToNames = Object.keys(phoneCallCounts);
-  const totalPhoneCalls = assignedToNames.map(name => phoneCallCounts[name]);
+  // Step 2: Group SMS by 'target_name' and count the SMSs for each user
+  const smsCounts = {};
+  
+  smsData.forEach(sms => {
+    const targetName = sms.target_name;
 
-  // Sort the totalPhoneCalls array in descending order
-  const sortedData = assignedToNames.map((name, index) => ({
+    if (targetName) {
+      if (!smsCounts[targetName]) {
+        smsCounts[targetName] = 1;
+      } else {
+        smsCounts[targetName]++;
+      }
+    }
+  });
+
+  // Step 3: Merge both phone call counts and SMS counts by username
+  const allUsernames = Array.from(new Set([...Object.keys(phoneCallCounts), ...Object.keys(smsCounts)]));
+
+  // Create arrays for the sorted data (calls and SMSs)
+  const totalPhoneCalls = allUsernames.map(name => phoneCallCounts[name] || 0);
+  const totalSmsCounts = allUsernames.map(name => smsCounts[name] || 0);
+
+  // Step 4: Sort data by totalPhoneCalls in descending order
+  const sortedData = allUsernames.map((name, index) => ({
     name,
-    count: totalPhoneCalls[index]
-  })).sort((a, b) => b.count - a.count);
+    phoneCalls: totalPhoneCalls[index],
+    smsCount: totalSmsCounts[index]
+  })).sort((a, b) => b.phoneCalls - a.phoneCalls);
 
   const sortedNames = sortedData.map(item => item.name);
-  const sortedCounts = sortedData.map(item => item.count);
+  const sortedPhoneCallCounts = sortedData.map(item => item.phoneCalls);
+  const sortedSmsCounts = sortedData.map(item => item.smsCount);
 
-  // Chart data
-  const barChartDataPhoneCalls = {
+  // Step 5: Update the chart data with both phone call and SMS counts
+  const barChartData = {
     labels: sortedNames,
     datasets: [
       {
-        label: 'Number of Phone Calls',
-        data: sortedCounts,
-        backgroundColor: 'cyan',
+        label: 'Phone Calls',
+        data: sortedPhoneCallCounts,
+        backgroundColor: '#004B95',
+      },
+      {
+        label: 'SMSs Sent',
+        data: sortedSmsCounts,
+        backgroundColor: '#8BC1F7',
       },
     ],
   };
 
-  const barChartOptionsPhoneCalls = {
+  const barChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    indexAxis: 'y',  // Makes the bar chart horizontal
+    indexAxis: 'y', // This makes the bar chart horizontal
     plugins: {
       title: {
         display: true,
-        text: `Number of Phone Calls by User ${startDateFormatted} - ${endDateFormatted}`,
+        text: `Number of Phone Calls and SMS by User ${startDateFormatted} - ${endDateFormatted}`,
       },
       legend: {
         position: 'top',
       },
     },
-    scales: {
-      x: { // Assuming the count is on the x-axis (horizontal bars)
-          beginAtZero: true,
-          ticks: {
-              stepSize: 1, // Ensure it increments by whole numbers
-              callback: function(value) { // Ensure no decimal places are shown
-                 return Number.isInteger(value) ? value : null;
-              },
-          },
+    layout: {
+      padding: {
+        left: 0,
+        right: 0,
+        top: 10,
+        bottom: 10,
       },
-  },
+    },
+    scales: {
+      x: {
+        beginAtZero: true,
+        ticks: {
+          stepSize: 1,
+          callback: function(value) {
+            return Number.isInteger(value) ? value : null;
+          },
+        },
+      },
+      y: {
+        beginAtZero: true,
+        maxBarThickness: 40,  // Adjust for better visibility
+      },
+    },
   };
 
   // Create the bar chart
-  const barChartContextPhoneCalls = document.getElementById('phone_calls_chart').getContext('2d');
-  sales_dash_phonecall_barchart = new Chart(barChartContextPhoneCalls, {
+  const barChartContext = document.getElementById('phone_calls_chart').getContext('2d');
+  sales_dash_phonecall_barchart = new Chart(barChartContext, {
     type: 'bar',
-    data: barChartDataPhoneCalls,
-    options: {
-      barChartOptionsPhoneCalls,
-       indexAxis: 'y'
-    }
+    data: barChartData,
+    options: barChartOptions,
   });
 }
-
 
 let scheduledDemosChart = null;
 
