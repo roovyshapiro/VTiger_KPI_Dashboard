@@ -677,8 +677,28 @@ class Vtiger_api:
     ############################
     ###    SMS Messages      ###
     ############################
+    def lookup_dialpad_id(self, sender_id):
+        '''
+        '''
+        with open('credentials.json') as f:
+            data = f.read()
+        credential_dict = json.loads(data)
+        dialpad_key = credential_dict['dialpad_key']
+        url = f"https://dialpad.com/api/v2/users?apikey={dialpad_key}"
+        headers = {
+            'accept': 'application/json'
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            for user in data['items']:
+                if user['id'] == str(sender_id):
+                    user_full_name = f"{user['first_name']} {user['last_name']}"
+        return user_full_name
 
-    def create_sms(self, payload):
+        
+
+    def create_sms(self, payload, user_full_name):
         '''
 
         Inbound SMS to Dialpad
@@ -718,7 +738,6 @@ class Vtiger_api:
         '''
         print(payload)
         vtiger_id = ''
-        user_full_name = ''
         assigned_id = ''
 
         if payload['direction'] == 'outbound':
@@ -742,23 +761,10 @@ class Vtiger_api:
                 print(f"No VTiger ID found for {cust_phone}. Skipping SMS creation.")
                 continue
 
-            if payload['target']['type'] != 'user':
-                with open('credentials.json') as f:
-                    data = f.read()
-                credential_dict = json.loads(data)
-                dialpad_key = credential_dict['dialpad_key']
-                url = f"https://dialpad.com/api/v2/users?apikey={dialpad_key}"
-                headers = {
-                    'accept': 'application/json'
-                }
-                response = requests.get(url, headers=headers)
-                if response.status_code == 200:
-                    data = response.json()
-                    for user in data['items']:
-                        if user['id'] == str(payload['sender_id']):
-                            user_full_name = f"{user['first_name']} {user['last_name']}"
-            else:
-                user_full_name = payload['target']['name']
+            #if payload['target']['type'] != 'user':
+            #    user_full_name = self.lookup_dialpad_id(payload['sender_id'])
+            #else:
+            #    user_full_name = payload['target']['name']
 
             # Prepare assigned user ID
             with open('users_and_groups.json') as f:

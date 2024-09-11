@@ -613,6 +613,20 @@ def save_dialpad_sms(webhook_data):
         "mms_url": "NULL"
     }
     '''
+    #If a user sends an SMS from the group name, we'll have to get the
+    #full name by looking it up with the "sender_id" instead via Dialpad API
+    user_full_name = ''
+    if webhook_data['target']['type'] != 'user':
+        credentials_file = 'credentials.json'
+        credentials_path = os.path.join(os.path.abspath('.'), credentials_file)
+        with open(credentials_path) as f:
+            data = f.read()
+        credential_dict = json.loads(data)
+        import VTiger_API
+        vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+        user_full_name = vtigerapi.lookup_dialpad_id(webhook_data['sender_id'])
+    else:
+        user_full_name = webhook_data['target']['name']
     sms_id = webhook_data['id']
 
     # Check if the opportunity with given ID already exists
@@ -626,10 +640,11 @@ def save_dialpad_sms(webhook_data):
     epoch_time_seconds = int(webhook_data['created_date']) / 1000
     sms.createdtime = datetime.datetime.fromtimestamp(epoch_time_seconds, tz=datetime.timezone.utc)
     sms.direction = webhook_data['direction']
-    sms.target_name = webhook_data['target']['name']
+    sms.target_name = user_full_name
     sms.target_number = webhook_data['target']['phone_number'].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
     sms.from_number = webhook_data['from_number'].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
     sms.to_number = webhook_data['to_number'][0].replace('(','').replace(')','').replace('-','').replace('+','').replace(' ','')
     sms.text = webhook_data['text']
 
     sms.save()
+    return user_full_name

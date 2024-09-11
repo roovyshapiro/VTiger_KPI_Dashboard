@@ -292,9 +292,9 @@ def sms_webhook(request):
 
         #Save the SMS to the DB
         from .tasks import save_dialpad_sms
-        save_dialpad_sms(payload)
+        user_full_name = save_dialpad_sms(payload)
 
-        send_sms_to_vtiger(payload)
+        send_sms_to_vtiger(payload, user_full_name)
 
         validation_token = request.headers.get('Validation-Token')
         #send_to_vtiger(payload)
@@ -314,12 +314,12 @@ def send_to_vtiger(payload):
     vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
     vtigerapi.create_call(payload)
 
-def send_sms_to_vtiger(payload):
+def send_sms_to_vtiger(payload, user_full_name):
     with open('credentials.json') as f:
         data = f.read()
     credential_dict = json.loads(data)
     vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
-    vtigerapi.create_sms(payload)
+    vtigerapi.create_sms(payload, user_full_name)
 
 def test_method(request):
     print('test! Sales Views!')
