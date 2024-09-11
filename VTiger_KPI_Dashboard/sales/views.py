@@ -9,12 +9,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.response import Response
-from .serializers import DealSerializer, PhoneCallSerializer
+from .serializers import DealSerializer, PhoneCallSerializer, SMSSerializer
 from rest_framework.decorators import api_view
 
 
 
-from .models import Phone_call, Opportunities
+from .models import Phone_call, Opportunities, SMS
 import VTiger_API
 import datetime, json, os, calendar, holidays
 
@@ -90,6 +90,21 @@ class PhoneCallDateFilterViewSet(viewsets.ModelViewSet):
         # Serialize the data
         serializer = PhoneCallSerializer(calls, many=True)
         return Response(serializer.data)
+
+class SMSDateFilterViewSet(viewsets.ModelViewSet):
+    queryset = SMS.objects.all()
+    serializer_class = SMSSerializer
+
+    def list(self, request):
+        start_date = self.request.query_params.get('start_date')
+        end_date = self.request.query_params.get('end_date')
+
+        calls = SMS.objects.filter(createdtime__date__gte=start_date, createdtime__date__lte=end_date).order_by('-date_modified')
+
+        # Serialize the data
+        serializer = SMSSerializer(calls, many=True)
+        return Response(serializer.data)
+
 
 @login_required()
 @staff_member_required

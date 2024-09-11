@@ -29,6 +29,7 @@ router.register(r'sales', DealViewSet, basename='sales')
 router.register(r'sales-open-deals', OpenDealsViewSet, basename='sales-open-deals')
 router.register(r'sales-deals-date-filter', DateFilterDealViewSet, basename='sales-deals-date-filter')
 router.register(r'sales-calls-date-filter', sales_views.PhoneCallDateFilterViewSet, basename='sales-calls-date-filter')
+router.register(r'sales-sms-date-filter', sales_views.SMSDateFilterViewSet, basename='sales-sms-date-filter')
 
 
 urlpatterns = [

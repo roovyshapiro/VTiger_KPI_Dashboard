@@ -2,7 +2,7 @@
 from rest_framework import serializers
  
 # import model from models.py
-from .models import Opportunities, Phone_call
+from .models import Opportunities, Phone_call, SMS
  
 # Create a model serializer
 class DealSerializer(serializers.ModelSerializer):
@@ -42,4 +42,10 @@ class DealSerializer(serializers.ModelSerializer):
 class PhoneCallSerializer(serializers.ModelSerializer):
     class Meta:
         model = Phone_call
+        fields = '__all__'
+
+
+class SMSSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SMS
         fields = '__all__'
