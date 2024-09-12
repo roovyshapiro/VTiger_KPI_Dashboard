@@ -1069,6 +1069,10 @@ document.addEventListener("DOMContentLoaded", function() {
   const dataContainer = document.getElementById("data-container");
 
   function fetchDataAndRenderCharts(startDate, endDate) {
+    // Show the loading spinner
+    document.getElementById('chart-loading').style.display = 'block';
+    document.getElementById('phone_calls_chart').style.display = 'none'; // Hide chart while loading
+  
     // Fetch both calls and SMS data in parallel
     const fetchCalls = fetch(`/api/sales-calls-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
       .then(response => response.json())
@@ -1094,6 +1098,10 @@ document.addEventListener("DOMContentLoaded", function() {
     Promise.all([fetchCalls, fetchSMS]).then(() => {
       // Now that both datasets are available, render the charts
       renderChartCalls();
+  
+      // Hide the loading spinner and show the chart
+      document.getElementById('chart-loading').style.display = 'none';
+      document.getElementById('phone_calls_chart').style.display = 'block';
     });
   
     // Fetch other data separately
