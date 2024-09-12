@@ -1068,52 +1068,50 @@ document.addEventListener("DOMContentLoaded", function() {
   const fetchDataButton = document.getElementById("fetch-data");
   const dataContainer = document.getElementById("data-container");
 
-  // Function to fetch data and render charts
   function fetchDataAndRenderCharts(startDate, endDate) {
-    // Make an API request to your DRF endpoint with the selected date range
-    fetch(`/api/sales-deals-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log("Opp Data:", data);
-        // Store the API response data in the global variable
-        apiData = data;
-
-        // Call separate functions to render charts
-        renderChart1();
-        renderChart2();
-        renderChart3();
-        renderChart4();
-        renderChartScheduledDemos(startDate, endDate);
-
-        // Add more chart rendering functions as needed
-      })
-      .catch(error => {
-        console.error("Error fetching data from the API:", error);
-      });
-
-      fetch(`/api/sales-calls-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+    // Fetch both calls and SMS data in parallel
+    const fetchCalls = fetch(`/api/sales-calls-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
       .then(response => response.json())
       .then(data => {
         console.log("Calls Data:", data);
-        // Store the API respons, e data in the global variable
         callsData = data;
       })
       .catch(error => {
         console.error("Error fetching calls data from the API:", error);
       });
-
-      fetch(`/api/sales-sms-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+  
+    const fetchSMS = fetch(`/api/sales-sms-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
       .then(response => response.json())
       .then(data => {
         console.log("SMS Data:", data);
-        // Store the API respons, e data in the global variable
-       smsData = data;
-      // Call separate functions to render charts
-      renderChartCalls();
-      // Add more chart rendering functions as needed
+        smsData = data;
       })
       .catch(error => {
         console.error("Error fetching sms data from the API:", error);
+      });
+  
+    // Wait for both calls and SMS data to be fetched before rendering the chart
+    Promise.all([fetchCalls, fetchSMS]).then(() => {
+      // Now that both datasets are available, render the charts
+      renderChartCalls();
+    });
+  
+    // Fetch other data separately
+    fetch(`/api/sales-deals-date-filter/?format=json&start_date=${startDate}&end_date=${endDate}`)
+      .then(response => response.json())
+      .then(data => {
+        console.log("Opp Data:", data);
+        apiData = data;
+  
+        // Render other charts using apiData
+        renderChart1();
+        renderChart2();
+        renderChart3();
+        renderChart4();
+        renderChartScheduledDemos(startDate, endDate);
+      })
+      .catch(error => {
+        console.error("Error fetching data from the API:", error);
       });
   }
 
@@ -1558,6 +1556,11 @@ function sales_dash_amount_barchart_assigned(apiData) {
 let sales_dash_phonecall_barchart = null;
 
 function f_sales_dash_phonecall_barchart(apiData, smsData) {
+  if (!apiData || !smsData) {
+    console.error("Error: Missing data for rendering the chart");
+    return; // Exit if data is not available
+  }
+
   if (sales_dash_phonecall_barchart) {
     // Destroy the existing chart if it exists
     sales_dash_phonecall_barchart.destroy();
