@@ -186,7 +186,7 @@ def webhook(request):
     This replaces the need for celery tasks.
     '''
     if request.method == 'POST':
-        #payload = json.loads(request.body)
+        payload = json.loads(request.body)
         #print("Data received from Webhook is: ", payload)
         #print(request)
         data = json.loads(request.body.decode('utf-8'))

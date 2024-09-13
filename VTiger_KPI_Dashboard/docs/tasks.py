@@ -310,10 +310,10 @@ def process_outline_update(doc):
         print('keyerror2', doc)
 
     if public_collect == True:
-        print('publishing to flock', doc['payload']['model']['title'])
+        #print('publishing to flock', doc['payload']['model']['title'])
         post_to_flock(doc, docs_url, flock_url)
         process_doc_webhook(doc)
-        print('saving to db', doc['payload']['model']['title'])
+        #print('saving to db', doc['payload']['model']['title'])
 
         
     else:
@@ -386,124 +386,43 @@ def process_doc_webhook(doc):
     }
     ''' 
     db_docs = Docs.objects.all()
-
-    #If the doc entry exists in the database, then the doc will be just saved
-    #If the doc doesn't exist, then the doc will be added to the db
-    #Only new doc updates will be sent to Flock
-
     
-    doc_updated_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
+    # Convert and handle date fields
+    def parse_date(date_string):
+        if date_string:
+            try:
+                return make_aware(datetime.datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%fZ"))
+            except ValueError:
+                # Handle cases where the microseconds are missing
+                return make_aware(datetime.datetime.strptime(date_string, "%Y-%m-%dT%H:%M:%S.%fZ"[:-4] + "Z"))
+        return None
 
-
-    #try:
-    #    new_doc = db_docs.get(updated_at = doc_updated_at)
-    #    #new_doc.save()
-    #except:
-    #    new_doc = Docs()
     new_doc = Docs()
-
-    try:
-        new_doc.doc_id = doc['payload']['model']['id']
-    except KeyError:
-        new_doc.doc_id = ""
-    try:
-        new_doc.parent_doc_id = doc['payload']['model']['parentDocumentId']
-    except KeyError:
-        new_doc.parent_doc_id = ""
-    try:
-        new_doc.collection_id = doc['payload']['model']['collectionId']
-    except KeyError:
-        new_doc.collection_id = ""
-
-    try:
-        new_doc.doc_url = doc['payload']['model']['url']
-    except KeyError:
-        new_doc.doc_url = ""
-
-    try:
-        new_doc.doc_url_id = doc['payload']['model']['urlId']
-    except KeyError:
-        new_doc.doc_url_id = ""
-
-    try:
-        new_doc.team_id = doc['payload']['model']['teamId']
-    except KeyError:
-        new_doc.team_id = ""
-
-    #"%Y-%m-%dT%H:%M:%S.%fZ"
-    #"2022-03-29T14:40:49.231Z"
-    try:
-        new_doc.published_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['publishedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    except KeyError:
-        new_doc.published_at = ""
-
-    try:
-        new_doc.doc_title = doc['payload']['model']['title']
-    except KeyError:
-        new_doc.doc_title = ""
-
-    try:
-        new_doc.doc_text = doc['payload']['model']['text']
-    except KeyError:
-        new_doc.doc_text = ""
-
-    try:
-        new_doc.revision = doc['payload']['model']['revision']
-    except KeyError:
-        new_doc.revision = 0
-
-    #"%Y-%m-%dT%H:%M:%S.%fZ"
-    #"2022-03-29T14:40:49.231Z"
-    try:
-        new_doc.updated_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    except KeyError:
-        new_doc.updated_at = ""
-
-    try:
-        new_doc.updated_by_name = doc['payload']['model']['updatedBy']['name']
-    except KeyError:
-        new_doc.updated_by_name = ""
-
-    try:
-        new_doc.updated_by_id = doc['payload']['model']['updatedBy']['id']
-    except KeyError:
-        new_doc.updated_by_id = ""
-
-    #"%Y-%m-%dT%H:%M:%S.%fZ"
-    #"2022-03-29T14:40:49.231Z"
-    try:
-        new_doc.updated_by_last_active_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['updatedBy']['lastActiveAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    except KeyError:
-        new_doc.updated_by_last_active_at = ""
-
-    #"%Y-%m-%dT%H:%M:%S.%fZ"
-    #"2022-03-29T14:40:49.231Z"
-    try:
-        new_doc.created_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['createdAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    except KeyError:
-        new_doc.created_at = ""
-    try:
-        new_doc.created_by_name = doc['payload']['model']['createdBy']['name']
-    except KeyError:
-        new_doc.created_by_name = ""
-    try:
-        new_doc.created_by_id = doc['payload']['model']['createdBy']['id']
-    except KeyError:
-        new_doc.created_by_id = ""
-
     
-    #"%Y-%m-%dT%H:%M:%S.%fZ"
-    #"2022-03-29T14:40:49.231Z"
-    try:
-        new_doc.created_by_last_active_at = make_aware(datetime.datetime.strptime(doc['payload']['model']['createdBy']['lastActiveAt'], "%Y-%m-%dT%H:%M:%S.%fZ"))
-    except KeyError:
-        new_doc.created_by_last_active_at = ""
+    new_doc.doc_id = doc.get('payload', {}).get('model', {}).get('id', None)
+    new_doc.parent_doc_id = doc.get('payload', {}).get('model', {}).get('parentDocumentId', None)
+    new_doc.collection_id = doc.get('payload', {}).get('model', {}).get('collectionId', None)
+    new_doc.doc_url = doc.get('payload', {}).get('model', {}).get('url', None)
+    new_doc.doc_url_id = doc.get('payload', {}).get('model', {}).get('urlId', None)
+    new_doc.team_id = doc.get('payload', {}).get('model', {}).get('teamId', None)
+    
+    # Date fields
+    new_doc.published_at = parse_date(doc['payload']['model'].get('publishedAt'))
+    new_doc.updated_at = parse_date(doc['payload']['model'].get('updatedAt'))
+    new_doc.updated_by_last_active_at = parse_date(doc['payload']['model']['updatedBy'].get('lastActiveAt'))
+    new_doc.created_at = parse_date(doc['payload']['model'].get('createdAt'))
+    new_doc.created_by_last_active_at = parse_date(doc['payload']['model']['createdBy'].get('lastActiveAt'))
 
-    try:
-        new_doc.collaborator_ids = json.dumps(doc['payload']['model']['collaboratorIds'])
-    except:
-        new_doc.collaborator_ids = ""
-
+    # Remaining fields
+    new_doc.doc_title = doc['payload']['model'].get('title', "")
+    new_doc.doc_text = doc['payload']['model'].get('text', "")
+    new_doc.revision = doc['payload']['model'].get('revision', 0)
+    new_doc.updated_by_name = doc['payload']['model']['updatedBy'].get('name', "")
+    new_doc.updated_by_id = doc['payload']['model']['updatedBy'].get('id', "")
+    new_doc.created_by_name = doc['payload']['model']['createdBy'].get('name', "")
+    new_doc.created_by_id = doc['payload']['model']['createdBy'].get('id', "")
+    new_doc.collaborator_ids = json.dumps(doc['payload']['model'].get('collaboratorIds', []))
+    
     new_doc.save()
 
 
