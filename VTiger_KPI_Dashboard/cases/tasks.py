@@ -157,7 +157,8 @@ def get_cases(get_all_cases=False):
     num_all_open_cases = retrieve_case_data(get_all_count = True)
     if num_all_open_cases != num_all_open_cases_db:
         print("Open Cases don't match!")
-        get_cases(get_all_cases=True)
+        #Commenting this out as its causing major slowdowns
+        #get_cases(get_all_cases=True)
 
 def delete_old_cases():
     '''
