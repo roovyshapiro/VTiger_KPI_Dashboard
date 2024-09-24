@@ -624,13 +624,15 @@ class Vtiger_api:
 
         with open('users_and_groups.json') as f:
             data = json.load(f)
+            found = False
             for user in data['users']:
-                #print(f"{data['users'][user][0]} {data['users'][user][1]}")
                 if f"{data['users'][user][2]}" == payload['target']['email']:
-                    #print(user)
                     assigned_id = user
                     assigned_name = f"{data['users'][user][0]} {data['users'][user][1]}"
-                    #print(assigned_id)
+                    found = True
+                    break
+            if not found:
+                print(f"User not found for email: {payload['target']['email']}")
 
 
 
