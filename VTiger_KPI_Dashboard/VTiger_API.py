@@ -624,6 +624,7 @@ class Vtiger_api:
 
 
         if payload['target']['type'] != 'user':
+            print(payload)
             user_full_name = self.lookup_dialpad_id(payload['sender_id'])
             with open('users_and_groups.json') as f:
                 data = json.load(f)
