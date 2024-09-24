@@ -632,7 +632,7 @@ class Vtiger_api:
                     found = True
                     break
             if not found:
-                print(f"User not found for email: {payload['target']['email']}")
+                print(f"User not found for email: {payload['target']}")
 
 
 
