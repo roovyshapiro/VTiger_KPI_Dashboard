@@ -621,11 +621,12 @@ class Vtiger_api:
  
         assigned_id = ''
         assigned_name = ''
-
-
+        '''
+        #Need to fix the issue with sending calls as the group
         if payload['target']['type'] != 'user':
             print(payload)
-            user_full_name = self.lookup_dialpad_id(payload['sender_id'])
+           
+            #user_full_name = self.lookup_dialpad_id(payload['sender_id'])
             with open('users_and_groups.json') as f:
                 data = json.load(f)
                 found = False
@@ -633,18 +634,20 @@ class Vtiger_api:
                     if f"{data['users'][user][0]} {data['users'][user][1]}" == user_full_name:
                         assigned_id = user
                         assigned_name = user_full_name
+            
         else:
-            with open('users_and_groups.json') as f:
-                data = json.load(f)
-                found = False
-                for user in data['users']:
-                    if f"{data['users'][user][2]}" == payload['target']['email']:
-                        assigned_id = user
-                        assigned_name = f"{data['users'][user][0]} {data['users'][user][1]}"
-                        found = True
-                        break
-                if not found:
-                    print(f"User not found for email: {payload['target']}")
+        '''
+        with open('users_and_groups.json') as f:
+            data = json.load(f)
+            found = False
+            for user in data['users']:
+                if f"{data['users'][user][2]}" == payload['target']['email']:
+                    assigned_id = user
+                    assigned_name = f"{data['users'][user][0]} {data['users'][user][1]}"
+                    found = True
+                    break
+            if not found:
+                print(f"User not found for email: {payload['target']}")
 
 
 
