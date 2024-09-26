@@ -697,6 +697,7 @@ class Vtiger_api:
     def lookup_dialpad_id(self, sender_id):
         '''
         '''
+        user_full_name = ''
         with open('credentials.json') as f:
             data = f.read()
         credential_dict = json.loads(data)
