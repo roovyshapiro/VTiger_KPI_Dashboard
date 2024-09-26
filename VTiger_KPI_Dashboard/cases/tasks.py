@@ -163,44 +163,59 @@ def get_cases(get_all_cases=False):
 def delete_old_cases():
     '''
     Deletes the cases from today which have an outdated date_modified field.
+    #If '/populateallcases' was run, there could be 1000s of cases modified within the day. 
+    #However, only the cases from today are updated on a continuous basis.
+    #Therefore, all the cases that were retrieved from at least yesterday via '/populateallcases'
+    #will have their date_modified fields be out of date and we don't want to delete any of them.
+    #Therefore, we'll only look at the cases which were modified today in vtiger AND saved today in the DB
+
+    #If no cases were deleted, and all cases from today are being updated, then the time different should be
+    #close to 0. If everything is running smooth, the time will be somewhere in the microseconds.
+    #However if we have a day where there is at least a 30 minute time difference in the "date_modified" field
+    #between the first and last case, we'll have to go through them and delete all the 30+ minute old cases.
+    #Since every case we get from VTiger is "save()'ed" to the db, the date_modified should update. If the
+    #time isn't updating, we're no longer receiving it from VTiger and the only reason for that is because its
+    #been deleted. Therefore, we'll delete it from our DB.
+    #If someone deletes a case from more than one day ago, we wont' be able to detect it using this method.
+    #The only solution I can think of at the moment is to get more than one days worth of cases from VTiger
+    #every 10 minutes. But this will result in a larger amount of API calls. If its becoming an issue, that will
+    #be the next step.
     '''
     #Get a list of all the date_modified days that we have data for in the DB, each day should appear in the list only one time.
     all_cases = Cases.objects.all().order_by('date_modified')
     all_dates = []
     for case in all_cases:
-        case_date = case.date_modified.replace(hour=0,minute=0,second=0,microsecond=0)
+        case_date = case.date_modified.replace(hour=0, minute=0, second=0, microsecond=0)
         all_dates.append(case_date)
     days_only = set(all_dates)
 
-
     for day in days_only:
-        end_of_day = day.replace(hour=23, minute = 59, second=59)
-        #Get all cases from the day.
+        end_of_day = day.replace(hour=23, minute=59, second=59)
+        # Get all cases from the day.
         days_cases = all_cases.filter(date_modified__gte=day, date_modified__lte=end_of_day)
-        #If '/populateallcases' was run, there could be 1000s of cases modified within the day. 
-        #However, only the cases from today are updated on a continuous basis.
-        #Therefore, all the cases that were retrieved from at least yesterday via '/populateallcases'
-        #will have their date_modified fields be out of date and we don't want to delete any of them.
-        #Therefore, we'll only look at the cases which were modified today in vtiger AND saved today in the DB
+        # Get only the cases modified today.
         days_cases_only = days_cases.filter(modifiedtime__gte=day)
-        #Calculate the time difference between the first and last case in this set.
-        mytimedelta = days_cases_only.last().date_modified - days_cases_only.first().date_modified
-        #If no cases were deleted, and all cases from today are being updated, then the time different should be
-        #close to 0. If everything is running smooth, the time will be somewhere in the microseconds.
-        #However if we have a day where there is at least a 30 minute time difference in the "date_modified" field
-        #between the first and last case, we'll have to go through them and delete all the 30+ minute old cases.
-        #Since every case we get from VTiger is "save()'ed" to the db, the date_modified should update. If the
-        #time isn't updating, we're no longer receiving it from VTiger and the only reason for that is because its
-        #been deleted. Therefore, we'll delete it from our DB.
-        #If someone deletes a case from more than one day ago, we wont' be able to detect it using this method.
-        #The only solution I can think of at the moment is to get more than one days worth of cases from VTiger
-        #every 10 minutes. But this will result in a larger amount of API calls. If its becoming an issue, that will
-        #be the next step.
-        if int(mytimedelta.total_seconds()) // 60 > 30:
-            for case in days_cases_only:
-                case_time_delta = days_cases_only.last().date_modified - case.date_modified
-                if int(case_time_delta.total_seconds()) // 60 > 30:
-                    case.delete()
+
+        # Check if there are any cases
+        if not days_cases_only.exists():
+            print(f"No cases found for the day {day}")
+            continue  # Skip to the next iteration if no cases are found
+
+        # Calculate the time difference between the first and last case
+        first_case = days_cases_only.first()
+        last_case = days_cases_only.last()
+
+        if first_case and last_case:
+            mytimedelta = last_case.date_modified - first_case.date_modified
+
+            # Check the time difference
+            if int(mytimedelta.total_seconds()) // 60 > 30:
+                for case in days_cases_only:
+                    case_time_delta = last_case.date_modified - case.date_modified
+                    if int(case_time_delta.total_seconds()) // 60 > 30:
+                        case.delete()
+        else:
+            print(f"No valid first/last case found for the day {day}")
 
 def retrieve_case_data(get_all_cases=False, get_all_count=False):
     '''
