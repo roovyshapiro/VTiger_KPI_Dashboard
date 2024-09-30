@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 import VTiger_API
 
 import datetime, calendar
-from .tasks import get_cases
+from .tasks import get_cases, save_webhook_case
 from .models import Cases
 import json,os
 
@@ -724,3 +724,25 @@ def delete_all_cases(request):
     #This deletes all items:
     #Cases.objects.all().delete()
     return HttpResponseRedirect('/cases')
+
+
+@csrf_exempt
+def case_webhook(request):
+    '''
+    '''
+    if request.method == 'POST':
+        payload = json.loads(request.body)
+        #print("Data received from Webhook is: ", payload)
+        #print('request',request)
+        #print('request.body',request.body)
+        #Save Case Data to DB
+        save_webhook_case(payload)
+        validation_token = request.headers.get('Validation-Token')
+        response = HttpResponse(status=200)
+        # add the Content-type header to the response
+        response['Content-type'] = 'application/json'
+        response['Validation-Token'] = validation_token
+        # return the response
+        return response
+        #return HttpResponse(status=200)
+    return HttpResponse(status=400)

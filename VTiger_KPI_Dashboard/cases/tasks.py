@@ -240,3 +240,91 @@ def retrieve_case_data(get_all_cases=False, get_all_count=False):
 
     return today_case_list
 
+def parse_datetime(date_str):
+    dt = datetime.datetime.strptime(date_str, '%Y-%m-%d %H:%M:%S')
+    return make_aware(dt) if timezone.is_naive(dt) else dt
+
+def save_webhook_case(webhook_data):
+    # Load the users and groups data
+    current_dir = os.path.dirname(__file__)
+    parent_dir = os.path.abspath(os.path.join(current_dir, '..'))
+    file_path = os.path.join(parent_dir, 'users_and_groups.json')
+
+    with open(file_path) as f:
+        users_and_groups = json.load(f)
+    
+    case_id = webhook_data.get('id', '')
+
+    # Check if the case with the given ID already exists
+    try:
+        existing_case = Cases.objects.get(case_id=case_id)
+    except Cases.DoesNotExist:
+        existing_case = Cases(case_id=case_id)
+
+    # Update fields with new data
+    existing_case.case_url_id = webhook_data['id'].replace('39x', '')
+    existing_case.contact_id = webhook_data.get('contact_id', '')
+    existing_case.case_no = webhook_data.get('case_no', '')
+    existing_case.title = webhook_data.get('case_title', '')
+    existing_case.casestatus = webhook_data.get('case_status', '')
+
+
+    # Parse date fields
+    existing_case.createdtime = parse_datetime(webhook_data['created_time'])
+    existing_case.modifiedtime = parse_datetime(webhook_data['modified_time'])
+
+    # Handle user assignments
+    existing_case.assigned_user_id = f"19x{webhook_data['assigned_user_id']}"
+
+    assigned_username = webhook_data.get('assigned_user_id_username', '')
+    if '@' in assigned_username:
+        for user_id, user_info in users_and_groups['users'].items():
+            if user_info[2] == assigned_username:
+                existing_case.assigned_username = f"{user_info[0]} {user_info[1]}"
+    else:
+        existing_case.created_user_id = assigned_username
+
+    # Handle modified by
+    modified_by = webhook_data.get('modified_by', '')
+    if '19x' not in modified_by:
+        for user_id, user_info in users_and_groups['users'].items():
+            if f"{user_info[0]} {user_info[1]}" == modified_by:
+                existing_case.modifiedby = user_id
+                existing_case.modified_username = modified_by
+    else:
+        existing_case.modifiedby = modified_by
+        existing_case.modified_username = modified_by
+
+
+    # Handle group assignment
+    group_id = webhook_data.get('group_id', '')
+    if group_id.isnumeric():
+        group_num = f"20x{group_id}"
+        existing_case.group_id = group_num
+        existing_case.assigned_groupname = users_and_groups['groups'].get(group_num, 'Unknown Group')
+    else:
+        existing_case.group_id = group_id
+
+    # Handle SLA closure
+    sla_closure = webhook_data.get('sla_actual_closure_on', '')
+    if sla_closure:
+        existing_case.sla_actual_closure_on = parse_datetime(sla_closure)
+    else:
+        existing_case.sla_actual_closure_on = None
+
+    # Handle time spent
+    try:
+        time_spent = float(webhook_data.get('total_time', 0))
+        existing_case.time_spent_hr = f"{int(time_spent / 24)} Days, {int(time_spent % 24)} Hours, {int(((time_spent % 24) - int(time_spent % 24)) * 60)} Minutes"
+    except ValueError:
+        existing_case.time_spent_hr = webhook_data.get('total_time', 'N/A')
+
+    try:
+        existing_case.time_spent = float(webhook_data.get('total_time', 0))
+    except ValueError:
+        existing_case.time_spent = 0
+    
+
+    print('Webhook - Case Saved to DB! ', existing_case)
+    # Save the case
+    existing_case.save()

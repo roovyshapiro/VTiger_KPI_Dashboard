@@ -95,7 +95,8 @@ class Cases(models.Model):
     date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.assigned_groupname} - {self.assigned_username} - {self.case_no} - {self.date_modified.strftime("%Y-%m-%d %H:%M:%S")}'
+        modified_date_str = self.date_modified.strftime("%Y-%m-%d %H:%M:%S") if self.date_modified else 'No Modification Date'
+        return f'{self.assigned_groupname} - {self.assigned_username} - {self.case_no} - {modified_date_str}'
     
     def modifiedtime_date(self):
         return self.modifiedtime.strftime('%Y-%m-%d')

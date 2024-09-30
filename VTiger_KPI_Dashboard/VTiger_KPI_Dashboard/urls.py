@@ -60,6 +60,8 @@ urlpatterns = [
     path('populateallcases/', case_views.populate_all_cases, name='populate_all_cases'),
     path('deletecases/', case_views.delete_all_cases, name='delete_all_cases'),
     path('testcases/', case_views.testing, name='cases_test'),
+    path('webhook/cases/', case_views.case_webhook, name='case_webhook'),
+
 
     path('ship/', ship_views.main, name='ship_dashboard'),
     path('populateproducts/', ship_views.populate_products, name='populate_products'),
