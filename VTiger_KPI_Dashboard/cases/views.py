@@ -77,7 +77,7 @@ def main(request):
     sorted_user_assigned_total_open = sorted(user_assigned_total_open.items(), key=lambda x: x[1], reverse=True)
 
     #Retrieve user specific data for the entire month
-    user_case_data = retrieve_user_data(full_cases,first_of_month, end_of_month)
+    #user_case_data = retrieve_user_data(full_cases,first_of_month, end_of_month)
 
     #We supply dictionaries of all the created cases to the html context so that we can easily pinpoint cases that were
     #created in that time frame. We highlight created cases in green and resolved cases in red.
@@ -137,7 +137,7 @@ def main(request):
         "all_open_cases":all_open_cases,
         'sorted_user_assigned_total_open':sorted_user_assigned_total_open,
 
-        'user_case_data': user_case_data,
+        #'user_case_data': user_case_data,
         'historical_data': historical_data,
         'month_comparison': month_comparison,
         'month_comparison_created' : month_comparison_created,
