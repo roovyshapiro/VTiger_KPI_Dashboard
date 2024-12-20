@@ -326,3 +326,24 @@ def test_method(request):
     from .tasks import get_users_and_groups
     get_users_and_groups()
     return HttpResponseRedirect('/sales')
+
+@login_required()
+@staff_member_required
+def populate_opp_month(request):
+    '''
+    Populates the opportunities and phone calls databases from the past 3 months.
+    '''
+    from sales.tasks import get_opportunities
+    get_opportunities(day='month')
+
+    return HttpResponseRedirect('/sales')
+
+@login_required()
+@staff_member_required
+def get_new_users(request):
+    with open('credentials.json') as f:
+        data = f.read()
+    credential_dict = json.loads(data)
+    vtigerapi = VTiger_API.Vtiger_api(credential_dict['username'], credential_dict['access_key'], credential_dict['host'])
+    vtigerapi.get_users_and_groups_file()
+    return HttpResponseRedirect('/')

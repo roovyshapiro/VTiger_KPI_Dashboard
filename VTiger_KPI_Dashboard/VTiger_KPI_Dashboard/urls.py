@@ -47,9 +47,10 @@ urlpatterns = [
     path('webhook/deals/', sales_views.deal_webhook, name='deals_webhook'),
     path('webhook/dialpad/', sales_views.call_webhook, name='dialpad_webhook'),
     path('webhook/dialpad/sms/', sales_views.sms_webhook, name='dialpad_sms_webhook'),
+    path('getnewusers/', sales_views.get_new_users, name='get_new_users'),
 
 
-    #path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
+    path('populateoppssales/', sales_views.populate_opp_month, name='populate_opps_month'),
     #path('populatecallssales/', sales_views.populate_call_month, name='populate_calls_month'),
     #path('deleteallsales/', sales_views.delete_all_items, name='delete_all'),
     #path('testsales/', sales_views.test_method, name='test'),
